@@ -64,6 +64,17 @@ export default function DeependerPremiumPortfolio() {
   const [showGreeting, setShowGreeting] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { scrollYProgress } = useScroll();
+  const [beerCount, setBeerCount] = useState(420);
+const [showBeerAchievement, setShowBeerAchievement] = useState(false);
+
+const handleBeerClick = () => {
+  setBeerCount((prev) => prev + 1);
+  setShowBeerAchievement(true);
+
+  window.setTimeout(() => {
+    setShowBeerAchievement(false);
+  }, 2200);
+};
 
   // form values
   const FORMSPREE_ID = 'YOUR_FORM_ID';
@@ -518,7 +529,7 @@ export default function DeependerPremiumPortfolio() {
           className="absolute inset-0"
           style={{
             backgroundImage: isDark
-              ? 'radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.1) 0%, transparent 50%)'
+              ? 'radial-gradient(circle at 50% 50%, rgba(45, 207, 105, 0.1) 0%, transparent 50%)'
               : 'radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.16) 0%, transparent 50%)',
             backgroundSize: '100% 100%',
             y: y1,
@@ -596,245 +607,340 @@ export default function DeependerPremiumPortfolio() {
           HERO SECTION
       ═══════════════════════════════════════════════════════════════════ */}
       <section id="hero" className="min-h-screen flex items-center justify-center px-6 pt-20 relative">
+  <AnimatePresence>
+    {showBeerAchievement && (
+      <motion.div
+        initial={{ opacity: 0, y: -40, scale: 0.9 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -40, scale: 0.9 }}
+        transition={{ type: 'spring', stiffness: 180 }}
+        className="fixed top-24 left-1/2 -translate-x-1/2 z-[90] rounded-xl bg-yellow-400 px-5 sm:px-8 py-4 text-black font-black text-sm sm:text-xl shadow-[0_0_45px_rgba(250,204,21,0.55)]"
+      >
+        🏆 Achievement Unlocked: 🥴 Absolutely Wasted!
+      </motion.div>
+    )}
+  </AnimatePresence>
+
+  <motion.div
+    initial={{ opacity: 0, y: 50 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 1 }}
+    className="max-w-6xl z-10 w-full"
+  >
+    <motion.div
+      initial={{ opacity: 0, x: -50 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.2 }}
+      className="text-green-400 font-mono mb-4 flex items-center gap-2"
+    >
+      <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
+        <Star size={20} />
+      </motion.div>
+      Hi, my name is
+    </motion.div>
+
+    <motion.h1
+      className={`text-4xl md:text-9xl font-black mb-6 ${themeClass({
+        dark: 'from-white via-green-300 to-emerald-500',
+        light: 'from-zinc-950 via-green-600 to-emerald-600',
+      })} bg-gradient-to-r bg-clip-text text-transparent leading-[0.95]`}
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: 0.3, type: 'spring' }}
+    >
+      Deepender <br />
+      Choudhary
+    </motion.h1>
+
+    <motion.h2
+      className={`text-3xl md:text-5xl font-bold ${themeClass({
+        dark: 'text-slate-400',
+        light: 'text-zinc-700',
+      })} mb-8 leading-tight`}
+      initial={{ opacity: 0, x: -50 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.5 }}
+    >
+      I work across{' '}
+      <span className="text-green-400">operations</span>, technology, and business execution.
+    </motion.h2>
+
+
+    <motion.div
+      className="flex flex-col sm:flex-row gap-5 mb-12"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.9 }}
+    >
+      <motion.a
+        href="#projects"
+        whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(34, 197, 94, 0.5)' }}
+        whileTap={{ scale: 0.95 }}
+        className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl font-bold text-lg flex items-center justify-center gap-2 group text-black"
+      >
+        See My Work
+        <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+      </motion.a>
+
+      <motion.a
+        href={RESUME_DOWNLOAD_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="px-8 py-4 border-2 border-green-400 rounded-xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-green-400/10 transition-colors"
+      >
+        <Download size={20} />
+        Download Resume
+      </motion.a>
+    </motion.div>
+
+    {/* Stats directly below buttons */}
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 1.05 }}
+      className="grid grid-cols-2 md:grid-cols-4 gap-5 max-w-5xl"
+    >
+      {[
+        { number: '3+', label: 'years across tech, support & operations' },
+        { number: '20+', label: 'pages and projects shipped' },
+        { number: '₹10L+', label: 'revenue influenced through project work' },
+      ].map((stat, i) => (
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="max-w-6xl z-10"
+          key={i}
+          whileHover={{ y: -6, scale: 1.03 }}
+          className="rounded-2xl border border-green-500/30 bg-black/40 p-5 backdrop-blur-xl"
         >
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-green-400 font-mono mb-4 flex items-center gap-2"
-          >
-            <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
-              <Star size={20} />
-            </motion.div>
-            Hi, my name is
-          </motion.div>
-
-          <motion.h1
-            className={`text-5xl md:text-8xl font-black mb-6 ${themeClass({ dark: 'from-white via-green-400 to-emerald-500', light: 'from-zinc-950 via-green-600 to-emerald-600' })} bg-gradient-to-r bg-clip-text text-transparent`}
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, type: 'spring' }}
-          >
-            Deepender Choudhary
-          </motion.h1>
-
-          <motion.h2
-            className={`text-4xl md:text-6xl font-bold ${themeClass({ dark: 'text-slate-400', light: 'text-zinc-700' })} mb-8`}
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            I transform{' '}
-            <motion.span className="text-green-400" animate={{ color: ['#4ade80', '#22c55e', '#4ade80'] }} transition={{ duration: 3, repeat: Infinity }}>
-              data
-            </motion.span>{' '}
-            into{' '}
-            <motion.span className="text-emerald-400" animate={{ color: ['#22c55e', '#4ade80', '#22c55e'] }} transition={{ duration: 3, repeat: Infinity }}>
-              business decisions
-            </motion.span>
-          </motion.h2>
-
-          
-
-          <motion.div className="flex flex-col sm:flex-row gap-6 mb-12" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
-            <motion.a
-              href="#contact"
-              whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(34, 197, 94, 0.5)' }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl font-bold text-lg flex items-center gap-2 group text-black"
-            >
-              Let&apos;s Talk
-              <motion.div animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
-                <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-              </motion.div>
-            </motion.a>
-            <motion.a
-              href="https://docs.google.com/document/d/1goFJDq8pAb8kbzO5bxXgfvy4rkmyH0-6-yw_7FkCvnI/edit?usp=sharing"
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 border-2 border-green-400 rounded-xl font-bold text-lg flex items-center gap-2 hover:bg-green-400/10 transition-colors"
-            >
-              <Link size={20} />
-              Resume
-            </motion.a>
-          </motion.div>
-
-          <motion.div className="flex gap-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1 }}>
-            {[
-              { Icon: FaLinkedin, href: 'https://www.linkedin.com/in/deepender-choudhary-337958248/' },
-              { Icon: Mail, href: 'mailto:deependerchoudhary2003@gmail.com' },
-            ].map(({ Icon, href }, i) => (
-              <motion.a key={i} href={href} whileHover={{ scale: 1.2, rotate: 5 }} className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} hover:text-green-400 transition-colors`}>
-                <Icon size={28} />
-              </motion.a>
-            ))}
-          </motion.div>
+          <div className="text-3xl md:text-5xl font-black text-white">
+            {stat.number}
+          </div>
+          <div className="mt-1 text-sm text-green-400">
+            {stat.label}
+          </div>
         </motion.div>
+      ))}
 
-        <motion.div className="absolute bottom-10 left-1/2 -translate-x-1/2" animate={{ y: [0, 10, 0] }} transition={{ duration: 2, repeat: Infinity }}>
-          <ChevronDown className="text-green-400" size={40} />
-        </motion.div>
-      </section>
+      <motion.button
+        type="button"
+        onClick={handleBeerClick}
+        whileTap={{ scale: 0.92 }}
+        whileHover={{ y: -6, scale: 1.03 }}
+        className="text-left rounded-2xl border border-green-500/30 bg-black/40 p-5 backdrop-blur-xl group"
+      >
+        <div className="text-3xl md:text-5xl font-black text-white">
+          {beerCount}
+          <span className="ml-1 text-green-400">🍺</span>
+        </div>
+        <div className="mt-1 text-sm text-slate-400 group-hover:text-green-400 transition-colors">
+          beers consumed — click carefully
+        </div>
+      </motion.button>
+    </motion.div>
+
+    <motion.div className="flex gap-6 mt-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.15 }}>
+      {[
+        { Icon: FaLinkedin, href: 'https://www.linkedin.com/in/deepender-choudhary-337958248/' },
+        { Icon: Mail, href: 'mailto:deependerchoudhary2003@gmail.com' },
+      ].map(({ Icon, href }, i) => (
+        <motion.a
+          key={i}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          whileHover={{ scale: 1.2, rotate: 5 }}
+          className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} hover:text-green-400 transition-colors`}
+        >
+          <Icon size={28} />
+        </motion.a>
+      ))}
+    </motion.div>
+  </motion.div>
+
+  <motion.div
+    className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:block"
+    animate={{ y: [0, 10, 0] }}
+    transition={{ duration: 2, repeat: Infinity }}
+  >
+    <ChevronDown className="text-green-400" size={40} />
+  </motion.div>
+</section>
 
       {/* ═══════════════════════════════════════════════════════════════════
           ABOUT / STORY SECTION
       ═══════════════════════════════════════════════════════════════════ */}
-      <section id="about" className="min-h-screen px-6 py-32 relative">
-        <div className="max-w-6xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.25 }} transition={{ duration: 0.8 }}>
-            <h2 className="text-4xl md:text-6xl font-black mb-16 flex items-center gap-6">
-              <span className="text-green-400 font-mono text-3xl">01.</span>
-              <span className="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">My Story</span>
-              <div className="flex-1 h-px bg-gradient-to-r from-green-400/50 to-transparent" />
-            </h2>
-          </motion.div>
+      <section id="about" className="min-h-screen px-4 sm:px-6 py-20 sm:py-32 relative">
+  <div className="max-w-6xl mx-auto">
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: false, amount: 0.25 }}
+      transition={{ duration: 0.8 }}
+      className="mb-12 sm:mb-16"
+    >
+      <h2 className="text-4xl sm:text-5xl md:text-6xl font-black flex items-center gap-4 sm:gap-6">
+        <span className="text-green-400 font-mono text-2xl sm:text-3xl">01.</span>
+        <span className="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
+          My Story
+        </span>
+        <div className="flex-1 h-px bg-gradient-to-r from-green-400/50 to-transparent" />
+      </h2>
+    </motion.div>
 
-          <div className="grid lg:grid-cols-2 gap-16">
+    <div className="grid lg:grid-cols-[1fr_0.85fr] gap-10 lg:gap-16 items-start">
+      <motion.div
+        initial={{ opacity: 0, x: -40 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: false, amount: 0.25 }}
+        className={`space-y-6 text-base sm:text-lg leading-relaxed ${themeClass({
+          dark: 'text-slate-300',
+          light: 'text-zinc-700',
+        })}`}
+      >
+        <h3 className="text-2xl sm:text-3xl font-bold text-green-400 leading-tight">
+          I did not start with a perfect roadmap. I learned by moving, building, and correcting.
+        </h3>
+
+        <p>
+          My first serious phase was preparing for the Indian Army. That period gave me
+          discipline, structure, patience, and the habit of showing up consistently.
+        </p>
+
+        <p>
+          Later, I moved toward technology and startups. I started understanding how websites,
+          products, customers, and business operations connect in the real world.
+        </p>
+
+        <p>
+          At <span className="text-emerald-400 font-semibold">Super Minds</span>, I worked on real
+          projects, built pages, improved user flows, and saw how execution details affect
+          business outcomes.
+        </p>
+
+        <p>
+          At <span className="text-lime-400 font-semibold">Concentrix</span>, I worked in technical
+          support. It taught me how to stay calm, understand problems quickly, communicate
+          clearly, and document issues properly.
+        </p>
+
+        <p>
+          Now at <span className="text-green-400 font-semibold">IGT Solutions</span>, I work around
+          airline operations and business processes. I am learning how systems, teams,
+          workflows, and customer impact come together at scale.
+        </p>
+
+        <motion.div
+          className="p-6 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-2xl"
+          whileHover={{ scale: 1.02, boxShadow: '0 0 40px rgba(34, 197, 94, 0.25)' }}
+        >
+          <h4 className="text-2xl font-bold text-green-400 mb-3">How I work</h4>
+          <p>
+            I like practical work more than theory. Army preparation gave me discipline;
+            startups and operations taught me speed, ownership, and problem-solving.
+            I try to understand the problem, take action, and improve through real feedback.
+          </p>
+        </motion.div>
+
+        <p>
+          I have completed cloud fundamentals through{' '}
+          <span className="text-orange-400 font-semibold">AWS Cloud Practitioner</span> and{' '}
+          <span className="text-blue-400 font-semibold">Microsoft Azure Fundamentals</span>.
+          I use them as a base to understand modern systems, not as a shortcut to claim expertise.
+        </p>
+
+        <p className="text-xl font-bold text-green-400">
+          Long term, I want to build useful products and solve problems where execution matters.
+        </p>
+      </motion.div>
+
+      <div className="space-y-6">
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: false, amount: 0.25 }}
-              className={`space-y-6 ${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} leading-relaxed`}
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.25 }}
+          className="space-y-4"
+        >
+          <h3 className="text-2xl font-bold text-green-400">Certifications</h3>
+
+          {certifications.map((cert, i) => (
+            <motion.div
+              key={i}
+              className={`${themeClass({
+                dark: 'bg-black/50 border-green-500/30',
+                light: 'bg-white/80 border-green-500/30',
+              })} p-5 sm:p-6 border-2 rounded-xl`}
+              whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(34, 197, 94, 0.25)' }}
             >
-              <motion.div className="text-2xl font-bold text-green-400 mb-6" whileHover={{ scale: 1.02 }}>
-                I&apos;m 22. From a middle-class family in Haryana. At a crossroads.
-              </motion.div>
-              <p className="text-lg">
-                <span className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} font-semibold`}>Government exams vs private sector.</span>{' '}
-                Stability vs growth. Safety vs opportunity. I chose growth because I have{' '}
-                <span className="text-green-400">3-4 years to get settled</span> before I get married. I cannot afford to wait for exam results that might come when I am 24.
-              </p>
-              <p>
-                I started at <span className="text-emerald-400 font-semibold">Super Minds</span>, coding React.js and building booking pages.
-                That&apos;s where I learned how businesses think — conversion rates, user journeys, ROI. Not from a textbook. From shipping real products.
-              </p>
-              <p>
-                Then <span className="text-lime-400 font-semibold">Concentrix</span> — technical support for a US telecom client.
-                30-40 angry customers daily. Network down. Internet slow. Every call was a mini root cause analysis.{' '}
-                <span className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} font-semibold`}>95%+ CSAT wasn&apos;t luck. It was systematic thinking.</span>
-              </p>
-              <p>
-                Now I&apos;m at <span className="text-green-400 font-semibold">IGT Solutions</span> managing KLM Airlines operations.
-                6-7 Lines of Business. Claims. Seating. Rebooking. Real-time flight disruptions affecting 200+ passengers.
-                I am not just handling tickets —{' '}
-                <span className="text-green-400 font-semibold">analyzing processes, identifying bottlenecks, generating reports, maintaining 99%+ SLA</span>.
-              </p>
-              <motion.div
-                className="p-6 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-2xl"
-                whileHover={{ scale: 1.02, boxShadow: '0 0 40px rgba(34, 197, 94, 0.3)' }}
-              >
-                <div className="text-2xl font-bold text-green-400 mb-3">Here&apos;s what makes me different:</div>
-                <p className="text-lg">
-                  I do not have a fancy degree from IIT or IIM. What I have is{' '}
-                  <span className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} font-bold`}>3+ years of real operational experience</span>{' '}
-                  that taught me what business analysis actually means.
-                </p>
-              </motion.div>
-              <p className="text-lg">
-                I have earned <span className="text-orange-400 font-semibold">AWS Cloud Practitioner</span> and{' '}
-                <span className="text-blue-400 font-semibold">Azure Fundamentals</span> certifications.
-                I am learning SQL, Power BI, BPMN, GenAI. I am building projects to prove I can deliver.
-              </p>
-              <motion.div
-                className="text-xl font-bold text-transparent bg-gradient-to-r from-green-400 via-emerald-500 to-lime-500 bg-clip-text"
-                animate={{ backgroundPosition: ['0%', '100%', '0%'] }}
-                transition={{ duration: 5, repeat: Infinity }}
-              >
-I want to build something that actually matters — a product or company that solves a real problem
-  for real people. Not for a valuation. Not for a LinkedIn headline.
-  The next few years are about sharpening the craft: business thinking, product sense, execution discipline.
-  The rest will follow.              </motion.div>
-            </motion.div>
-
-            {/* Stats & Highlights */}
-            <div className="space-y-6">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: false, amount: 0.25 }}
-                className={`${themeClass({ dark: 'bg-black/50 border-green-500/20', light: 'bg-white/70 border-green-500/30' })} backdrop-blur-xl border rounded-2xl p-8`}
-              >
-                <h3 className="text-3xl font-bold mb-8 text-green-400">By The Numbers</h3>
-                <div className="grid grid-cols-2 gap-6">
-                  {[
-                    { number: '3+', label: 'Years Experience', color: 'from-green-400 to-emerald-400' },
-                    { number: '99%', label: 'SLA Achievement', color: 'from-green-400 to-emerald-400' },
-                    { number: '50+', label: 'Daily Cases', color: 'from-lime-400 to-green-400' },
-                    { number: '6-7', label: 'LOBs Managed', color: 'from-orange-400 to-red-400' },
-                  ].map((stat, i) => (
-                    <motion.div
-                      key={i}
-                      className={`${themeClass({ dark: 'bg-slate-900/70 border-slate-700', light: 'bg-zinc-50 border-zinc-200' })} text-center p-4 rounded-xl border`}
-                      whileHover={{ scale: 1.05, borderColor: 'rgb(34 197 94)' }}
-                    >
-                      <div className={`text-4xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}>{stat.number}</div>
-                      <div className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} text-sm`}>{stat.label}</div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-
-              {/* Certifications */}
-              <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: false, amount: 0.25 }}
-                className="space-y-4"
-              >
-                <h3 className="text-2xl font-bold text-green-400 mb-4">Certifications</h3>
-                {certifications.map((cert, i) => (
-                  <motion.div
-                    key={i}
-                    className={`${themeClass({ dark: 'bg-black/50 border-green-500/30', light: 'bg-white/80 border-green-500/30' })} p-6 border-2 rounded-xl`}
-                    whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(34, 197, 94, 0.3)' }}
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div
+                    className={`${themeClass({
+                      dark: 'text-white',
+                      light: 'text-zinc-950',
+                    })} font-bold text-base sm:text-lg mb-1`}
                   >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} font-bold text-lg mb-1`}>{cert.name}</div>
-                        <div className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} text-sm`}>{cert.issuer} • {cert.date}</div>
-                        <div className="text-green-400 text-sm font-mono mt-1">{cert.credential}</div>
-                      </div>
-                      <Award className="text-green-400" size={32} />
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
+                    {cert.name}
+                  </div>
+                  <div
+                    className={`${themeClass({
+                      dark: 'text-slate-400',
+                      light: 'text-zinc-600',
+                    })} text-sm`}
+                  >
+                    {cert.issuer} • {cert.date}
+                  </div>
+                  <div className="text-green-400 text-sm font-mono mt-1">
+                    {cert.credential}
+                  </div>
+                </div>
+                <Award className="text-green-400 shrink-0" size={28} />
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
 
-              {/* Quick Facts */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: false, amount: 0.25 }}
-                className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-2xl p-6"
-              >
-                <h3 className="text-xl font-bold mb-4 text-green-400">Quick Facts</h3>
-                <div className="space-y-3">
-                  {[
-                    { icon: MapPin, label: 'Location', value: 'Gurugram, Haryana, India' },
-                    { icon: GraduationCap, label: 'Education', value: 'BCA, Shri Khushal Das University' },
-                    { icon: Target, label: 'Experience', value: '3.5+ years of exp. in IT, Support, Telecom, Airline, Operations' },
-                  ].map((fact, i) => (
-                    <motion.div key={i} className="flex items-start gap-3" whileHover={{ x: 5 }}>
-                      <fact.icon className="text-green-400 shrink-0 mt-1" size={20} />
-                      <div>
-                        <div className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} font-semibold`}>{fact.label}</div>
-                        <div className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} text-sm`}>{fact.value}</div>
-                      </div>
-                    </motion.div>
-                  ))}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: false, amount: 0.25 }}
+          className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-2xl p-6"
+        >
+          <h3 className="text-xl font-bold mb-4 text-green-400">Quick Facts</h3>
+
+          <div className="space-y-4">
+            {[
+              { icon: MapPin, label: 'Location', value: 'Gurugram, Haryana, India' },
+              { icon: GraduationCap, label: 'Education', value: 'BCA, Shri Khushal Das University' },
+              { icon: Target, label: 'Current Focus', value: 'Business analysis, operations, cloud fundamentals, and product thinking' },
+            ].map((fact, i) => (
+              <motion.div key={i} className="flex items-start gap-3" whileHover={{ x: 5 }}>
+                <fact.icon className="text-green-400 shrink-0 mt-1" size={20} />
+                <div>
+                  <div
+                    className={`${themeClass({
+                      dark: 'text-white',
+                      light: 'text-zinc-950',
+                    })} font-semibold`}
+                  >
+                    {fact.label}
+                  </div>
+                  <div
+                    className={`${themeClass({
+                      dark: 'text-slate-400',
+                      light: 'text-zinc-600',
+                    })} text-sm`}
+                  >
+                    {fact.value}
+                  </div>
                 </div>
               </motion.div>
-            </div>
+            ))}
           </div>
-        </div>
-      </section>
+        </motion.div>
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* ═══════════════════════════════════════════════════════════════════
           JOURNEY SECTION — Enhanced with career path visual + animated cards
