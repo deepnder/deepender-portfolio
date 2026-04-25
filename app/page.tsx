@@ -26,12 +26,17 @@ import {
   Briefcase,
   GraduationCap,
   ChevronDown,
+  ChevronRight,
   Sun,
   Moon,
   X,
   Send,
   Link,
-  MessageCircleMore
+  MessageCircleMore,
+  Globe,
+  HeadphonesIcon,
+  BarChart2,
+  BrainCircuit,
 } from 'lucide-react';
 
 type Particle = {
@@ -60,23 +65,21 @@ export default function DeependerPremiumPortfolio() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { scrollYProgress } = useScroll();
 
-
-
-  // form values 
-
+  // form values
   const FORMSPREE_ID = 'YOUR_FORM_ID';
-const RESUME_VIEW_URL =
-  'https://docs.google.com/document/d/1goFJDq8pAb8kbzO5bxXgfvy4rkmyH0-6-yw_7FkCvnI/edit?usp=sharing';
-  const RESUME_DOWNLOAD_URL = 'https://docs.google.com/document/d/1goFJDq8pAb8kbzO5bxXgfvy4rkmyH0-6-yw_7FkCvnI/export?format=pdf';
+  const RESUME_VIEW_URL =
+    'https://docs.google.com/document/d/1goFJDq8pAb8kbzO5bxXgfvy4rkmyH0-6-yw_7FkCvnI/edit?usp=sharing';
+  const RESUME_DOWNLOAD_URL =
+    'https://docs.google.com/document/d/1goFJDq8pAb8kbzO5bxXgfvy4rkmyH0-6-yw_7FkCvnI/export?format=pdf';
 
-
-  // ── NEW: dynamic geolocation state ──────────────────────────────────────────
+  // dynamic geolocation state
   const [visitorCity, setVisitorCity] = useState('India');
   const [visitorCountry, setVisitorCountry] = useState('IN');
-  // ── NEW: contact form state ──────────────────────────────────────────────────
+
+  // contact form state
   const [formState, setFormState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
- 
-  // ── Contact form submit ──────────────────────────────────────────────────────
+
+  // Contact form submit
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormState('sending');
@@ -94,7 +97,8 @@ const RESUME_VIEW_URL =
       setFormState('error');
     }
   };
-  // ── ✅ FIX 1: Dynamic geolocation popup ─────────────────────────────────────
+
+  // Dynamic geolocation popup
   useEffect(() => {
     fetch('https://ipapi.co/json/')
       .then((r) => r.json())
@@ -102,10 +106,9 @@ const RESUME_VIEW_URL =
         if (data?.city) setVisitorCity(data.city);
         if (data?.country_code) setVisitorCountry(data.country_code);
       })
-      .catch(() => {
-        // Fallback — keep defaults
-      });
+      .catch(() => {});
   }, []);
+
   // Parallax effects
   const y1 = useTransform(scrollYProgress, [0, 1], [0, -200]);
   const y2 = useTransform(scrollYProgress, [0, 1], [0, -400]);
@@ -125,13 +128,12 @@ const RESUME_VIEW_URL =
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
-
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
   }, [cursorVariant]);
 
-  // Hydration-safe particles. Do not use Math.random() directly in JSX in Next.js.
+  // Hydration-safe particles
   useEffect(() => {
     setParticles(
       Array.from({ length: 10 }).map((_, i) => ({
@@ -149,13 +151,10 @@ const RESUME_VIEW_URL =
     const timer = window.setInterval(() => {
       setSessionSeconds((prev) => prev + 1);
     }, 1000);
-
     return () => window.clearInterval(timer);
   }, []);
 
-  // Intro screen and greeting popup
-
-  // ── Intro + greeting sequence ────────────────────────────────────────────────
+  // Intro + greeting sequence
   useEffect(() => {
     const t1 = window.setTimeout(() => { setShowIntro(false); setShowGreeting(true); }, 2800);
     const t2 = window.setTimeout(() => setShowGreeting(false), 7000);
@@ -174,13 +173,13 @@ const RESUME_VIEW_URL =
       },
       { threshold: 0.5 }
     );
-
     document.querySelectorAll('section[id]').forEach((section) => {
       observer.observe(section);
     });
-
     return () => observer.disconnect();
   }, []);
+
+  // ─── DATA ─────────────────────────────────────────────────────────────────
 
   const projects = [
     {
@@ -257,6 +256,46 @@ const RESUME_VIEW_URL =
     },
   ];
 
+  // ─── OTHER PROJECTS (NEW) ─────────────────────────────────────────────────
+  const otherProjects = [
+    {
+      title: '18 CandleLinks',
+      company: 'Super Minds IT',
+      description: 'Event & booking platform for hotels, restaurants, and live event ticketing with real-time availability.',
+      tech: ['React', 'Next.js', 'REST API', 'Tailwind'],
+      url: 'https://18candleriggs.com/',
+      emoji: '🕯️',
+      color: 'from-rose-500 to-pink-600',
+    },
+    {
+      title: 'Web3 Admin Dashboard',
+      company: 'Casino Client',
+      description: 'MetaMask-connected admin panel with crypto transactions (DAI/ETH/USDT/USDC), analytics charts & refund management.',
+      tech: ['Web3.js', 'MetaMask', 'Chart.js', 'React'],
+      url: '#',
+      emoji: '⛓️',
+      color: 'from-violet-500 to-purple-700',
+    },
+    {
+      title: 'Affiliate Pages (~20)',
+      company: 'Super Minds IT',
+      description: '20+ high-conversion affiliate booking pages. Drove ₹10L+ revenue with optimised page load < 2s.',
+      tech: ['HTML', 'CSS', 'JavaScript', 'SEO'],
+      url: '#',
+      emoji: '📄',
+      color: 'from-amber-500 to-orange-600',
+    },
+    {
+      title: 'Netflix Clone',
+      company: 'Client Project',
+      description: 'Full streaming platform clone with movie browsing, genre filtering, and video playback for a client.',
+      tech: ['React', 'TMDB API', 'Firebase', 'Styled Components'],
+      url: '#',
+      emoji: '🎬',
+      color: 'from-red-600 to-red-800',
+    },
+  ];
+
   const skills = {
     'Business Analysis Core': {
       items: ['Requirements Gathering', 'Process Analysis', 'Gap Analysis', 'Stakeholder Management', 'BRD/FRD Documentation', 'User Stories & Use Cases', 'BPMN 2.0 Modeling', 'Root Cause Analysis'],
@@ -269,7 +308,7 @@ const RESUME_VIEW_URL =
       color: 'from-purple-500 to-pink-500',
     },
     'APIs & Development': {
-      items: ['REST APIs', 'React.js/Next.js','SEO Optimization', 'Postman Testing', 'API Documentation', 'Swagger/OpenAPI', 'Webhook Concepts', 'OAuth2 Authentication'],
+      items: ['REST APIs', 'React.js/Next.js', 'SEO Optimization', 'Postman Testing', 'API Documentation', 'Swagger/OpenAPI', 'Webhook Concepts', 'OAuth2 Authentication'],
       icon: Code,
       color: 'from-green-500 to-emerald-500',
     },
@@ -291,7 +330,7 @@ const RESUME_VIEW_URL =
   };
 
   const timeline = [
-   {
+    {
       year: '2025 - Present',
       title: 'Operations Business Analyst',
       company: 'IGT Solutions (KLM Airlines)',
@@ -309,7 +348,7 @@ const RESUME_VIEW_URL =
     },
     {
       year: '2024 - 2025',
-      title: 'Technical Support Analyst (L1)',
+      title: 'Support Engineer (L1)',
       company: 'Concentrix',
       location: 'Gurugram, India',
       description: 'Transitioned to technical support for US telecom client. Developed strong analytical and problem-solving skills while maintaining high customer satisfaction under pressure.',
@@ -322,7 +361,7 @@ const RESUME_VIEW_URL =
       skills: ['Root Cause Analysis', 'Technical Documentation', 'SLA Management', 'Customer Success'],
       icon: Briefcase,
     },
-     {
+    {
       year: '2022 - 2024',
       title: 'Frontend Developer',
       company: 'Super Minds IT Services',
@@ -337,7 +376,14 @@ const RESUME_VIEW_URL =
       skills: ['React.js', 'REST APIs', 'Postman', 'SEO', 'Stakeholder Communication'],
       icon: Code,
     },
-    
+  ];
+
+  // ─── CAREER PATH (NEW) ────────────────────────────────────────────────────
+  const careerPath = [
+    { role: 'Frontend\nDeveloper', icon: Code, color: 'from-cyan-400 to-blue-500', year: '2022' },
+    { role: 'Support Engineer', icon: HeadphonesIcon, color: 'from-purple-400 to-pink-500', year: '2024' },
+    { role: 'Operations\nAnalyst', icon: BarChart2, color: 'from-green-400 to-emerald-500', year: '2025' },
+    { role: 'Business\nAnalyst', icon: BrainCircuit, color: 'from-amber-400 to-orange-500', year: 'Now →' },
   ];
 
   const certifications = [
@@ -356,18 +402,21 @@ const RESUME_VIEW_URL =
       color: 'from-blue-500 to-cyan-500',
     },
   ];
-if (!hasMounted) {
-  return (
-    <div className="min-h-screen bg-black text-green-400 font-mono flex items-center justify-center">
-      Initializing portfolio...
-    </div>
-  );
-}
+
+  if (!hasMounted) {
+    return (
+      <div className="min-h-screen bg-black text-green-400 font-mono flex items-center justify-center">
+        Initializing portfolio...
+      </div>
+    );
+  }
+
   return (
     <div
       ref={containerRef}
       className={`min-h-screen ${themeClass({ dark: 'bg-black text-white', light: 'bg-zinc-50 text-zinc-950' })} transition-colors duration-500 overflow-hidden cursor-none`}
     >
+      {/* ── Intro Screen ─────────────────────────────────────────────────── */}
       <AnimatePresence>
         {showIntro && (
           <motion.div
@@ -387,7 +436,6 @@ if (!hasMounted) {
                 <span className="w-3 h-3 rounded-full bg-green-500" />
                 <span className="ml-6 text-xs md:text-sm text-green-500">deepender@portfolio:~$ ./welcome.sh</span>
               </div>
-
               <div className="p-8 space-y-3 text-sm md:text-base">
                 <p>&gt; Initializing portfolio...</p>
                 <p>&gt; Loading business analyst mindset... OK</p>
@@ -395,7 +443,6 @@ if (!hasMounted) {
                 <p>&gt; Opening opportunities... 🍻 OK</p>
                 <p>&gt; Deploying creativity... OK</p>
                 <p className="font-bold text-green-300">&gt; System ready. Let&apos;s build impact! 🎉</p>
-
                 <motion.h1
                   className="pt-8 text-5xl md:text-7xl font-black tracking-tight text-green-400"
                   animate={{ opacity: [0.7, 1, 0.7] }}
@@ -408,7 +455,8 @@ if (!hasMounted) {
           </motion.div>
         )}
       </AnimatePresence>
- {/* ── ✅ FIX 1: GEOLOCATION GREETING POPUP ────────────────────────────── */}
+
+      {/* ── Geolocation Greeting Popup ───────────────────────────────────── */}
       <AnimatePresence>
         {showGreeting && (
           <motion.div
@@ -442,7 +490,7 @@ if (!hasMounted) {
         )}
       </AnimatePresence>
 
-      {/* Session Timer */}
+      {/* ── Session Timer ─────────────────────────────────────────────────── */}
       <motion.div
         className="fixed bottom-6 left-6 z-[70] border border-green-500/40 bg-black/80 px-5 py-4 font-mono text-green-400 backdrop-blur-xl shadow-[0_0_35px_rgba(34,197,94,0.16)]"
         initial={{ opacity: 0, y: 30 }}
@@ -455,7 +503,7 @@ if (!hasMounted) {
         <p className="text-xs text-slate-500">True dedication! 💪</p>
       </motion.div>
 
-      {/* Custom Cursor */}
+      {/* ── Custom Cursor ─────────────────────────────────────────────────── */}
       {hasMounted && (
         <div
           ref={cursorRef}
@@ -463,7 +511,7 @@ if (!hasMounted) {
         />
       )}
 
-      {/* Animated Background */}
+      {/* ── Animated Background ───────────────────────────────────────────── */}
       <div className="fixed inset-0 pointer-events-none">
         <div className={`absolute inset-0 ${themeClass({ dark: 'bg-gradient-to-br from-black via-zinc-950 to-emerald-950 opacity-95', light: 'bg-gradient-to-br from-zinc-50 via-white to-emerald-50 opacity-95' })}`} />
         <motion.div
@@ -476,42 +524,27 @@ if (!hasMounted) {
             y: y1,
             opacity,
           }}
-          animate={{
-            scale: [1, 1.2, 1],
-          }}
+          animate={{ scale: [1, 1.2, 1] }}
           transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
         />
-
         <motion.div
           className="absolute -right-20 top-40 h-72 w-72 rounded-full bg-green-500/10 blur-3xl"
           style={{ y: y2 }}
           animate={{ x: [0, -30, 0], scale: [1, 1.15, 1] }}
           transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
         />
-
-        {/* Floating particles */}
         {particles.map((particle) => (
           <motion.div
             key={particle.id}
             className="absolute w-1 h-1 bg-green-400 rounded-full"
-            style={{
-              left: `${particle.left}%`,
-              top: `${particle.top}%`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0, 1, 0],
-            }}
-            transition={{
-              duration: particle.duration,
-              repeat: Infinity,
-              delay: particle.delay,
-            }}
+            style={{ left: `${particle.left}%`, top: `${particle.top}%` }}
+            animate={{ y: [0, -30, 0], opacity: [0, 1, 0] }}
+            transition={{ duration: particle.duration, repeat: Infinity, delay: particle.delay }}
           />
         ))}
       </div>
 
-      {/* Navigation */}
+      {/* ── Navigation ────────────────────────────────────────────────────── */}
       <motion.nav
         initial={{ y: -100 }}
         animate={{ y: 0 }}
@@ -521,7 +554,6 @@ if (!hasMounted) {
           <motion.div className="text-3xl font-bold" whileHover={{ scale: 1.1 }}>
             <span className="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">DC</span>
           </motion.div>
-
           <div className="hidden lg:flex gap-8 items-center">
             {['About', 'Journey', 'Projects', 'Skills', 'Contact'].map((item) => (
               <motion.a
@@ -538,7 +570,6 @@ if (!hasMounted) {
                 )}
               </motion.a>
             ))}
-
             <motion.button
               type="button"
               onClick={() => setIsDark((prev) => !prev)}
@@ -549,7 +580,6 @@ if (!hasMounted) {
             >
               {isDark ? <Sun size={18} /> : <Moon size={18} />}
             </motion.button>
-
             <motion.a
               href="#contact"
               whileHover={{ scale: 1.05 }}
@@ -562,7 +592,9 @@ if (!hasMounted) {
         </div>
       </motion.nav>
 
-      {/* Hero Section */}
+      {/* ═══════════════════════════════════════════════════════════════════
+          HERO SECTION
+      ═══════════════════════════════════════════════════════════════════ */}
       <section id="hero" className="min-h-screen flex items-center justify-center px-6 pt-20 relative">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -607,21 +639,7 @@ if (!hasMounted) {
             </motion.span>
           </motion.h2>
 
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="max-w-3xl">
-            <p className={`text-xl ${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} mb-4 leading-relaxed`}>
-              <span className="text-green-400 font-bold">Business Analyst</span> with <span className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} font-semibold`}>3+ years</span> bridging technical operations and business strategy.
-            </p>
-            <p className={`text-lg ${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} mb-8 leading-relaxed`}>
-              From <span className="text-green-400">Frontend Developer</span> → <span className="text-emerald-400">Technical Support</span> → <span className="text-lime-400">Operations Analyst</span> → <span className="text-green-400">Business Analyst</span>
-            </p>
-            <motion.p
-              className="text-2xl font-bold text-transparent bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text mb-12"
-              animate={{ opacity: [0.7, 1, 0.7] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              Not from IIT. Not from IIM. From the real world where I learned by doing.
-            </motion.p>
-          </motion.div>
+          
 
           <motion.div className="flex flex-col sm:flex-row gap-6 mb-12" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
             <motion.a
@@ -635,7 +653,6 @@ if (!hasMounted) {
                 <ArrowRight className="group-hover:translate-x-1 transition-transform" />
               </motion.div>
             </motion.a>
-
             <motion.a
               href="https://docs.google.com/document/d/1goFJDq8pAb8kbzO5bxXgfvy4rkmyH0-6-yw_7FkCvnI/edit?usp=sharing"
               target="_blank"
@@ -661,13 +678,14 @@ if (!hasMounted) {
           </motion.div>
         </motion.div>
 
-        {/* Scroll indicator */}
         <motion.div className="absolute bottom-10 left-1/2 -translate-x-1/2" animate={{ y: [0, 10, 0] }} transition={{ duration: 2, repeat: Infinity }}>
           <ChevronDown className="text-green-400" size={40} />
         </motion.div>
       </section>
 
-      {/* About/Story Section */}
+      {/* ═══════════════════════════════════════════════════════════════════
+          ABOUT / STORY SECTION
+      ═══════════════════════════════════════════════════════════════════ */}
       <section id="about" className="min-h-screen px-6 py-32 relative">
         <div className="max-w-6xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.25 }} transition={{ duration: 0.8 }}>
@@ -679,46 +697,70 @@ if (!hasMounted) {
           </motion.div>
 
           <div className="grid lg:grid-cols-2 gap-16">
-            <motion.div initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: false, amount: 0.25 }} className={`space-y-6 ${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} leading-relaxed`}>
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, amount: 0.25 }}
+              className={`space-y-6 ${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} leading-relaxed`}
+            >
               <motion.div className="text-2xl font-bold text-green-400 mb-6" whileHover={{ scale: 1.02 }}>
                 I&apos;m 22. From a middle-class family in Haryana. At a crossroads.
               </motion.div>
-
               <p className="text-lg">
-                <span className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} font-semibold`}>Government exams vs private sector.</span> Stability vs growth. Safety vs opportunity. I chose growth because I have <span className="text-green-400">3-4 years to get settled</span> before I get married. I cannot afford to wait for exam results that might come when I am 24.
+                <span className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} font-semibold`}>Government exams vs private sector.</span>{' '}
+                Stability vs growth. Safety vs opportunity. I chose growth because I have{' '}
+                <span className="text-green-400">3-4 years to get settled</span> before I get married. I cannot afford to wait for exam results that might come when I am 24.
               </p>
-
               <p>
-                I started at <span className="text-emerald-400 font-semibold">Super Minds</span>, coding React.js and building booking pages. That&apos;s where I learned how businesses think — conversion rates, user journeys, ROI. Not from a textbook. From shipping real products.
+                I started at <span className="text-emerald-400 font-semibold">Super Minds</span>, coding React.js and building booking pages.
+                That&apos;s where I learned how businesses think — conversion rates, user journeys, ROI. Not from a textbook. From shipping real products.
               </p>
-
               <p>
-                Then <span className="text-lime-400 font-semibold">Concentrix</span> — technical support for a US telecom client. 30-40 angry customers daily. Network down. Internet slow. Every call was a mini root cause analysis. I learned to diagnose, document, escalate with context. <span className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} font-semibold`}>95%+ CSAT wasn&apos;t luck. It was systematic thinking.</span>
+                Then <span className="text-lime-400 font-semibold">Concentrix</span> — technical support for a US telecom client.
+                30-40 angry customers daily. Network down. Internet slow. Every call was a mini root cause analysis.{' '}
+                <span className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} font-semibold`}>95%+ CSAT wasn&apos;t luck. It was systematic thinking.</span>
               </p>
-
               <p>
-                Now I&apos;m at <span className="text-green-400 font-semibold">IGT Solutions</span> managing KLM Airlines operations. 6-7 Lines of Business. Claims. Seating. Rebooking. Real-time flight disruptions affecting 200+ passengers. I am not just handling tickets — I am <span className="text-green-400 font-semibold">analyzing processes, identifying bottlenecks, generating reports, maintaining 99%+ SLA</span>.
+                Now I&apos;m at <span className="text-green-400 font-semibold">IGT Solutions</span> managing KLM Airlines operations.
+                6-7 Lines of Business. Claims. Seating. Rebooking. Real-time flight disruptions affecting 200+ passengers.
+                I am not just handling tickets —{' '}
+                <span className="text-green-400 font-semibold">analyzing processes, identifying bottlenecks, generating reports, maintaining 99%+ SLA</span>.
               </p>
-
-              <motion.div className="p-6 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-2xl" whileHover={{ scale: 1.02, boxShadow: '0 0 40px rgba(34, 197, 94, 0.3)' }}>
+              <motion.div
+                className="p-6 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-2xl"
+                whileHover={{ scale: 1.02, boxShadow: '0 0 40px rgba(34, 197, 94, 0.3)' }}
+              >
                 <div className="text-2xl font-bold text-green-400 mb-3">Here&apos;s what makes me different:</div>
                 <p className="text-lg">
-                  I do not have a fancy degree from IIT or IIM. What I have is <span className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} font-bold`}>3+ years of real operational experience</span> that taught me what business analysis actually means. I have lived SLA pressure. I have handled stakeholder escalations. I have analyzed messy processes and made them better.
+                  I do not have a fancy degree from IIT or IIM. What I have is{' '}
+                  <span className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} font-bold`}>3+ years of real operational experience</span>{' '}
+                  that taught me what business analysis actually means.
                 </p>
               </motion.div>
-
               <p className="text-lg">
-                I have earned <span className="text-orange-400 font-semibold">AWS Cloud Practitioner</span> and <span className="text-blue-400 font-semibold">Azure Fundamentals</span> certifications. I am learning SQL, Power BI, BPMN, GenAI. I am building projects to prove I can deliver. I am not just learning theory — I&apos;m applying it to real problems.
+                I have earned <span className="text-orange-400 font-semibold">AWS Cloud Practitioner</span> and{' '}
+                <span className="text-blue-400 font-semibold">Azure Fundamentals</span> certifications.
+                I am learning SQL, Power BI, BPMN, GenAI. I am building projects to prove I can deliver.
               </p>
-
-              <motion.div className="text-xl font-bold text-transparent bg-gradient-to-r from-green-400 via-emerald-500 to-lime-500 bg-clip-text" animate={{ backgroundPosition: ['0%', '100%', '0%'] }} transition={{ duration: 5, repeat: Infinity }}>
-                My goal? Build a career solving real business problems. Reach 10-15 LPA in 2-3 years. Eventually start a business with my brother. But right now? Land a BA role where I can learn from the best and deliver impact from day one.
-              </motion.div>
+              <motion.div
+                className="text-xl font-bold text-transparent bg-gradient-to-r from-green-400 via-emerald-500 to-lime-500 bg-clip-text"
+                animate={{ backgroundPosition: ['0%', '100%', '0%'] }}
+                transition={{ duration: 5, repeat: Infinity }}
+              >
+I want to build something that actually matters — a product or company that solves a real problem
+  for real people. Not for a valuation. Not for a LinkedIn headline.
+  The next few years are about sharpening the craft: business thinking, product sense, execution discipline.
+  The rest will follow.              </motion.div>
             </motion.div>
 
             {/* Stats & Highlights */}
             <div className="space-y-6">
-              <motion.div initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: false, amount: 0.25 }} className={`${themeClass({ dark: 'bg-black/50 border-green-500/20', light: 'bg-white/70 border-green-500/30' })} backdrop-blur-xl border rounded-2xl p-8`}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: false, amount: 0.25 }}
+                className={`${themeClass({ dark: 'bg-black/50 border-green-500/20', light: 'bg-white/70 border-green-500/30' })} backdrop-blur-xl border rounded-2xl p-8`}
+              >
                 <h3 className="text-3xl font-bold mb-8 text-green-400">By The Numbers</h3>
                 <div className="grid grid-cols-2 gap-6">
                   {[
@@ -727,7 +769,11 @@ if (!hasMounted) {
                     { number: '50+', label: 'Daily Cases', color: 'from-lime-400 to-green-400' },
                     { number: '6-7', label: 'LOBs Managed', color: 'from-orange-400 to-red-400' },
                   ].map((stat, i) => (
-                    <motion.div key={i} className={`${themeClass({ dark: 'bg-slate-900/70 border-slate-700', light: 'bg-zinc-50 border-zinc-200' })} text-center p-4 rounded-xl border`} whileHover={{ scale: 1.05, borderColor: 'rgb(34 197 94)' }}>
+                    <motion.div
+                      key={i}
+                      className={`${themeClass({ dark: 'bg-slate-900/70 border-slate-700', light: 'bg-zinc-50 border-zinc-200' })} text-center p-4 rounded-xl border`}
+                      whileHover={{ scale: 1.05, borderColor: 'rgb(34 197 94)' }}
+                    >
                       <div className={`text-4xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent mb-2`}>{stat.number}</div>
                       <div className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} text-sm`}>{stat.label}</div>
                     </motion.div>
@@ -736,10 +782,19 @@ if (!hasMounted) {
               </motion.div>
 
               {/* Certifications */}
-              <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.25 }} className="space-y-4">
+              <motion.div
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.25 }}
+                className="space-y-4"
+              >
                 <h3 className="text-2xl font-bold text-green-400 mb-4">Certifications</h3>
                 {certifications.map((cert, i) => (
-                  <motion.div key={i} className={`${themeClass({ dark: 'bg-black/50 border-green-500/30', light: 'bg-white/80 border-green-500/30' })} p-6 border-2 rounded-xl`} whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(34, 197, 94, 0.3)' }}>
+                  <motion.div
+                    key={i}
+                    className={`${themeClass({ dark: 'bg-black/50 border-green-500/30', light: 'bg-white/80 border-green-500/30' })} p-6 border-2 rounded-xl`}
+                    whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(34, 197, 94, 0.3)' }}
+                  >
                     <div className="flex items-start justify-between">
                       <div>
                         <div className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} font-bold text-lg mb-1`}>{cert.name}</div>
@@ -753,13 +808,18 @@ if (!hasMounted) {
               </motion.div>
 
               {/* Quick Facts */}
-              <motion.div initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: false, amount: 0.25 }} className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-2xl p-6">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: false, amount: 0.25 }}
+                className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-2xl p-6"
+              >
                 <h3 className="text-xl font-bold mb-4 text-green-400">Quick Facts</h3>
                 <div className="space-y-3">
                   {[
                     { icon: MapPin, label: 'Location', value: 'Gurugram, Haryana, India' },
                     { icon: GraduationCap, label: 'Education', value: 'BCA, Shri Khushal Das University' },
-                    { icon: Target, label: 'Goal', value: '10-15 LPA in 2-3 years' },
+                    { icon: Target, label: 'Experience', value: '3.5+ years of exp. in IT, Support, Telecom, Airline, Operations' },
                   ].map((fact, i) => (
                     <motion.div key={i} className="flex items-start gap-3" whileHover={{ x: 5 }}>
                       <fact.icon className="text-green-400 shrink-0 mt-1" size={20} />
@@ -776,30 +836,135 @@ if (!hasMounted) {
         </div>
       </section>
 
-      {/* Journey/Timeline Section */}
-      <section id="journey" className={`min-h-screen px-6 py-32 relative ${themeClass({ dark: 'bg-slate-900/20', light: 'bg-emerald-50/40' })}`}>
+      {/* ═══════════════════════════════════════════════════════════════════
+          JOURNEY SECTION — Enhanced with career path visual + animated cards
+      ═══════════════════════════════════════════════════════════════════ */}
+      <section id="journey" className={`min-h-screen px-4 sm:px-6 py-20 sm:py-32 relative ${themeClass({ dark: 'bg-slate-900/20', light: 'bg-emerald-50/40' })}`}>
         <div className="max-w-6xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.25 }}>
-            <h2 className="text-4xl md:text-6xl font-black mb-16 flex items-center gap-6">
-              <span className="text-green-400 font-mono text-3xl">02.</span>
+            <h2 className="text-4xl md:text-6xl font-black mb-6 flex items-center gap-4 sm:gap-6">
+              <span className="text-green-400 font-mono text-2xl sm:text-3xl">02.</span>
               <span className="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">My Journey</span>
               <div className="flex-1 h-px bg-gradient-to-r from-green-400/50 to-transparent" />
             </h2>
+            <p className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} text-base sm:text-lg mb-12 sm:mb-16 max-w-2xl`}>
+              Every role taught me something the next one needed. No wasted steps — just a deliberate path.
+            </p>
           </motion.div>
 
+          {/* ── Career Path Visual Flow (NEW) ──────────────────────────────── */}
+          <div className="mb-16 sm:mb-24">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.25 }}
+              className="relative"
+            >
+              {/* Desktop: horizontal flow */}
+              <div className="hidden md:flex items-center justify-between relative">
+                {/* Connecting gradient line */}
+                <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-cyan-500 via-purple-500 via-green-500 to-amber-500 -translate-y-1/2 z-0" />
+
+                {careerPath.map((step, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: false, amount: 0.25 }}
+                    transition={{ delay: i * 0.18 }}
+                    className="relative z-10 flex flex-col items-center"
+                    style={{ width: '22%' }}
+                  >
+                    {/* Year label */}
+                    <motion.div
+                      className={`text-xs font-mono mb-3 px-3 py-1 ${themeClass({ dark: 'bg-slate-800 border-slate-700 text-slate-400', light: 'bg-white border-zinc-200 text-zinc-500' })} rounded-full border`}
+                      whileHover={{ borderColor: 'rgb(34 197 94)', color: 'rgb(34 197 94)' }}
+                    >
+                      {step.year}
+                    </motion.div>
+
+                    {/* Icon circle */}
+                    <motion.div
+                      className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center shadow-lg border-4 ${themeClass({ dark: 'border-black', light: 'border-zinc-50' })} mb-4`}
+                      whileHover={{ scale: 1.15, rotate: 6, boxShadow: '0 0 30px rgba(34, 197, 94, 0.5)' }}
+                      transition={{ type: 'spring', stiffness: 300 }}
+                    >
+                      <step.icon className="text-white" size={28} />
+                    </motion.div>
+
+                    {/* Role name */}
+                    <div className={`text-center text-sm font-bold bg-gradient-to-r ${step.color} bg-clip-text text-transparent whitespace-pre-line leading-tight`}>
+                      {step.role}
+                    </div>
+
+                    {/* Current / Target badge */}
+                    {i === careerPath.length - 1 && (
+                      <motion.div
+                        className="mt-2 px-2 py-0.5 bg-amber-500/20 border border-amber-500/50 rounded-full text-amber-400 text-xs font-mono"
+                        animate={{ opacity: [0.6, 1, 0.6] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      >
+                        Target
+                      </motion.div>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Mobile: vertical flow */}
+              <div className="flex md:hidden flex-col gap-4 relative pl-8">
+                <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-cyan-500 via-purple-500 to-amber-500" />
+                {careerPath.map((step, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: false, amount: 0.25 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="flex items-center gap-4 relative"
+                  >
+                    <div className={`absolute -left-4 w-8 h-8 rounded-full bg-gradient-to-br ${step.color} flex items-center justify-center border-2 ${themeClass({ dark: 'border-black', light: 'border-zinc-50' })}`}>
+                      <step.icon size={14} className="text-white" />
+                    </div>
+                    <div className={`ml-4 ${themeClass({ dark: 'bg-slate-800/60 border-slate-700', light: 'bg-white/80 border-zinc-200' })} rounded-xl px-4 py-3 border`}>
+                      <div className={`text-xs font-mono ${themeClass({ dark: 'text-slate-400', light: 'text-zinc-500' })}`}>{step.year}</div>
+                      <div className={`text-sm font-bold bg-gradient-to-r ${step.color} bg-clip-text text-transparent`}>
+                        {step.role.replace('\n', ' ')}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* ── Detailed Timeline Cards ─────────────────────────────────────── */}
           <div className="relative">
             {/* Timeline line */}
             <div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-green-500 via-emerald-500 to-lime-500" />
 
             <div className="space-y-16">
               {timeline.map((item, i) => (
-                <motion.div key={i} initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: false, amount: 0.25 }} transition={{ delay: i * 0.18, duration: 0.65, type: 'spring', stiffness: 80 }} className="relative pl-24">
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: false, amount: 0.25 }}
+                  transition={{ delay: i * 0.18, duration: 0.65, type: 'spring', stiffness: 80 }}
+                  className="relative pl-24"
+                >
                   {/* Timeline dot */}
-                  <motion.div className="absolute left-5 top-6 w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center border-4 border-black" whileHover={{ scale: 1.3, boxShadow: '0 0 30px rgba(34, 197, 94, 0.8)' }}>
+                  <motion.div
+                    className="absolute left-5 top-6 w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center border-4 border-black"
+                    whileHover={{ scale: 1.3, boxShadow: '0 0 30px rgba(34, 197, 94, 0.8)' }}
+                  >
                     <item.icon size={16} />
                   </motion.div>
 
-                  <motion.div className={`${themeClass({ dark: 'bg-black/50 border-green-500/20', light: 'bg-white/80 border-green-500/30' })} backdrop-blur-xl border rounded-2xl p-8 hover:border-green-500/50 transition-all`} whileHover={{ scale: 1.03, y: -6, boxShadow: '0 25px 70px rgba(34, 197, 94, 0.22)' }}>
+                  <motion.div
+                    className={`${themeClass({ dark: 'bg-black/50 border-green-500/20', light: 'bg-white/80 border-green-500/30' })} backdrop-blur-xl border rounded-2xl p-8 hover:border-green-500/50 transition-all`}
+                    whileHover={{ scale: 1.03, y: -6, boxShadow: '0 25px 70px rgba(34, 197, 94, 0.22)' }}
+                  >
                     <div className="flex justify-between items-start mb-4">
                       <div>
                         <div className="text-green-400 font-mono text-sm mb-2">{item.year}</div>
@@ -814,12 +979,22 @@ if (!hasMounted) {
 
                     <p className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} mb-6 leading-relaxed`}>{item.description}</p>
 
+                    {/* Achievements — 2-col grid on sm+ */}
                     <div className="mb-6">
-                      <div className="text-sm font-bold text-green-400 mb-3">Key Achievements</div>
-                      <ul className="space-y-2">
+                      <div className="text-sm font-bold text-green-400 mb-3 flex items-center gap-2">
+                        <Star size={14} /> Key Achievements
+                      </div>
+                      <ul className="space-y-2 grid sm:grid-cols-2 sm:gap-x-4">
                         {item.achievements.map((achievement, j) => (
-                          <motion.li key={j} className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} text-sm flex items-start gap-2`} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: false, amount: 0.25 }} transition={{ delay: j * 0.1 }}>
-                            <Star className="text-green-400 shrink-0 mt-0.5" size={16} />
+                          <motion.li
+                            key={j}
+                            className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} text-sm flex items-start gap-2`}
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: false, amount: 0.25 }}
+                            transition={{ delay: j * 0.08 }}
+                          >
+                            <ChevronRight className="text-green-400 shrink-0 mt-0.5" size={14} />
                             {achievement}
                           </motion.li>
                         ))}
@@ -828,7 +1003,11 @@ if (!hasMounted) {
 
                     <div className="flex flex-wrap gap-2">
                       {item.skills.map((skill, j) => (
-                        <motion.span key={j} className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-xs border border-green-500/30" whileHover={{ scale: 1.1, backgroundColor: 'rgba(34, 197, 94, 0.3)' }}>
+                        <motion.span
+                          key={j}
+                          className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-xs border border-green-500/30"
+                          whileHover={{ scale: 1.1, backgroundColor: 'rgba(34, 197, 94, 0.3)' }}
+                        >
                           {skill}
                         </motion.span>
                       ))}
@@ -841,69 +1020,82 @@ if (!hasMounted) {
         </div>
       </section>
 
-      {/* Projects Section - PART 1 */}
-      <section id="projects" className="min-h-screen px-6 py-32 relative">
+      {/* ═══════════════════════════════════════════════════════════════════
+          PROJECTS SECTION — Featured (mobile-fixed) + Other Projects grid
+      ═══════════════════════════════════════════════════════════════════ */}
+      <section id="projects" className="min-h-screen px-4 sm:px-6 py-20 sm:py-32 relative">
         <div className="max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.25 }}>
-            <h2 className="text-4xl md:text-6xl font-black mb-16 flex items-center gap-6">
-              <span className="text-green-400 font-mono text-3xl">03.</span>
+            <h2 className="text-4xl md:text-6xl font-black mb-12 sm:mb-16 flex items-center gap-4 sm:gap-6">
+              <span className="text-green-400 font-mono text-2xl sm:text-3xl">03.</span>
               <span className="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">Projects & Work</span>
               <div className="flex-1 h-px bg-gradient-to-r from-green-400/50 to-transparent" />
             </h2>
           </motion.div>
 
-          <div className="space-y-24">
+          {/* ── Featured Projects (mobile-responsive) ──────────────────────── */}
+          <div className="space-y-16 sm:space-y-24 mb-24 sm:mb-32">
             {projects.map((project, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 80 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.2, margin: '-80px' }} transition={{ duration: 0.75, delay: i * 0.18, type: 'spring', stiffness: 80 }} className="relative">
-                {/* Project card */}
-                <motion.div className={`${themeClass({ dark: 'from-black/40 to-slate-950/40 border-green-500/30', light: 'from-white/80 to-emerald-50/70 border-green-500/30' })} relative bg-gradient-to-br backdrop-blur-xl border-2 rounded-3xl p-10 overflow-hidden group`} whileHover={{ scale: 1.015, y: -8, boxShadow: '0 25px 80px rgba(34, 197, 94, 0.16)' }}>
-                  {/* Animated gradient overlay */}
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 80 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.2, margin: '-80px' }}
+                transition={{ duration: 0.75, delay: i * 0.18, type: 'spring', stiffness: 80 }}
+                className="relative"
+              >
+                <motion.div
+                  className={`${themeClass({ dark: 'from-black/40 to-slate-950/40 border-green-500/30', light: 'from-white/80 to-emerald-50/70 border-green-500/30' })} relative bg-gradient-to-br backdrop-blur-xl border-2 rounded-3xl p-6 sm:p-10 overflow-hidden group`}
+                  whileHover={{ scale: 1.015, y: -8, boxShadow: '0 25px 80px rgba(34, 197, 94, 0.16)' }}
+                >
                   <motion.div className={`absolute inset-0 bg-gradient-to-r ${project.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
-
-                  {/* Project number */}
-                  <div className={`absolute top-0 right-0 text-9xl font-black ${themeClass({ dark: 'text-slate-800/20', light: 'text-zinc-200/80' })} select-none`}>0{i + 1}</div>
+                  <div className={`absolute top-0 right-0 text-7xl sm:text-9xl font-black ${themeClass({ dark: 'text-slate-800/20', light: 'text-zinc-200/80' })} select-none`}>0{i + 1}</div>
 
                   <div className="relative z-10">
                     {/* Header */}
-                    <div className="flex flex-col lg:flex-row justify-between items-start mb-6 gap-6">
+                    <div className="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4">
                       <div className="flex-1">
-                        <motion.div className="text-green-400 font-mono text-sm mb-2" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}>
+                        <motion.div className="text-green-400 font-mono text-xs sm:text-sm mb-2" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}>
                           Featured Project
                         </motion.div>
-                        <h3 className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} text-4xl font-black mb-3 group-hover:text-green-400 transition-colors`}>{project.title}</h3>
-                        <p className={`text-xl font-semibold bg-gradient-to-r ${project.color} bg-clip-text text-transparent mb-4`}>{project.tagline}</p>
-                        <p className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} text-lg leading-relaxed max-w-3xl`}>{project.description}</p>
+                        <h3 className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} text-2xl sm:text-4xl font-black mb-3 group-hover:text-green-400 transition-colors`}>{project.title}</h3>
+                        <p className={`text-base sm:text-xl font-semibold bg-gradient-to-r ${project.color} bg-clip-text text-transparent mb-4`}>{project.tagline}</p>
+                        <p className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} text-sm sm:text-lg leading-relaxed max-w-3xl`}>{project.description}</p>
                       </div>
-
-                      <div className="flex gap-4 lg:ml-8">
+                      <div className="flex gap-4 sm:ml-8">
                         <motion.a href={project.BadgeCheck} whileHover={{ scale: 1.2, rotate: 5 }} className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} hover:text-green-400 transition-colors`}>
-                          <BadgeCheck size={32} />
+                          <BadgeCheck size={28} />
                         </motion.a>
                         <motion.a href={project.demo} whileHover={{ scale: 1.2, rotate: -5 }} className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} hover:text-green-400 transition-colors`}>
-                          <ExternalLink size={32} />
+                          <ExternalLink size={28} />
                         </motion.a>
                       </div>
                     </div>
 
-                    {/* Challenge & Approach */}
-                    <div className="grid md:grid-cols-2 gap-8 mb-8">
-                      <div className={`${themeClass({ dark: 'bg-slate-900/70 border-slate-700', light: 'bg-white/70 border-zinc-200' })} rounded-2xl p-6 border`}>
-                        <div className="flex items-center gap-2 mb-4">
-                          <Target className="text-red-400" size={24} />
-                          <h4 className="text-xl font-bold text-red-400">The Challenge</h4>
+                    {/* Challenge & Approach — stacked on mobile, 2-col on md+ */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 mb-6 sm:mb-8">
+                      <div className={`${themeClass({ dark: 'bg-slate-900/70 border-slate-700', light: 'bg-white/70 border-zinc-200' })} rounded-2xl p-4 sm:p-6 border`}>
+                        <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                          <Target className="text-red-400" size={20} />
+                          <h4 className="text-base sm:text-xl font-bold text-red-400">The Challenge</h4>
                         </div>
-                        <p className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} leading-relaxed`}>{project.challenge}</p>
+                        <p className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} leading-relaxed text-sm sm:text-base`}>{project.challenge}</p>
                       </div>
-
-                      <div className={`${themeClass({ dark: 'bg-slate-900/70 border-slate-700', light: 'bg-white/70 border-zinc-200' })} rounded-2xl p-6 border`}>
-                        <div className="flex items-center gap-2 mb-4">
-                          <Zap className="text-yellow-400" size={24} />
-                          <h4 className="text-xl font-bold text-yellow-400">My Approach</h4>
+                      <div className={`${themeClass({ dark: 'bg-slate-900/70 border-slate-700', light: 'bg-white/70 border-zinc-200' })} rounded-2xl p-4 sm:p-6 border`}>
+                        <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                          <Zap className="text-yellow-400" size={20} />
+                          <h4 className="text-base sm:text-xl font-bold text-yellow-400">My Approach</h4>
                         </div>
                         <ul className="space-y-2">
                           {project.approach.map((step, j) => (
-                            <motion.li key={j} className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} text-sm flex items-start gap-2`} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: j * 0.1 }}>
-                              <ArrowRight className="text-green-400 shrink-0 mt-0.5" size={16} />
+                            <motion.li
+                              key={j}
+                              className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} text-xs sm:text-sm flex items-start gap-2`}
+                              initial={{ opacity: 0, x: -20 }}
+                              whileInView={{ opacity: 1, x: 0 }}
+                              transition={{ delay: j * 0.08 }}
+                            >
+                              <ArrowRight className="text-green-400 shrink-0 mt-0.5" size={14} />
                               {step}
                             </motion.li>
                           ))}
@@ -912,15 +1104,21 @@ if (!hasMounted) {
                     </div>
 
                     {/* Outcomes */}
-                    <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-2xl p-6 mb-8">
-                      <div className="flex items-center gap-2 mb-4">
-                        <TrendingUp className="text-green-400" size={24} />
-                        <h4 className="text-xl font-bold text-green-400">Outcomes & Impact</h4>
+                    <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8">
+                      <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                        <TrendingUp className="text-green-400" size={20} />
+                        <h4 className="text-base sm:text-xl font-bold text-green-400">Outcomes & Impact</h4>
                       </div>
-                      <ul className="grid md:grid-cols-2 gap-4">
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                         {project.outcomes.map((outcome, j) => (
-                          <motion.li key={j} className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} flex items-start gap-2`} initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} transition={{ delay: j * 0.1 }}>
-                            <Star className="text-green-400 shrink-0 mt-1" size={16} />
+                          <motion.li
+                            key={j}
+                            className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} text-xs sm:text-sm flex items-start gap-2`}
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: j * 0.08 }}
+                          >
+                            <Star className="text-green-400 shrink-0 mt-0.5" size={14} />
                             {outcome}
                           </motion.li>
                         ))}
@@ -928,19 +1126,30 @@ if (!hasMounted) {
                     </div>
 
                     {/* Metrics */}
-                    <div className="flex flex-wrap gap-6 mb-8">
+                    <div className="flex flex-wrap gap-3 sm:gap-6 mb-6 sm:mb-8">
                       {Object.entries(project.metrics).map(([key, value], j) => (
-                        <motion.div key={j} className={`${themeClass({ dark: 'bg-slate-900/70', light: 'bg-white/80' })} rounded-xl px-6 py-4 border border-green-500/30`} whileHover={{ scale: 1.05, borderColor: 'rgb(34 197 94)' }}>
-                          <div className={`text-3xl font-black bg-gradient-to-r ${project.color} bg-clip-text text-transparent`}>{value}</div>
-                          <div className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} text-sm capitalize`}>{key}</div>
+                        <motion.div
+                          key={j}
+                          className={`${themeClass({ dark: 'bg-slate-900/70', light: 'bg-white/80' })} rounded-xl px-4 sm:px-6 py-3 sm:py-4 border border-green-500/30`}
+                          whileHover={{ scale: 1.05, borderColor: 'rgb(34 197 94)' }}
+                        >
+                          <div className={`text-xl sm:text-3xl font-black bg-gradient-to-r ${project.color} bg-clip-text text-transparent`}>{value}</div>
+                          <div className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} text-xs capitalize`}>{key}</div>
                         </motion.div>
                       ))}
                     </div>
 
                     {/* Tools */}
-                    <div className="flex flex-wrap gap-3">
+                    <div className="flex flex-wrap gap-2 sm:gap-3">
                       {project.tools.map((tool, j) => (
-                        <motion.span key={j} className={`px-4 py-2 bg-gradient-to-r ${project.color} bg-opacity-10 text-white rounded-lg text-sm font-semibold border-2 border-opacity-30`} whileHover={{ scale: 1.1, y: -2 }} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: j * 0.05 }}>
+                        <motion.span
+                          key={j}
+                          className={`px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r ${project.color} bg-opacity-10 text-white rounded-lg text-xs sm:text-sm font-semibold border border-white/10`}
+                          whileHover={{ scale: 1.1, y: -2 }}
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          transition={{ delay: j * 0.05 }}
+                        >
                           {tool}
                         </motion.span>
                       ))}
@@ -950,10 +1159,91 @@ if (!hasMounted) {
               </motion.div>
             ))}
           </div>
+
+          {/* ── Other Projects Grid (NEW) ───────────────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.2 }}
+            transition={{ duration: 0.7 }}
+          >
+            {/* Section header */}
+            <div className="flex items-center gap-3 mb-8">
+              <span className="text-xl">📁</span>
+              <h3 className={`text-xs sm:text-sm font-bold tracking-[0.25em] ${themeClass({ dark: 'text-slate-400', light: 'text-zinc-500' })} uppercase`}>
+                Other Projects
+              </h3>
+              <div className={`flex-1 h-px ${themeClass({ dark: 'bg-slate-700', light: 'bg-zinc-200' })}`} />
+            </div>
+
+            {/* Grid: 1 col → 2 col → 4 col */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+              {otherProjects.map((proj, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, amount: 0.2 }}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ y: -6, boxShadow: '0 0 30px rgba(34, 197, 94, 0.2)' }}
+                  className={`group relative ${themeClass({ dark: 'bg-slate-900/60 border-slate-700 hover:border-green-500/60', light: 'bg-white/70 border-zinc-200 hover:border-green-400/60' })} border rounded-2xl p-5 sm:p-6 transition-all duration-300 cursor-pointer overflow-hidden`}
+                >
+                  {/* Subtle gradient overlay on hover */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${proj.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 rounded-2xl`} />
+
+                  {/* Top row: emoji + external link */}
+                  <div className="relative z-10 flex items-start justify-between mb-4">
+                    <div className="text-2xl">{proj.emoji}</div>
+                    {proj.url !== '#' ? (
+                      <motion.a
+                        href={proj.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.2 }}
+                        className={`${themeClass({ dark: 'text-slate-600 hover:text-green-400', light: 'text-zinc-400 hover:text-green-500' })} transition-colors`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ExternalLink size={16} />
+                      </motion.a>
+                    ) : (
+                      <div className={`${themeClass({ dark: 'text-slate-700', light: 'text-zinc-300' })}`}>
+                        <Globe size={16} />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Title + company */}
+                  <div className="relative z-10 mb-3">
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <h4 className={`${themeClass({ dark: 'text-white group-hover:text-green-400', light: 'text-zinc-950 group-hover:text-green-600' })} font-bold text-base transition-colors leading-tight`}>
+                        {proj.title}
+                      </h4>
+                      <span className={`${themeClass({ dark: 'text-slate-500', light: 'text-zinc-400' })} text-xs font-mono shrink-0 mt-0.5`}>{proj.company}</span>
+                    </div>
+                    <p className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} text-xs leading-relaxed`}>{proj.description}</p>
+                  </div>
+
+                  {/* Tech tags */}
+                  <div className="relative z-10 flex flex-wrap gap-1.5">
+                    {proj.tech.map((t, j) => (
+                      <span
+                        key={j}
+                        className={`px-2 py-0.5 ${themeClass({ dark: 'bg-slate-800 text-slate-400 border-slate-700 group-hover:border-slate-600', light: 'bg-zinc-100 text-zinc-500 border-zinc-200 group-hover:border-zinc-300' })} text-xs rounded-md border transition-colors`}
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Skills Section */}
+      {/* ═══════════════════════════════════════════════════════════════════
+          SKILLS SECTION
+      ═══════════════════════════════════════════════════════════════════ */}
       <section id="skills" className={`min-h-screen px-6 py-32 relative ${themeClass({ dark: 'bg-slate-900/20', light: 'bg-emerald-50/40' })}`}>
         <div className="max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.25 }}>
@@ -966,21 +1256,34 @@ if (!hasMounted) {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {Object.entries(skills).map(([category, data], i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.25 }} transition={{ delay: i * 0.12, duration: 0.65, type: 'spring', stiffness: 90 }}>
-                <motion.div className={`${themeClass({ dark: 'from-black/50 to-slate-950/50 border-green-500/20', light: 'from-white/80 to-emerald-50/70 border-green-500/30' })} h-full bg-gradient-to-br backdrop-blur-xl border-2 rounded-2xl p-8 group`} whileHover={{ scale: 1.04, y: -8, borderColor: 'rgb(34 197 94)', boxShadow: '0 25px 70px rgba(34, 197, 94, 0.18)' }}>
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.25 }}
+                transition={{ delay: i * 0.12, duration: 0.65, type: 'spring', stiffness: 90 }}
+              >
+                <motion.div
+                  className={`${themeClass({ dark: 'from-black/50 to-slate-950/50 border-green-500/20', light: 'from-white/80 to-emerald-50/70 border-green-500/30' })} h-full bg-gradient-to-br backdrop-blur-xl border-2 rounded-2xl p-8 group`}
+                  whileHover={{ scale: 1.04, y: -8, borderColor: 'rgb(34 197 94)', boxShadow: '0 25px 70px rgba(34, 197, 94, 0.18)' }}
+                >
                   <div className="flex items-center gap-4 mb-6">
                     <motion.div className={`p-3 bg-gradient-to-r ${data.color} rounded-xl`} whileHover={{ rotate: 360 }} transition={{ duration: 0.5 }}>
                       <data.icon className="text-white" size={28} />
                     </motion.div>
                     <h3 className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} text-2xl font-bold`}>{category}</h3>
                   </div>
-
                   <ul className="space-y-3">
                     {data.items.map((skill, j) => (
-                      <motion.li key={j} className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} flex items-start gap-2 group/item`} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: j * 0.05 }} whileHover={{ x: 5 }}>
-                        <motion.span className="text-green-400 shrink-0 mt-1" whileHover={{ scale: 1.5 }}>
-                          ▹
-                        </motion.span>
+                      <motion.li
+                        key={j}
+                        className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} flex items-start gap-2 group/item`}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ delay: j * 0.05 }}
+                        whileHover={{ x: 5 }}
+                      >
+                        <motion.span className="text-green-400 shrink-0 mt-1" whileHover={{ scale: 1.5 }}>▹</motion.span>
                         <span className="group-hover/item:text-green-400 transition-colors">{skill}</span>
                       </motion.li>
                     ))}
@@ -992,7 +1295,9 @@ if (!hasMounted) {
         </div>
       </section>
 
-      {/* Contact Section */}
+      {/* ═══════════════════════════════════════════════════════════════════
+          CONTACT SECTION
+      ═══════════════════════════════════════════════════════════════════ */}
       <section id="contact" className="min-h-screen flex items-center px-6 py-32 relative">
         <div className="max-w-5xl mx-auto w-full">
           <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.25 }}>
@@ -1002,18 +1307,34 @@ if (!hasMounted) {
             </h2>
           </motion.div>
 
-          <motion.p className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} text-2xl mb-16 max-w-3xl mx-auto text-center leading-relaxed`} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-            I am actively looking for <span className="text-green-400 font-bold">Business Analyst opportunities</span> where I can contribute from day one. If you are hiring or want to discuss how my operational background can add value to your team, <span className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} font-bold`}>let us connect</span>.
+          <motion.p
+            className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} text-2xl mb-16 max-w-3xl mx-auto text-center leading-relaxed`}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            I am actively looking for{' '}
+            <span className="text-green-400 font-bold">Business Analyst opportunities</span> where I can contribute from day one.
+            If you are hiring or want to discuss how my operational background can add value to your team,{' '}
+            <span className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} font-bold`}>let us connect</span>.
           </motion.p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {[
               { icon: Mail, label: 'Email', value: 'deependerchoudhary2003@gmail.com', href: 'mailto:deependerchoudhary2003@gmail.com', color: 'from-red-500 to-orange-500' },
               { icon: Phone, label: 'Phone', value: '+91 9729880411', href: 'tel:+919729880411', color: 'from-green-500 to-emerald-500' },
-              { icon:  FaLinkedin, label: 'LinkedIn', value: 'Connect with me', href: '#', color: 'from-blue-500 to-cyan-500' },
-              { icon: MessageCircleMore, label: 'WhatsApp', value: 'Chat directly', href: 'https://wa.me/919729880411', color: 'from-green-400 to-teal-500' }
+              { icon: FaLinkedin, label: 'LinkedIn', value: 'Connect with me', href: '#', color: 'from-blue-500 to-cyan-500' },
+              { icon: MessageCircleMore, label: 'WhatsApp', value: 'Chat directly', href: 'https://wa.me/919729880411', color: 'from-green-400 to-teal-500' },
             ].map((contact, i) => (
-              <motion.a key={i} href={contact.href} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.12, duration: 0.65, type: 'spring', stiffness: 90 }} whileHover={{ scale: 1.05, y: -5 }} className={`${themeClass({ dark: 'from-black/50 to-slate-950/50 border-green-500/20', light: 'from-white/80 to-emerald-50/70 border-green-500/30' })} bg-gradient-to-br backdrop-blur-xl border-2 rounded-2xl p-6 hover:border-green-500 transition-all group`}>
+              <motion.a
+                key={i}
+                href={contact.href}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.12, duration: 0.65, type: 'spring', stiffness: 90 }}
+                whileHover={{ scale: 1.05, y: -5 }}
+                className={`${themeClass({ dark: 'from-black/50 to-slate-950/50 border-green-500/20', light: 'from-white/80 to-emerald-50/70 border-green-500/30' })} bg-gradient-to-br backdrop-blur-xl border-2 rounded-2xl p-6 hover:border-green-500 transition-all group`}
+              >
                 <motion.div className={`mb-4 p-4 bg-gradient-to-r ${contact.color} rounded-xl w-fit`} whileHover={{ rotate: 5 }}>
                   <contact.icon className="text-white" size={32} />
                 </motion.div>
@@ -1023,7 +1344,7 @@ if (!hasMounted) {
             ))}
           </div>
 
-          {/* ── CONTACT FORM (Formspree) ── */}
+          {/* Contact Form (Formspree) */}
           <motion.form
             onSubmit={handleFormSubmit}
             className={`${themeClass({ dark: 'bg-black/70 border-green-500/30', light: 'bg-white/80 border-green-500/30' })} mx-auto max-w-2xl border p-6 md:p-8 backdrop-blur-xl shadow-[0_0_50px_rgba(34,197,94,0.12)]`}
@@ -1060,7 +1381,7 @@ if (!hasMounted) {
                 className={`${themeClass({ dark: 'text-white placeholder:text-slate-500 border-slate-700', light: 'text-zinc-950 placeholder:text-zinc-400 border-zinc-300' })} w-full resize-none border-b bg-transparent py-3 md:py-4 text-base md:text-xl outline-none focus:border-green-400 transition-colors`}
               />
             </div>
- 
+
             <AnimatePresence mode="wait">
               {formState === 'sent' ? (
                 <motion.div
@@ -1096,13 +1417,12 @@ if (!hasMounted) {
             </AnimatePresence>
           </motion.form>
 
-          {/* ── ✅ FIX 2b: Resume — Download + View ── */}
+          {/* Resume Buttons */}
           <motion.div
             className="text-center mt-8 md:mt-10 flex flex-col sm:flex-row gap-4 justify-center"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
           >
-            {/* Download button — downloads resume.pdf from /public */}
             <motion.a
               href={RESUME_DOWNLOAD_URL}
               download="Deepender_Choudhary_Resume.pdf"
@@ -1113,8 +1433,6 @@ if (!hasMounted) {
               Download Resume
               <Download size={22} />
             </motion.a>
- 
-            {/* View button — opens Google Drive */}
             <motion.a
               href={RESUME_VIEW_URL}
               target="_blank"
@@ -1130,14 +1448,21 @@ if (!hasMounted) {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* ── Footer ────────────────────────────────────────────────────────── */}
       <footer className={`${themeClass({ dark: 'border-green-500/20 bg-black/80', light: 'border-green-500/30 bg-white/80' })} border-t py-12 px-6 backdrop-blur-xl`}>
         <div className="max-w-6xl mx-auto">
           <div className="text-center">
-            <motion.p className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} mb-4`} whileHover={{ scale: 1.02 }}>
+            <motion.p
+              className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} mb-4`}
+              whileHover={{ scale: 1.02 }}
+            >
               Designed & Built by Deepender Choudhary
             </motion.p>
-            <motion.p className="text-2xl font-bold text-transparent bg-gradient-to-r from-green-400 via-emerald-500 to-lime-500 bg-clip-text" animate={{ backgroundPosition: ['0%', '100%', '0%'] }} transition={{ duration: 5, repeat: Infinity }}>
+            <motion.p
+              className="text-2xl font-bold text-transparent bg-gradient-to-r from-green-400 via-emerald-500 to-lime-500 bg-clip-text"
+              animate={{ backgroundPosition: ['0%', '100%', '0%'] }}
+              transition={{ duration: 5, repeat: Infinity }}
+            >
               Not from IIT. Not from IIM. Just someone who gets things done.
             </motion.p>
           </div>
