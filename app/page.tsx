@@ -604,8 +604,7 @@ if (!hasMounted) {
 
           <motion.div className="flex gap-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1 }}>
             {[
-              { Icon: Badge, href: '#' },
-              { Icon: BadgeCheck, href: '#' },
+              { Icon: Badge, href: 'https://www.linkedin.com/in/deepender-choudhary-337958248/' },
               { Icon: Mail, href: 'mailto:deependerchoudhary2003@gmail.com' },
             ].map(({ Icon, href }, i) => (
               <motion.a key={i} href={href} whileHover={{ scale: 1.2, rotate: 5 }} className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} hover:text-green-400 transition-colors`}>
@@ -965,7 +964,6 @@ if (!hasMounted) {
               { icon: Mail, label: 'Email', value: 'deependerchoudhary2003@gmail.com', href: 'mailto:deependerchoudhary2003@gmail.com', color: 'from-red-500 to-orange-500' },
               { icon: Phone, label: 'Phone', value: '+91 9729880411', href: 'tel:+919729880411', color: 'from-green-500 to-emerald-500' },
               { icon: Badge, label: 'Badge', value: 'Connect with me', href: '#', color: 'from-blue-500 to-cyan-500' },
-              { icon: BadgeCheck, label: 'BadgeCheck', value: 'View my code', href: '#', color: 'from-purple-500 to-pink-500' },
             ].map((contact, i) => (
               <motion.a key={i} href={contact.href} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.12, duration: 0.65, type: 'spring', stiffness: 90 }} whileHover={{ scale: 1.05, y: -5 }} className={`${themeClass({ dark: 'from-black/50 to-slate-950/50 border-green-500/20', light: 'from-white/80 to-emerald-50/70 border-green-500/30' })} bg-gradient-to-br backdrop-blur-xl border-2 rounded-2xl p-6 hover:border-green-500 transition-all group`}>
                 <motion.div className={`mb-4 p-4 bg-gradient-to-r ${contact.color} rounded-xl w-fit`} whileHover={{ rotate: 5 }}>
