@@ -91,24 +91,36 @@ const handleBeerClick = () => {
   const [formState, setFormState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
   // Contact form submit
-  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setFormState('sending');
-    const form = e.currentTarget;
-    const data = new FormData(form);
-    try {
-      const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
-        method: 'POST',
-        body: data,
-        headers: { Accept: 'application/json' },
-      });
-      if (res.ok) { setFormState('sent'); form.reset(); }
-      else setFormState('error');
-    } catch {
+const WEB3FORMS_ACCESS_KEY = '3918bdd2-1540-4605-b70d-8dffce6eaf53';
+
+const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setFormState('sending');
+
+  const form = e.currentTarget;
+  const data = new FormData(form);
+
+  data.append('access_key', WEB3FORMS_ACCESS_KEY);
+  data.append('subject', 'New portfolio message from Deepender website');
+
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      body: data,
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      setFormState('sent');
+      form.reset();
+    } else {
       setFormState('error');
     }
-  };
-
+  } catch {
+    setFormState('error');
+  }
+};
   // Dynamic geolocation popup
   useEffect(() => {
     fetch('https://ipapi.co/json/')
