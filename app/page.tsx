@@ -2,6 +2,9 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { FaLinkedin } from "react-icons/fa6";
+import { FaWhatsapp } from "react-icons/fa";
+
 import {
   Mail,
   Badge,
@@ -27,6 +30,8 @@ import {
   Moon,
   X,
   Send,
+  Link,
+  MessageCircleMore
 } from 'lucide-react';
 
 type Particle = {
@@ -55,6 +60,52 @@ export default function DeependerPremiumPortfolio() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { scrollYProgress } = useScroll();
 
+
+
+  // form values 
+
+  const FORMSPREE_ID = 'YOUR_FORM_ID';
+const RESUME_VIEW_URL =
+  'https://docs.google.com/document/d/1goFJDq8pAb8kbzO5bxXgfvy4rkmyH0-6-yw_7FkCvnI/edit?usp=sharing';
+  const RESUME_DOWNLOAD_URL = 'https://docs.google.com/document/d/1goFJDq8pAb8kbzO5bxXgfvy4rkmyH0-6-yw_7FkCvnI/export?format=pdf';
+
+
+  // ── NEW: dynamic geolocation state ──────────────────────────────────────────
+  const [visitorCity, setVisitorCity] = useState('India');
+  const [visitorCountry, setVisitorCountry] = useState('IN');
+  // ── NEW: contact form state ──────────────────────────────────────────────────
+  const [formState, setFormState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+ 
+  // ── Contact form submit ──────────────────────────────────────────────────────
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setFormState('sending');
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    try {
+      const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+        method: 'POST',
+        body: data,
+        headers: { Accept: 'application/json' },
+      });
+      if (res.ok) { setFormState('sent'); form.reset(); }
+      else setFormState('error');
+    } catch {
+      setFormState('error');
+    }
+  };
+  // ── ✅ FIX 1: Dynamic geolocation popup ─────────────────────────────────────
+  useEffect(() => {
+    fetch('https://ipapi.co/json/')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.city) setVisitorCity(data.city);
+        if (data?.country_code) setVisitorCountry(data.country_code);
+      })
+      .catch(() => {
+        // Fallback — keep defaults
+      });
+  }, []);
   // Parallax effects
   const y1 = useTransform(scrollYProgress, [0, 1], [0, -200]);
   const y2 = useTransform(scrollYProgress, [0, 1], [0, -400]);
@@ -103,20 +154,12 @@ export default function DeependerPremiumPortfolio() {
   }, []);
 
   // Intro screen and greeting popup
+
+  // ── Intro + greeting sequence ────────────────────────────────────────────────
   useEffect(() => {
-    const introTimer = window.setTimeout(() => {
-      setShowIntro(false);
-      setShowGreeting(true);
-    }, 2800);
-
-    const greetingTimer = window.setTimeout(() => {
-      setShowGreeting(false);
-    }, 6500);
-
-    return () => {
-      window.clearTimeout(introTimer);
-      window.clearTimeout(greetingTimer);
-    };
+    const t1 = window.setTimeout(() => { setShowIntro(false); setShowGreeting(true); }, 2800);
+    const t2 = window.setTimeout(() => setShowGreeting(false), 7000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
   // Intersection observer for section tracking
@@ -220,13 +263,13 @@ export default function DeependerPremiumPortfolio() {
       icon: FileText,
       color: 'from-blue-500 to-cyan-500',
     },
-    'Data & Analytics': {
+    'Data & Reporting': {
       items: ['SQL (Joins, CTEs, Window Functions)', 'Power BI Dashboards', 'DAX Formulas', 'Excel (Advanced)', 'Data Validation', 'KPI Development', 'Data Modeling'],
       icon: Database,
       color: 'from-purple-500 to-pink-500',
     },
-    'APIs & Integration': {
-      items: ['REST APIs', 'JSON/XML', 'Postman Testing', 'API Documentation', 'Swagger/OpenAPI', 'Webhook Concepts', 'OAuth2 Authentication'],
+    'APIs & Development': {
+      items: ['REST APIs', 'React.js/Next.js','SEO Optimization', 'Postman Testing', 'API Documentation', 'Swagger/OpenAPI', 'Webhook Concepts', 'OAuth2 Authentication'],
       icon: Code,
       color: 'from-green-500 to-emerald-500',
     },
@@ -248,20 +291,21 @@ export default function DeependerPremiumPortfolio() {
   };
 
   const timeline = [
-    {
-      year: '2022 - 2024',
-      title: 'Frontend Developer',
-      company: 'Super Minds IT Services',
+   {
+      year: '2025 - Present',
+      title: 'Operations Business Analyst',
+      company: 'IGT Solutions (KLM Airlines)',
       location: 'Gurugram, India',
-      description: 'Started my tech journey building React.js applications. Created 20+ affiliate booking pages, integrated REST APIs, and learned the fundamentals of translating business requirements into technical solutions.',
+      description: 'Currently managing multi-LOB airline operations, analyzing processes, and driving data-backed improvements. This is where I discovered my passion for Business Analysis.',
       achievements: [
-        'Built 20+ high-conversion booking pages generating ₹10L+ revenue',
-        'Optimized page load time from 4s to <2s (50% improvement)',
-        'Integrated 15+ third-party APIs using Postman for testing',
-        'Collaborated with marketing team on SEO strategy (30% traffic increase)',
+        'Managing 6-7 Lines of Business (Claims, Seating, Rebooking, GST)',
+        'Handling 50+ operational cases daily maintaining 99%+ SLA',
+        'Analyzed real-time flight disruptions affecting 200+ passengers',
+        'Generated operational reports tracking KPIs and performance metrics',
+        'Contributed to process documentation and SOP improvements',
       ],
-      skills: ['React.js', 'REST APIs', 'Postman', 'SEO', 'Stakeholder Communication'],
-      icon: Code,
+      skills: ['Process Analysis', 'Multi-LOB Management', 'Operational Reporting', 'Stakeholder Coordination'],
+      icon: Target,
     },
     {
       year: '2024 - 2025',
@@ -278,22 +322,22 @@ export default function DeependerPremiumPortfolio() {
       skills: ['Root Cause Analysis', 'Technical Documentation', 'SLA Management', 'Customer Success'],
       icon: Briefcase,
     },
-    {
-      year: '2025 - Present',
-      title: 'Operations Business Analyst',
-      company: 'IGT Solutions (KLM Airlines)',
+     {
+      year: '2022 - 2024',
+      title: 'Frontend Developer',
+      company: 'Super Minds IT Services',
       location: 'Gurugram, India',
-      description: 'Currently managing multi-LOB airline operations, analyzing processes, and driving data-backed improvements. This is where I discovered my passion for Business Analysis.',
+      description: 'Started my tech journey building React.js applications. Created 20+ affiliate booking pages, integrated REST APIs, and learned the fundamentals of translating business requirements into technical solutions.',
       achievements: [
-        'Managing 6-7 Lines of Business (Claims, Seating, Rebooking, GST)',
-        'Handling 50+ operational cases daily maintaining 99%+ SLA',
-        'Analyzed real-time flight disruptions affecting 200+ passengers',
-        'Generated operational reports tracking KPIs and performance metrics',
-        'Contributed to process documentation and SOP improvements',
+        'Built 20+ high-conversion booking pages generating ₹10L+ revenue',
+        'Optimized page load time from 4s to <2s (50% improvement)',
+        'Integrated 15+ third-party APIs using Postman for testing',
+        'Collaborated with marketing team on SEO strategy (30% traffic increase)',
       ],
-      skills: ['Process Analysis', 'Multi-LOB Management', 'Operational Reporting', 'Stakeholder Coordination'],
-      icon: Target,
+      skills: ['React.js', 'REST APIs', 'Postman', 'SEO', 'Stakeholder Communication'],
+      icon: Code,
     },
+    
   ];
 
   const certifications = [
@@ -364,14 +408,15 @@ if (!hasMounted) {
           </motion.div>
         )}
       </AnimatePresence>
-
+ {/* ── ✅ FIX 1: GEOLOCATION GREETING POPUP ────────────────────────────── */}
       <AnimatePresence>
         {showGreeting && (
           <motion.div
-            className="fixed top-24 right-6 z-[80] border-2 border-orange-400 bg-black/90 px-6 py-5 text-white shadow-[0_0_40px_rgba(251,146,60,0.25)]"
+            className="fixed top-20 right-4 md:top-24 md:right-6 z-[80] border-2 border-orange-400 bg-black/90 px-4 py-4 md:px-6 md:py-5 text-white shadow-[0_0_40px_rgba(251,146,60,0.25)] max-w-[280px] md:max-w-sm"
             initial={{ opacity: 0, x: 80 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 80 }}
+            transition={{ type: 'spring', stiffness: 120 }}
           >
             <button
               type="button"
@@ -379,15 +424,17 @@ if (!hasMounted) {
               onClick={() => setShowGreeting(false)}
               className="absolute right-3 top-3 text-slate-400 hover:text-white"
             >
-              <X size={16} />
+              <X size={14} />
             </button>
-
-            <div className="flex items-center gap-4 pr-8">
-              <div className="text-3xl font-black font-serif">IN</div>
+            <div className="flex items-center gap-3 md:gap-4 pr-6">
+              <div className="text-2xl md:text-3xl font-black font-serif text-orange-400">
+                {visitorCountry}
+              </div>
               <div>
-                <div className="font-bold text-lg">Namaste from India! 🙏</div>
-                <div className="text-sm text-slate-400">
-                  Visitor from <span className="text-orange-400">New Delhi, India</span>
+                <div className="font-bold text-base md:text-lg">Namaste from India! 🙏</div>
+                <div className="text-xs md:text-sm text-slate-400">
+                  Visitor from{' '}
+                  <span className="text-orange-400 font-semibold">{visitorCity}, India</span>
                 </div>
               </div>
             </div>
@@ -590,21 +637,21 @@ if (!hasMounted) {
             </motion.a>
 
             <motion.a
-              href="/resume.pdf"
+              href="https://docs.google.com/document/d/1goFJDq8pAb8kbzO5bxXgfvy4rkmyH0-6-yw_7FkCvnI/edit?usp=sharing"
               target="_blank"
               rel="noopener noreferrer"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="px-8 py-4 border-2 border-green-400 rounded-xl font-bold text-lg flex items-center gap-2 hover:bg-green-400/10 transition-colors"
             >
-              <Download size={20} />
+              <Link size={20} />
               Resume
             </motion.a>
           </motion.div>
 
           <motion.div className="flex gap-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1 }}>
             {[
-              { Icon: Badge, href: 'https://www.linkedin.com/in/deepender-choudhary-337958248/' },
+              { Icon: FaLinkedin, href: 'https://www.linkedin.com/in/deepender-choudhary-337958248/' },
               { Icon: Mail, href: 'mailto:deependerchoudhary2003@gmail.com' },
             ].map(({ Icon, href }, i) => (
               <motion.a key={i} href={href} whileHover={{ scale: 1.2, rotate: 5 }} className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} hover:text-green-400 transition-colors`}>
@@ -963,7 +1010,8 @@ if (!hasMounted) {
             {[
               { icon: Mail, label: 'Email', value: 'deependerchoudhary2003@gmail.com', href: 'mailto:deependerchoudhary2003@gmail.com', color: 'from-red-500 to-orange-500' },
               { icon: Phone, label: 'Phone', value: '+91 9729880411', href: 'tel:+919729880411', color: 'from-green-500 to-emerald-500' },
-              { icon: Badge, label: 'Badge', value: 'Connect with me', href: '#', color: 'from-blue-500 to-cyan-500' },
+              { icon:  FaLinkedin, label: 'LinkedIn', value: 'Connect with me', href: '#', color: 'from-blue-500 to-cyan-500' },
+              { icon: MessageCircleMore, label: 'WhatsApp', value: 'Chat directly', href: 'https://wa.me/919729880411', color: 'from-green-400 to-teal-500' }
             ].map((contact, i) => (
               <motion.a key={i} href={contact.href} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.12, duration: 0.65, type: 'spring', stiffness: 90 }} whileHover={{ scale: 1.05, y: -5 }} className={`${themeClass({ dark: 'from-black/50 to-slate-950/50 border-green-500/20', light: 'from-white/80 to-emerald-50/70 border-green-500/30' })} bg-gradient-to-br backdrop-blur-xl border-2 rounded-2xl p-6 hover:border-green-500 transition-all group`}>
                 <motion.div className={`mb-4 p-4 bg-gradient-to-r ${contact.color} rounded-xl w-fit`} whileHover={{ rotate: 5 }}>
@@ -975,62 +1023,108 @@ if (!hasMounted) {
             ))}
           </div>
 
+          {/* ── CONTACT FORM (Formspree) ── */}
           <motion.form
-            action="https://formspree.io/f/YOUR_FORM_ID"
-            method="POST"
-            className={`${themeClass({ dark: 'bg-black/70 border-green-500/30', light: 'bg-white/80 border-green-500/30' })} mx-auto max-w-2xl border p-8 backdrop-blur-xl shadow-[0_0_50px_rgba(34,197,94,0.12)]`}
+            onSubmit={handleFormSubmit}
+            className={`${themeClass({ dark: 'bg-black/70 border-green-500/30', light: 'bg-white/80 border-green-500/30' })} mx-auto max-w-2xl border p-6 md:p-8 backdrop-blur-xl shadow-[0_0_50px_rgba(34,197,94,0.12)]`}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.2 }}
           >
-            <div className="mb-8">
-              <label className="mb-2 block text-sm font-bold text-green-400">☕ NAME</label>
+            <div className="mb-6 md:mb-8">
+              <label className="mb-2 block text-xs md:text-sm font-bold text-green-400">☕ NAME</label>
               <input
                 name="name"
                 required
                 placeholder="Your awesome name"
-                className={`${themeClass({ dark: 'text-white placeholder:text-slate-500 border-slate-700', light: 'text-zinc-950 placeholder:text-zinc-400 border-zinc-300' })} w-full border-b bg-transparent py-4 text-xl outline-none focus:border-green-400`}
+                className={`${themeClass({ dark: 'text-white placeholder:text-slate-500 border-slate-700', light: 'text-zinc-950 placeholder:text-zinc-400 border-zinc-300' })} w-full border-b bg-transparent py-3 md:py-4 text-base md:text-xl outline-none focus:border-green-400 transition-colors`}
               />
             </div>
-
-            <div className="mb-8">
-              <label className="mb-2 block text-sm font-bold text-green-400">💌 EMAIL</label>
+            <div className="mb-6 md:mb-8">
+              <label className="mb-2 block text-xs md:text-sm font-bold text-green-400">💌 EMAIL</label>
               <input
                 name="email"
                 type="email"
                 required
                 placeholder="you@awesome.com"
-                className={`${themeClass({ dark: 'text-white placeholder:text-slate-500 border-slate-700', light: 'text-zinc-950 placeholder:text-zinc-400 border-zinc-300' })} w-full border-b bg-transparent py-4 text-xl outline-none focus:border-green-400`}
+                className={`${themeClass({ dark: 'text-white placeholder:text-slate-500 border-slate-700', light: 'text-zinc-950 placeholder:text-zinc-400 border-zinc-300' })} w-full border-b bg-transparent py-3 md:py-4 text-base md:text-xl outline-none focus:border-green-400 transition-colors`}
               />
             </div>
-
-            <div className="mb-8">
-              <label className="mb-2 block text-sm font-bold text-green-400">💬 MESSAGE</label>
+            <div className="mb-6 md:mb-8">
+              <label className="mb-2 block text-xs md:text-sm font-bold text-green-400">💬 MESSAGE</label>
               <textarea
                 name="message"
                 required
-                rows={5}
-                placeholder="Let’s build something cool (or grab a drink)..."
-                className={`${themeClass({ dark: 'text-white placeholder:text-slate-500 border-slate-700', light: 'text-zinc-950 placeholder:text-zinc-400 border-zinc-300' })} w-full resize-none border-b bg-transparent py-4 text-xl outline-none focus:border-green-400`}
+                rows={4}
+                placeholder="Let's build something cool (or grab a drink)..."
+                className={`${themeClass({ dark: 'text-white placeholder:text-slate-500 border-slate-700', light: 'text-zinc-950 placeholder:text-zinc-400 border-zinc-300' })} w-full resize-none border-b bg-transparent py-3 md:py-4 text-base md:text-xl outline-none focus:border-green-400 transition-colors`}
               />
             </div>
-
-            <button type="submit" className="w-full bg-green-500 py-5 text-lg font-black text-black hover:bg-green-400 transition-colors flex items-center justify-center gap-3">
-              Send Message 🍻
-              <Send size={20} />
-            </button>
+ 
+            <AnimatePresence mode="wait">
+              {formState === 'sent' ? (
+                <motion.div
+                  key="sent"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="w-full py-4 md:py-5 bg-green-500/20 border border-green-500 text-green-400 font-bold text-center rounded"
+                >
+                  ✅ Message sent! I&apos;ll get back to you soon.
+                </motion.div>
+              ) : formState === 'error' ? (
+                <motion.div key="error" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
+                  <div className="w-full py-3 bg-red-500/20 border border-red-500 text-red-400 font-bold text-center rounded text-sm">
+                    ❌ Something went wrong. Try emailing directly.
+                  </div>
+                  <button type="submit" className="w-full py-4 bg-green-500 text-black font-black hover:bg-green-400 transition-colors">
+                    Retry
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.button
+                  key="submit"
+                  type="submit"
+                  disabled={formState === 'sending'}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-4 md:py-5 text-base md:text-lg font-black text-black transition-colors flex items-center justify-center gap-3 disabled:opacity-60 bg-green-500 hover:bg-green-400"
+                >
+                  {formState === 'sending' ? 'Sending...' : 'Send Message 🍻'}
+                  <Send size={18} />
+                </motion.button>
+              )}
+            </AnimatePresence>
           </motion.form>
 
-          <motion.div className="text-center mt-10" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}>
+          {/* ── ✅ FIX 2b: Resume — Download + View ── */}
+          <motion.div
+            className="text-center mt-8 md:mt-10 flex flex-col sm:flex-row gap-4 justify-center"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+          >
+            {/* Download button — downloads resume.pdf from /public */}
             <motion.a
-              href="/resume.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.05, boxShadow: '0 0 50px rgba(34, 197, 94, 0.5)' }}
+              href={RESUME_DOWNLOAD_URL}
+              download="Deepender_Choudhary_Resume.pdf"
+              whileHover={{ scale: 1.05, boxShadow: '0 0 40px rgba(34,197,94,0.5)' }}
               whileTap={{ scale: 0.95 }}
-              className="px-12 py-6 bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl font-bold text-2xl inline-flex items-center gap-3 text-black"
+              className="px-8 md:px-12 py-4 md:py-6 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl md:rounded-2xl font-bold text-lg md:text-2xl inline-flex items-center gap-3 text-black"
             >
               Download Resume
-              <Download size={28} />
+              <Download size={22} />
+            </motion.a>
+ 
+            {/* View button — opens Google Drive */}
+            <motion.a
+              href={RESUME_VIEW_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 md:px-12 py-4 md:py-6 border-2 border-green-400 rounded-xl md:rounded-2xl font-bold text-lg md:text-2xl inline-flex items-center gap-3 hover:bg-green-400/10 transition-colors"
+            >
+              View Resume
+              <ExternalLink size={22} />
             </motion.a>
           </motion.div>
         </div>
