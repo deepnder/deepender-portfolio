@@ -3,12 +3,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { FaLinkedin } from "react-icons/fa6";
-import { FaWhatsapp } from "react-icons/fa";
 
 import {
   Mail,
-  Badge,
-  BadgeCheck,
+ Menu, CircleX,  BadgeCheck,
   Phone,
   MapPin,
   Award,
@@ -65,16 +63,16 @@ export default function DeependerPremiumPortfolio() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { scrollYProgress } = useScroll();
   const [beerCount, setBeerCount] = useState(420);
-const [showBeerAchievement, setShowBeerAchievement] = useState(false);
+  const [showBeerAchievement, setShowBeerAchievement] = useState(false);
+const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const handleBeerClick = () => {
+    setBeerCount((prev) => prev + 1);
+    setShowBeerAchievement(true);
 
-const handleBeerClick = () => {
-  setBeerCount((prev) => prev + 1);
-  setShowBeerAchievement(true);
-
-  window.setTimeout(() => {
-    setShowBeerAchievement(false);
-  }, 2200);
-};
+    window.setTimeout(() => {
+      setShowBeerAchievement(false);
+    }, 2200);
+  };
 
   // form values
   const FORMSPREE_ID = 'YOUR_FORM_ID';
@@ -91,36 +89,36 @@ const handleBeerClick = () => {
   const [formState, setFormState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
   // Contact form submit
-const WEB3FORMS_ACCESS_KEY = '3918bdd2-1540-4605-b70d-8dffce6eaf53';
+  const WEB3FORMS_ACCESS_KEY = '3918bdd2-1540-4605-b70d-8dffce6eaf53';
 
-const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setFormState('sending');
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setFormState('sending');
 
-  const form = e.currentTarget;
-  const data = new FormData(form);
+    const form = e.currentTarget;
+    const data = new FormData(form);
 
-  data.append('access_key', WEB3FORMS_ACCESS_KEY);
-  data.append('subject', 'New portfolio message from Deepender website');
+    data.append('access_key', WEB3FORMS_ACCESS_KEY);
+    data.append('subject', 'New portfolio message from Deepender website');
 
-  try {
-    const res = await fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      body: data,
-    });
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: data,
+      });
 
-    const result = await res.json();
+      const result = await res.json();
 
-    if (result.success) {
-      setFormState('sent');
-      form.reset();
-    } else {
+      if (result.success) {
+        setFormState('sent');
+        form.reset();
+      } else {
+        setFormState('error');
+      }
+    } catch {
       setFormState('error');
     }
-  } catch {
-    setFormState('error');
-  }
-};
+  };
   // Dynamic geolocation popup
   useEffect(() => {
     fetch('https://ipapi.co/json/')
@@ -129,7 +127,7 @@ const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         if (data?.city) setVisitorCity(data.city);
         if (data?.country_code) setVisitorCountry(data.country_code);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // Parallax effects
@@ -159,7 +157,7 @@ const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   // Hydration-safe particles
   useEffect(() => {
     setParticles(
-      Array.from({ length: 10 }).map((_, i) => ({
+      Array.from({ length: 7 }).map((_, i) => ({
         id: i,
         left: Math.random() * 100,
         top: Math.random() * 100,
@@ -437,7 +435,10 @@ const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   return (
     <div
       ref={containerRef}
-      className={`min-h-screen ${themeClass({ dark: 'bg-black text-white', light: 'bg-zinc-50 text-zinc-950' })} transition-colors duration-500 overflow-hidden cursor-none`}
+      className={`min-h-screen ${themeClass({
+        dark: 'bg-black text-white',
+        light: 'bg-zinc-50 text-zinc-950',
+      })} transition-colors duration-500 overflow-x-hidden cursor-auto md:cursor-none`}
     >
       {/* ── Intro Screen ─────────────────────────────────────────────────── */}
       <AnimatePresence>
@@ -568,396 +569,470 @@ const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       </div>
 
       {/* ── Navigation ────────────────────────────────────────────────────── */}
-      <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className={`fixed top-0 w-full ${themeClass({ dark: 'bg-black/80 border-green-500/20', light: 'bg-white/80 border-green-500/30' })} backdrop-blur-xl z-40 border-b`}
+     <motion.nav
+  initial={{ y: -100 }}
+  animate={{ y: 0 }}
+  className={`fixed top-0 left-0 right-0 w-full ${themeClass({
+    dark: 'bg-black/85 border-green-500/20',
+    light: 'bg-white/85 border-green-500/30',
+  })} backdrop-blur-xl z-40 border-b`}
+>
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+    <motion.a href="#hero" className="text-3xl font-bold" whileHover={{ scale: 1.1 }}>
+      <span className="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
+        DC
+      </span>
+    </motion.a>
+
+    {/* Desktop Menu */}
+    <div className="hidden lg:flex gap-8 items-center">
+      {['About', 'Journey', 'Projects', 'Skills', 'Contact'].map((item) => (
+        <motion.a
+          key={item}
+          href={`#${item.toLowerCase()}`}
+          className={`${themeClass({
+            dark: 'text-slate-300',
+            light: 'text-zinc-700',
+          })} hover:text-green-400 transition-colors relative`}
+          whileHover={{ y: -2 }}
+          onMouseEnter={() => setCursorVariant('hover')}
+          onMouseLeave={() => setCursorVariant('default')}
+        >
+          {item}
+
+          {activeSection === item.toLowerCase() && (
+            <motion.div
+              layoutId="activeSection"
+              className="absolute -bottom-1 left-0 right-0 h-0.5 bg-green-400"
+            />
+          )}
+        </motion.a>
+      ))}
+
+      <motion.button
+        type="button"
+        onClick={() => setIsDark((prev) => !prev)}
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.95 }}
+        className="rounded-full border border-green-500/40 p-3 text-green-400 hover:bg-green-500/10"
+        aria-label="Toggle theme"
       >
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-          <motion.div className="text-3xl font-bold" whileHover={{ scale: 1.1 }}>
-            <span className="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">DC</span>
-          </motion.div>
-          <div className="hidden lg:flex gap-8 items-center">
-            {['About', 'Journey', 'Projects', 'Skills', 'Contact'].map((item) => (
-              <motion.a
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} hover:text-green-400 transition-colors relative`}
-                whileHover={{ y: -2 }}
-                onMouseEnter={() => setCursorVariant('hover')}
-                onMouseLeave={() => setCursorVariant('default')}
-              >
-                {item}
-                {activeSection === item.toLowerCase() && (
-                  <motion.div layoutId="activeSection" className="absolute -bottom-1 left-0 right-0 h-0.5 bg-green-400" />
-                )}
-              </motion.a>
-            ))}
-            <motion.button
-              type="button"
-              onClick={() => setIsDark((prev) => !prev)}
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.95 }}
-              className="rounded-full border border-green-500/40 p-3 text-green-400 hover:bg-green-500/10"
-              aria-label="Toggle theme"
+        {isDark ? <Sun size={18} /> : <Moon size={18} />}
+      </motion.button>
+
+      <motion.a
+        href="#contact"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full font-semibold text-black"
+      >
+        Hire Me
+      </motion.a>
+    </div>
+
+    {/* Mobile Buttons */}
+    <div className="flex lg:hidden items-center gap-3">
+      <button
+        type="button"
+        onClick={() => setIsDark((prev) => !prev)}
+        className="rounded-full border border-green-500/40 p-2.5 text-green-400 hover:bg-green-500/10"
+        aria-label="Toggle theme"
+      >
+        {isDark ? <Sun size={18} /> : <Moon size={18} />}
+      </button>
+
+      <button
+        type="button"
+        onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+        className="rounded-full border border-green-500/40 p-2.5 text-green-400 hover:bg-green-500/10"
+        aria-label="Toggle menu"
+      >
+        {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
+    </div>
+  </div>
+
+  {/* Mobile Dropdown */}
+  <AnimatePresence>
+    {isMobileMenuOpen && (
+      <motion.div
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -12 }}
+        transition={{ duration: 0.22 }}
+        className={`${themeClass({
+          dark: 'bg-black/95 border-green-500/20 text-white',
+          light: 'bg-white/95 border-green-500/30 text-zinc-950',
+        })} lg:hidden border-t px-4 sm:px-6 py-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)]`}
+      >
+        <div className="flex flex-col gap-4">
+          {['About', 'Journey', 'Projects', 'Skills', 'Contact'].map((item) => (
+            <a
+              key={item}
+              href={`#${item.toLowerCase()}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-base font-semibold hover:text-green-400 transition-colors"
             >
-              {isDark ? <Sun size={18} /> : <Moon size={18} />}
-            </motion.button>
-            <motion.a
-              href="#contact"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full font-semibold text-black"
-            >
-              Hire Me
-            </motion.a>
-          </div>
+              {item}
+            </a>
+          ))}
+
+          <a
+            href="#contact"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="mt-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 px-5 py-3 text-center font-bold text-black"
+          >
+            Hire Me
+          </a>
         </div>
-      </motion.nav>
+      </motion.div>
+    )}
+  </AnimatePresence>
+</motion.nav>
 
       {/* ═══════════════════════════════════════════════════════════════════
           HERO SECTION
       ═══════════════════════════════════════════════════════════════════ */}
       <section id="hero" className="min-h-screen flex items-center justify-center px-6 pt-20 relative">
-  <AnimatePresence>
-    {showBeerAchievement && (
-      <motion.div
-        initial={{ opacity: 0, y: -40, scale: 0.9 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -40, scale: 0.9 }}
-        transition={{ type: 'spring', stiffness: 180 }}
-        className="fixed top-24 left-1/2 -translate-x-1/2 z-[90] rounded-xl bg-yellow-400 px-5 sm:px-8 py-4 text-black font-black text-sm sm:text-xl shadow-[0_0_45px_rgba(250,204,21,0.55)]"
-      >
-        🏆 Achievement Unlocked: 🥴 Absolutely Wasted!
-      </motion.div>
-    )}
-  </AnimatePresence>
+        <AnimatePresence>
+          {showBeerAchievement && (
+            <motion.div
+              initial={{ opacity: 0, y: -40, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -40, scale: 0.9 }}
+              transition={{ type: 'spring', stiffness: 180 }}
+              className="fixed top-24 left-1/2 -translate-x-1/2 z-[90] rounded-xl bg-yellow-400 px-5 sm:px-8 py-4 text-black font-black text-sm sm:text-xl shadow-[0_0_45px_rgba(250,204,21,0.55)]"
+            >
+              🏆 Achievement Unlocked: 🥴 Absolutely Wasted!
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-  <motion.div
-    initial={{ opacity: 0, y: 50 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 1 }}
-    className="max-w-6xl z-10 w-full"
-  >
-    <motion.div
-      initial={{ opacity: 0, x: -50 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.2 }}
-      className="text-green-400 font-mono mb-4 flex items-center gap-2"
-    >
-      <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
-        <Star size={20} />
-      </motion.div>
-      Hi, my name is
-    </motion.div>
-
-    <motion.h1
-      className={`text-4xl md:text-9xl font-black mb-6 ${themeClass({
-        dark: 'from-white via-green-300 to-emerald-500',
-        light: 'from-zinc-950 via-green-600 to-emerald-600',
-      })} bg-gradient-to-r bg-clip-text text-transparent leading-[0.95]`}
-      initial={{ opacity: 0, scale: 0.5 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 0.3, type: 'spring' }}
-    >
-      Deepender <br />
-      Choudhary
-    </motion.h1>
-
-    <motion.h2
-      className={`text-3xl md:text-5xl font-bold ${themeClass({
-        dark: 'text-slate-400',
-        light: 'text-zinc-700',
-      })} mb-8 leading-tight`}
-      initial={{ opacity: 0, x: -50 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.5 }}
-    >
-      I work across{' '}
-      <span className="text-green-400">operations</span>, technology, and business execution.
-    </motion.h2>
-
-
-    <motion.div
-      className="flex flex-col sm:flex-row gap-5 mb-12"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.9 }}
-    >
-      <motion.a
-        href="#projects"
-        whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(34, 197, 94, 0.5)' }}
-        whileTap={{ scale: 0.95 }}
-        className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl font-bold text-lg flex items-center justify-center gap-2 group text-black"
-      >
-        See My Work
-        <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-      </motion.a>
-
-      <motion.a
-        href={RESUME_DOWNLOAD_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="px-8 py-4 border-2 border-green-400 rounded-xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-green-400/10 transition-colors"
-      >
-        <Download size={20} />
-        Download Resume
-      </motion.a>
-    </motion.div>
-
-    {/* Stats directly below buttons */}
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 1.05 }}
-      className="grid grid-cols-2 md:grid-cols-4 gap-5 max-w-5xl"
-    >
-      {[
-        { number: '3.5+', label: 'years across tech, support & operations' },
-        { number: '20+', label: 'pages and projects shipped' },
-        { number: 'Ops + Tech', label: 'bridging operations with technology' },
-      ].map((stat, i) => (
         <motion.div
-          key={i}
-          whileHover={{ y: -6, scale: 1.03 }}
-          className="rounded-2xl border border-green-500/30 bg-black/40 p-5 backdrop-blur-xl"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="max-w-6xl z-10 w-full"
         >
-          <div className="text-3xl md:text-5xl font-black text-white">
-            {stat.number}
-          </div>
-          <div className="mt-1 text-sm text-green-400">
-            {stat.label}
-          </div>
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-green-400 font-mono mb-4 flex items-center gap-2"
+          >
+            <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
+              <Star size={20} />
+            </motion.div>
+            Hi, my name is
+          </motion.div>
+
+          <motion.h1
+            className={`text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black mb-6 ${themeClass({
+              dark: 'from-white via-green-300 to-emerald-500',
+              light: 'from-zinc-950 via-green-600 to-emerald-600',
+            })} bg-gradient-to-r bg-clip-text text-transparent leading-[0.95]`}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3, type: 'spring' }}
+          >
+            Deepender <br />
+            Choudhary
+          </motion.h1>
+
+          <motion.h2
+            className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold ${themeClass({
+              dark: 'text-slate-400',
+              light: 'text-zinc-700',
+            })} mb-8 leading-tight`}
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            I work across{' '}
+            <span className="text-green-400">operations</span>, technology, and business execution.
+          </motion.h2>
+
+
+          <motion.div
+            className="flex flex-col sm:flex-row gap-5 mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+          >
+            <motion.a
+              href="#projects"
+              whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(34, 197, 94, 0.5)' }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl font-bold text-lg flex items-center justify-center gap-2 group text-black"
+            >
+              See My Work
+              <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+            </motion.a>
+
+            <motion.a
+              href={RESUME_DOWNLOAD_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-4 border-2 border-green-400 rounded-xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-green-400/10 transition-colors"
+            >
+              <Download size={20} />
+              Download Resume
+            </motion.a>
+          </motion.div>
+
+          {/* Stats directly below buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.05 }}
+            className="grid grid-cols-2 md:grid-cols-4 gap-5 max-w-5xl"
+          >
+            {[
+              { number: '3.5+', label: 'years across tech, support & operations' },
+              { number: '20+', label: 'pages and projects shipped' },
+              { number: 'Ops + Tech', label: 'bridging operations with technology' },
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ y: -6, scale: 1.03 }}
+                className="rounded-2xl border border-green-500/30 bg-black/40 p-5 backdrop-blur-xl"
+              >
+                <div className="text-3xl md:text-5xl font-black text-white">
+                  {stat.number}
+                </div>
+                <div className="mt-1 text-sm text-green-400">
+                  {stat.label}
+                </div>
+              </motion.div>
+            ))}
+
+            <motion.button
+              type="button"
+              onClick={handleBeerClick}
+              whileTap={{ scale: 0.92 }}
+              whileHover={{ y: -6, scale: 1.03 }}
+              className="text-left rounded-2xl border border-green-500/30 bg-black/40 p-5 backdrop-blur-xl group"
+            >
+              <div className="text-3xl md:text-5xl font-black text-white">
+                {beerCount}
+                <span className="ml-1 text-green-400">🍺</span>
+              </div>
+              <div className="mt-1 text-sm text-slate-400 group-hover:text-green-400 transition-colors">
+                beers consumed — click carefully
+              </div>
+            </motion.button>
+          </motion.div>
+
+          <motion.div className="flex gap-6 mt-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.15 }}>
+            {[
+              { Icon: FaLinkedin, href: 'https://www.linkedin.com/in/deepender-choudhary-337958248/' },
+              { Icon: Mail, href: 'mailto:deependerchoudhary2003@gmail.com' },
+            ].map(({ Icon, href }, i) => (
+              <motion.a
+                key={i}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.2, rotate: 5 }}
+                className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} hover:text-green-400 transition-colors`}
+              >
+                <Icon size={28} />
+              </motion.a>
+            ))}
+          </motion.div>
         </motion.div>
-      ))}
 
-      <motion.button
-        type="button"
-        onClick={handleBeerClick}
-        whileTap={{ scale: 0.92 }}
-        whileHover={{ y: -6, scale: 1.03 }}
-        className="text-left rounded-2xl border border-green-500/30 bg-black/40 p-5 backdrop-blur-xl group"
-      >
-        <div className="text-3xl md:text-5xl font-black text-white">
-          {beerCount}
-          <span className="ml-1 text-green-400">🍺</span>
-        </div>
-        <div className="mt-1 text-sm text-slate-400 group-hover:text-green-400 transition-colors">
-          beers consumed — click carefully
-        </div>
-      </motion.button>
-    </motion.div>
-
-    <motion.div className="flex gap-6 mt-10" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.15 }}>
-      {[
-        { Icon: FaLinkedin, href: 'https://www.linkedin.com/in/deepender-choudhary-337958248/' },
-        { Icon: Mail, href: 'mailto:deependerchoudhary2003@gmail.com' },
-      ].map(({ Icon, href }, i) => (
-        <motion.a
-          key={i}
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.2, rotate: 5 }}
-          className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} hover:text-green-400 transition-colors`}
+        <motion.div
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:block"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
         >
-          <Icon size={28} />
-        </motion.a>
-      ))}
-    </motion.div>
-  </motion.div>
-
-  <motion.div
-    className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden md:block"
-    animate={{ y: [0, 10, 0] }}
-    transition={{ duration: 2, repeat: Infinity }}
-  >
-    <ChevronDown className="text-green-400" size={40} />
-  </motion.div>
-</section>
+          <ChevronDown className="text-green-400" size={40} />
+        </motion.div>
+      </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
           ABOUT / STORY SECTION
       ═══════════════════════════════════════════════════════════════════ */}
       <section id="about" className="min-h-screen px-4 sm:px-6 py-20 sm:py-32 relative">
-  <div className="max-w-6xl mx-auto">
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: false, amount: 0.25 }}
-      transition={{ duration: 0.8 }}
-      className="mb-12 sm:mb-16"
-    >
-      <h2 className="text-4xl sm:text-5xl md:text-6xl font-black flex items-center gap-4 sm:gap-6">
-        <span className="text-green-400 font-mono text-2xl sm:text-3xl">01.</span>
-        <span className="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
-          My Story
-        </span>
-        <div className="flex-1 h-px bg-gradient-to-r from-green-400/50 to-transparent" />
-      </h2>
-    </motion.div>
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.25 }}
+            transition={{ duration: 0.8 }}
+            className="mb-12 sm:mb-16"
+          >
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black flex items-center gap-4 sm:gap-6">
+              <span className="text-green-400 font-mono text-2xl sm:text-3xl">01.</span>
+              <span className="bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
+                My Story
+              </span>
+              <div className="flex-1 h-px bg-gradient-to-r from-green-400/50 to-transparent" />
+            </h2>
+          </motion.div>
 
-    <div className="grid lg:grid-cols-[1fr_0.85fr] gap-10 lg:gap-16 items-start">
-      <motion.div
-        initial={{ opacity: 0, x: -40 }}
-        whileInView={{ opacity: 1, x: 0 }}
-        viewport={{ once: false, amount: 0.25 }}
-        className={`space-y-6 text-base sm:text-lg leading-relaxed ${themeClass({
-          dark: 'text-slate-300',
-          light: 'text-zinc-700',
-        })}`}
-      >
-        <h3 className="text-2xl sm:text-3xl font-bold text-green-400 leading-tight">
-          I did not start with a perfect roadmap. I learned by moving, building, and correcting.
-        </h3>
-
-        <p>
-          My first serious phase was preparing for the Indian Army. That period gave me
-          discipline, structure, patience, and the habit of showing up consistently.
-        </p>
-
-        <p>
-          Later, I moved toward technology and startups. I started understanding how websites,
-          products, customers, and business operations connect in the real world.
-        </p>
-
-        <p>
-          At <span className="text-emerald-400 font-semibold">Super Minds</span>, I worked on real
-          projects, built pages, improved user flows, and saw how execution details affect
-          business outcomes.
-        </p>
-
-        <p>
-          At <span className="text-lime-400 font-semibold">Concentrix</span>, I worked in technical
-          support. It taught me how to stay calm, understand problems quickly, communicate
-          clearly, and document issues properly.
-        </p>
-
-        <p>
-          Now at <span className="text-green-400 font-semibold">IGT Solutions</span>, I work around
-          airline operations and business processes. I am learning how systems, teams,
-          workflows, and customer impact come together at scale.
-        </p>
-
-        <motion.div
-          className="p-6 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-2xl"
-          whileHover={{ scale: 1.02, boxShadow: '0 0 40px rgba(34, 197, 94, 0.25)' }}
-        >
-          <h4 className="text-2xl font-bold text-green-400 mb-3">How I work</h4>
-          <p>
-            I like practical work more than theory. Army preparation gave me discipline;
-            startups and operations taught me speed, ownership, and problem-solving.
-            I try to understand the problem, take action, and improve through real feedback.
-          </p>
-        </motion.div>
-
-        <p>
-          I have completed cloud fundamentals through{' '}
-          <span className="text-orange-400 font-semibold">AWS Cloud Practitioner</span> and{' '}
-          <span className="text-blue-400 font-semibold">Microsoft Azure Fundamentals</span>.
-          I use them as a base to understand modern systems, not as a shortcut to claim expertise.
-        </p>
-
-        <p className="text-xl font-bold text-green-400">
-          Long term, I want to build useful products and solve problems where execution matters.
-        </p>
-      </motion.div>
-
-      <div className="space-y-6">
+          <div className="grid lg:grid-cols-[1fr_0.85fr] gap-10 lg:gap-16 items-start">
             <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.25 }}
-          className="space-y-4"
-        >
-          <h3 className="text-2xl font-bold text-green-400">Certifications</h3>
-
-          {certifications.map((cert, i) => (
-            <motion.div
-              key={i}
-              className={`${themeClass({
-                dark: 'bg-black/50 border-green-500/30',
-                light: 'bg-white/80 border-green-500/30',
-              })} p-5 sm:p-6 border-2 rounded-xl`}
-              whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(34, 197, 94, 0.25)' }}
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: false, amount: 0.25 }}
+              className={`space-y-6 text-base sm:text-lg leading-relaxed ${themeClass({
+                dark: 'text-slate-300',
+                light: 'text-zinc-700',
+              })}`}
             >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div
-                    className={`${themeClass({
-                      dark: 'text-white',
-                      light: 'text-zinc-950',
-                    })} font-bold text-base sm:text-lg mb-1`}
-                  >
-                    {cert.name}
-                  </div>
-                  <div
-                    className={`${themeClass({
-                      dark: 'text-slate-400',
-                      light: 'text-zinc-600',
-                    })} text-sm`}
-                  >
-                    {cert.issuer} • {cert.date}
-                  </div>
-                  <div className="text-green-400 text-sm font-mono mt-1">
-                    {cert.credential}
-                  </div>
-                </div>
-                <Award className="text-green-400 shrink-0" size={28} />
-              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-green-400 leading-tight">
+                I did not start with a perfect roadmap. I learned by moving, building, and correcting.
+              </h3>
+
+              <p>
+                My first serious phase was preparing for the Indian Army. That period gave me
+                discipline, structure, patience, and the habit of showing up consistently.
+              </p>
+
+              <p>
+                Later, I moved toward technology and startups. I started understanding how websites,
+                products, customers, and business operations connect in the real world.
+              </p>
+
+              <p>
+                At <span className="text-emerald-400 font-semibold">Super Minds</span>, I worked on real
+                projects, built pages, improved user flows, and saw how execution details affect
+                business outcomes.
+              </p>
+
+              <p>
+                At <span className="text-lime-400 font-semibold">Concentrix</span>, I worked in technical
+                support. It taught me how to stay calm, understand problems quickly, communicate
+                clearly, and document issues properly.
+              </p>
+
+              <p>
+                Now at <span className="text-green-400 font-semibold">IGT Solutions</span>, I work around
+                airline operations and business processes. I am learning how systems, teams,
+                workflows, and customer impact come together at scale.
+              </p>
+
+              <motion.div
+                className="p-6 bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-2xl"
+                whileHover={{ scale: 1.02, boxShadow: '0 0 40px rgba(34, 197, 94, 0.25)' }}
+              >
+                <h4 className="text-2xl font-bold text-green-400 mb-3">How I work</h4>
+                <p>
+                  I like practical work more than theory. Army preparation gave me discipline;
+                  startups and operations taught me speed, ownership, and problem-solving.
+                  I try to understand the problem, take action, and improve through real feedback.
+                </p>
+              </motion.div>
+
+              <p>
+                I have completed cloud fundamentals through{' '}
+                <span className="text-orange-400 font-semibold">AWS Cloud Practitioner</span> and{' '}
+                <span className="text-blue-400 font-semibold">Microsoft Azure Fundamentals</span>.
+                I use them as a base to understand modern systems, not as a shortcut to claim expertise.
+              </p>
+
+              <p className="text-xl font-bold text-green-400">
+                Long term, I want to build useful products and solve problems where execution matters.
+              </p>
             </motion.div>
-          ))}
-        </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: false, amount: 0.25 }}
-          className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-2xl p-6"
-        >
-          <h3 className="text-xl font-bold mb-4 text-green-400">Quick Facts</h3>
+            <div className="space-y-6">
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: false, amount: 0.25 }}
+                className="space-y-4"
+              >
+                <h3 className="text-2xl font-bold text-green-400">Certifications</h3>
 
-          <div className="space-y-4">
-            {[
-              { icon: MapPin, label: 'Location', value: 'Gurugram, Haryana, India' },
-              { icon: GraduationCap, label: 'Education', value: 'BCA, Shri Khushal Das University' },
-              { icon: Target, label: 'Current Focus', value: 'Business analysis, operations, cloud fundamentals, and product thinking' },
-            ].map((fact, i) => (
-              <motion.div key={i} className="flex items-start gap-3" whileHover={{ x: 5 }}>
-                <fact.icon className="text-green-400 shrink-0 mt-1" size={20} />
-                <div>
-                  <div
+                {certifications.map((cert, i) => (
+                  <motion.div
+                    key={i}
                     className={`${themeClass({
-                      dark: 'text-white',
-                      light: 'text-zinc-950',
-                    })} font-semibold`}
+                      dark: 'bg-black/50 border-green-500/30',
+                      light: 'bg-white/80 border-green-500/30',
+                    })} p-5 sm:p-6 border-2 rounded-xl`}
+                    whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(34, 197, 94, 0.25)' }}
                   >
-                    {fact.label}
-                  </div>
-                  <div
-                    className={`${themeClass({
-                      dark: 'text-slate-400',
-                      light: 'text-zinc-600',
-                    })} text-sm`}
-                  >
-                    {fact.value}
-                  </div>
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <div
+                          className={`${themeClass({
+                            dark: 'text-white',
+                            light: 'text-zinc-950',
+                          })} font-bold text-base sm:text-lg mb-1`}
+                        >
+                          {cert.name}
+                        </div>
+                        <div
+                          className={`${themeClass({
+                            dark: 'text-slate-400',
+                            light: 'text-zinc-600',
+                          })} text-sm`}
+                        >
+                          {cert.issuer} • {cert.date}
+                        </div>
+                        <div className="text-green-400 text-sm font-mono mt-1">
+                          {cert.credential}
+                        </div>
+                      </div>
+                      <Award className="text-green-400 shrink-0" size={28} />
+                    </div>
+                  </motion.div>
+                ))}
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: false, amount: 0.25 }}
+                className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-2xl p-6"
+              >
+                <h3 className="text-xl font-bold mb-4 text-green-400">Quick Facts</h3>
+
+                <div className="space-y-4">
+                  {[
+                    { icon: MapPin, label: 'Location', value: 'Gurugram, Haryana, India' },
+                    { icon: GraduationCap, label: 'Education', value: 'BCA, Shri Khushal Das University' },
+                    { icon: Target, label: 'Current Focus', value: 'Business analysis, operations, cloud fundamentals, and product thinking' },
+                  ].map((fact, i) => (
+                    <motion.div key={i} className="flex items-start gap-3" whileHover={{ x: 5 }}>
+                      <fact.icon className="text-green-400 shrink-0 mt-1" size={20} />
+                      <div>
+                        <div
+                          className={`${themeClass({
+                            dark: 'text-white',
+                            light: 'text-zinc-950',
+                          })} font-semibold`}
+                        >
+                          {fact.label}
+                        </div>
+                        <div
+                          className={`${themeClass({
+                            dark: 'text-slate-400',
+                            light: 'text-zinc-600',
+                          })} text-sm`}
+                        >
+                          {fact.value}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </motion.div>
-            ))}
+            </div>
           </div>
-        </motion.div>
-      </div>
-    </div>
-  </div>
-</section>
+        </div>
+      </section>
 
       {/* ═══════════════════════════════════════════════════════════════════
           JOURNEY SECTION — Enhanced with career path visual + animated cards
       ═══════════════════════════════════════════════════════════════════ */}
-      <section id="journey" className={`min-h-screen px-4 sm:px-6 py-20 sm:py-32 relative ${themeClass({ dark: 'bg-slate-900/20', light: 'bg-emerald-50/40' })}`}>
+      <section id="journey" className={`min-h-screen px-4 sm:px-6 py-16 sm:py-24 relative ${themeClass({ dark: 'bg-slate-900/20', light: 'bg-emerald-50/40' })}`}>
         <div className="max-w-6xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.25 }}>
             <h2 className="text-4xl md:text-6xl font-black mb-6 flex items-center gap-4 sm:gap-6">
@@ -1059,61 +1134,91 @@ const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
           {/* ── Detailed Timeline Cards ─────────────────────────────────────── */}
           <div className="relative">
             {/* Timeline line */}
-            <div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-green-500 via-emerald-500 to-lime-500" />
-
-            <div className="space-y-16">
+            <div className="absolute left-3 sm:left-5 md:left-8 top-0 bottom-0 w-0.5 md:w-1 bg-gradient-to-b from-green-500 via-emerald-500 to-lime-500" />
+            <div className="space-y-8 sm:space-y-10">
               {timeline.map((item, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, x: -50 }}
+                  initial={{ opacity: 0, x: -30 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: false, amount: 0.25 }}
-                  transition={{ delay: i * 0.18, duration: 0.65, type: 'spring', stiffness: 80 }}
-                  className="relative pl-24"
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ delay: i * 0.12, duration: 0.45 }}
+                  className="relative pl-10 sm:pl-14 md:pl-20"
                 >
-                  {/* Timeline dot */}
                   <motion.div
-                    className="absolute left-5 top-6 w-8 h-8 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center border-4 border-black"
-                    whileHover={{ scale: 1.3, boxShadow: '0 0 30px rgba(34, 197, 94, 0.8)' }}
+                    className="absolute left-0 sm:left-2 md:left-5 top-5 w-6 h-6 md:w-8 md:h-8 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center border-4 border-black"
+                    whileHover={{ scale: 1.2 }}
                   >
-                    <item.icon size={16} />
+                    <item.icon size={14} />
                   </motion.div>
 
                   <motion.div
-                    className={`${themeClass({ dark: 'bg-black/50 border-green-500/20', light: 'bg-white/80 border-green-500/30' })} backdrop-blur-xl border rounded-2xl p-8 hover:border-green-500/50 transition-all`}
-                    whileHover={{ scale: 1.03, y: -6, boxShadow: '0 25px 70px rgba(34, 197, 94, 0.22)' }}
+                    className={`${themeClass({
+                      dark: 'bg-black/50 border-green-500/20',
+                      light: 'bg-white/80 border-green-500/30',
+                    })} backdrop-blur-xl border rounded-2xl p-4 sm:p-5 md:p-6 hover:border-green-500/50 transition-all`}
+                    whileHover={{
+                      y: -4,
+                      boxShadow: '0 12px 35px rgba(34, 197, 94, 0.14)',
+                    }}
                   >
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <div className="text-green-400 font-mono text-sm mb-2">{item.year}</div>
-                        <h3 className={`${themeClass({ dark: 'text-white', light: 'text-zinc-950' })} text-3xl font-bold mb-2`}>{item.title}</h3>
-                        <div className="text-emerald-400 font-semibold flex items-center gap-2">
-                          {item.company}
-                          <span className="text-slate-500">•</span>
-                          <span className={`${themeClass({ dark: 'text-slate-400', light: 'text-zinc-600' })} text-sm`}>{item.location}</span>
-                        </div>
+                    <div className="mb-3">
+                      <div className="text-green-400 font-mono text-xs sm:text-sm mb-1">
+                        {item.year}
+                      </div>
+
+                      <h3
+                        className={`${themeClass({
+                          dark: 'text-white',
+                          light: 'text-zinc-950',
+                        })} text-xl sm:text-2xl md:text-3xl font-bold mb-1`}
+                      >
+                        {item.title}
+                      </h3>
+
+                      <div className="text-emerald-400 font-semibold flex flex-wrap items-center gap-2 text-sm">
+                        {item.company}
+                        <span className="text-slate-500">•</span>
+                        <span
+                          className={`${themeClass({
+                            dark: 'text-slate-400',
+                            light: 'text-zinc-600',
+                          })}`}
+                        >
+                          {item.location}
+                        </span>
                       </div>
                     </div>
 
-                    <p className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} mb-6 leading-relaxed`}>{item.description}</p>
+                    <p
+                      className={`${themeClass({
+                        dark: 'text-slate-300',
+                        light: 'text-zinc-700',
+                      })} mb-4 text-sm sm:text-base leading-relaxed`}
+                    >
+                      {item.description}
+                    </p>
 
-                    {/* Achievements — 2-col grid on sm+ */}
-                    <div className="mb-6">
-                      <div className="text-sm font-bold text-green-400 mb-3 flex items-center gap-2">
+                    <div className="mb-4">
+                      <div className="text-xs sm:text-sm font-bold text-green-400 mb-3 flex items-center gap-2">
                         <Star size={14} /> Key Achievements
                       </div>
-                      <ul className="space-y-2 grid sm:grid-cols-2 sm:gap-x-4">
+
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {item.achievements.map((achievement, j) => (
                           <motion.li
                             key={j}
-                            className={`${themeClass({ dark: 'text-slate-300', light: 'text-zinc-700' })} text-sm flex items-start gap-2`}
-                            initial={{ opacity: 0, x: -20 }}
+                            className={`${themeClass({
+                              dark: 'text-slate-300',
+                              light: 'text-zinc-700',
+                            })} text-xs sm:text-sm flex items-start gap-2`}
+                            initial={{ opacity: 0, x: -12 }}
                             whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: false, amount: 0.25 }}
-                            transition={{ delay: j * 0.08 }}
+                            viewport={{ once: true, amount: 0.25 }}
+                            transition={{ delay: j * 0.05 }}
                           >
                             <ChevronRight className="text-green-400 shrink-0 mt-0.5" size={14} />
-                            {achievement}
+                            <span>{achievement}</span>
                           </motion.li>
                         ))}
                       </ul>
@@ -1123,8 +1228,8 @@ const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
                       {item.skills.map((skill, j) => (
                         <motion.span
                           key={j}
-                          className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-xs border border-green-500/30"
-                          whileHover={{ scale: 1.1, backgroundColor: 'rgba(34, 197, 94, 0.3)' }}
+                          className="px-2.5 py-1 bg-green-500/15 text-green-300 rounded-full text-[11px] sm:text-xs border border-green-500/25"
+                          whileHover={{ scale: 1.05 }}
                         >
                           {skill}
                         </motion.span>
