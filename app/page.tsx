@@ -282,7 +282,7 @@ const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   // ─── OTHER PROJECTS (NEW) ─────────────────────────────────────────────────
   const otherProjects = [
     {
-      title: '18 CandleLinks',
+      title: '18 Candleriggs - Hotel Booking Platform',
       company: 'Super Minds IT',
       description: 'Event & booking platform for hotels, restaurants, and live event ticketing with real-time availability.',
       tech: ['React', 'Next.js', 'REST API', 'Tailwind'],
@@ -715,9 +715,9 @@ const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       className="grid grid-cols-2 md:grid-cols-4 gap-5 max-w-5xl"
     >
       {[
-        { number: '3+', label: 'years across tech, support & operations' },
+        { number: '3.5+', label: 'years across tech, support & operations' },
         { number: '20+', label: 'pages and projects shipped' },
-        { number: '₹10L+', label: 'revenue influenced through project work' },
+        { number: 'Ops + Tech', label: 'bridging operations with technology' },
       ].map((stat, i) => (
         <motion.div
           key={i}
