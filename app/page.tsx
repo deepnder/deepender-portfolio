@@ -1719,7 +1719,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
 
             {/* Modal box */}
             <motion.div
-              className={`relative z-10 w-full max-w-3xl max-h-[290px] sm:max-h-[80vh] rounded-3xl border-2 overflow-hidden flex flex-col ${themeClass({
+              className={`relative z-10 w-full max-w-3xl max-h-[420px] sm:max-h-[80vh] rounded-3xl border-2 overflow-hidden flex flex-col ${themeClass({
                 dark: 'bg-black/90 border-green-500/40',
                 light: 'bg-white/95 border-green-500/40',
               })}`}
@@ -1770,7 +1770,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
   domain: 'E-Commerce · Requirements Engineering · BPMN · JIRA / Agile',
   color: 'from-teal-500 to-green-500',
   emoji: '🛒',
-  link: '/projects/project-3-customer-refund.html',
+  link: '/projects/project-2-customer-refund.html',
 },
                   {
   num: '03',
@@ -1779,7 +1779,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
   domain: 'Sales Analytics · SQL · Power BI · DAX · Pareto Analysis',
   color: 'from-orange-500 to-amber-500',
   emoji: '📦',
-  link: '/projects/project-5-amazon.html',
+  link: '/projects/project-3-amazon.html',
 },
                   {
   num: '04',
@@ -1788,7 +1788,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
   domain: 'Food Delivery · Zomato Dataset · Process Mapping · MoSCoW · SQL',
   color: 'from-pink-500 to-rose-500',
   emoji: '🍕',
-  link: '/projects/project-4-zomato.html',
+  link: '/projects/project-4-zomato-refund.html',
 },
                                  
                   {
@@ -1798,7 +1798,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
   domain: 'BFSI · Credit Risk · UCI Dataset · SQL · Risk Register · RACI',
   color: 'from-yellow-400 to-orange-500',
   emoji: '🏦',
-  link: '/projects/project-5-hdfc.html',
+  link: '/projects/project-5-hdfc-credit.html',
 },
                 ].map((project, i) => (
                   <motion.div

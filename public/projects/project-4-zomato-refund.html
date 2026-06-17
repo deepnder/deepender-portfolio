@@ -1,0 +1,3360 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Project 4 — Zomato Refund & Delivery Failure Analysis | Deepender
+      Choudhary
+    </title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --navy: #0b1f3a;
+        --blue: #1352a2;
+        --blue-lt: #e8f0fc;
+        --teal: #0d7a6e;
+        --teal-lt: #e3f5f3;
+        --amber: #b45309;
+        --amber-lt: #fef3cd;
+        --red: #b91c1c;
+        --red-lt: #fef2f2;
+        --ink: #111827;
+        --body: #374151;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --surface: #f9fafb;
+        --white: #ffffff;
+        --green: #166534;
+        --green-lt: #dcfce7;
+        --orange: #c2410c;
+        --orange-lt: #fff7ed;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #f3f4f6;
+        color: var(--ink);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      /* NAV */
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        padding: 0 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
+      .nav-brand {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--navy);
+        text-decoration: none;
+        letter-spacing: -0.3px;
+      }
+      .nav-links {
+        display: flex;
+        gap: 28px;
+        list-style: none;
+      }
+      .nav-links a {
+        font-size: 13px;
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .nav-links a:hover {
+        color: var(--blue);
+      }
+      .nav-badge {
+        font-size: 12px;
+        font-weight: 500;
+        background: var(--orange-lt);
+        color: var(--orange);
+        padding: 5px 14px;
+        border-radius: 20px;
+      }
+
+      /* LAYOUT */
+      .page-wrap {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 24px 80px;
+      }
+
+      /* HERO */
+      .hero {
+        padding: 56px 0 40px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 40px;
+      }
+      .eyebrow {
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--orange);
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .eyebrow::before {
+        content: "";
+        display: block;
+        width: 24px;
+        height: 2px;
+        background: var(--orange);
+      }
+      .hero h1 {
+        font-size: 38px;
+        font-weight: 600;
+        color: var(--navy);
+        line-height: 1.15;
+        letter-spacing: -0.8px;
+        margin-bottom: 16px;
+        max-width: 680px;
+      }
+      .hero-sub {
+        font-size: 16px;
+        color: var(--body);
+        line-height: 1.7;
+        max-width: 640px;
+        margin-bottom: 28px;
+      }
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 36px;
+      }
+      .tag {
+        font-size: 12px;
+        font-weight: 500;
+        padding: 5px 12px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        color: var(--body);
+        background: var(--white);
+      }
+      .tag.blue {
+        background: var(--blue-lt);
+        color: var(--blue);
+        border-color: #bfdbfe;
+      }
+      .tag.teal {
+        background: var(--teal-lt);
+        color: var(--teal);
+        border-color: #99e6de;
+      }
+      .tag.amber {
+        background: var(--amber-lt);
+        color: var(--amber);
+        border-color: #fde68a;
+      }
+      .tag.orange {
+        background: var(--orange-lt);
+        color: var(--orange);
+        border-color: #fed7aa;
+      }
+
+      /* METRICS */
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        margin-bottom: 40px;
+      }
+      .metric {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px 16px;
+        text-align: center;
+      }
+      .metric-val {
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--navy);
+        display: block;
+        letter-spacing: -0.5px;
+        line-height: 1;
+        margin-bottom: 6px;
+      }
+      .metric-label {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+      .metric.highlight {
+        border-color: #fed7aa;
+        background: var(--orange-lt);
+      }
+      .metric.highlight .metric-val {
+        color: var(--orange);
+      }
+      .metric.blue-hi {
+        border-color: #bfdbfe;
+        background: var(--blue-lt);
+      }
+      .metric.blue-hi .metric-val {
+        color: var(--blue);
+      }
+
+      /* SECTION */
+      .section {
+        margin-bottom: 48px;
+      }
+      .section-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      .section-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      .si-blue {
+        background: var(--blue-lt);
+        color: var(--blue);
+      }
+      .si-teal {
+        background: var(--teal-lt);
+        color: var(--teal);
+      }
+      .si-amber {
+        background: var(--amber-lt);
+        color: var(--amber);
+      }
+      .si-green {
+        background: var(--green-lt);
+        color: var(--green);
+      }
+      .si-red {
+        background: var(--red-lt);
+        color: var(--red);
+      }
+      .si-orange {
+        background: var(--orange-lt);
+        color: var(--orange);
+      }
+      .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--navy);
+        letter-spacing: -0.3px;
+      }
+      .section-title span {
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--muted);
+        margin-left: 6px;
+        letter-spacing: 0;
+      }
+
+      /* CARDS */
+      .card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 16px;
+      }
+      .card-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      .card-label.blue {
+        color: var(--blue);
+      }
+      .card-label.teal {
+        color: var(--teal);
+      }
+      .card-label.amber {
+        color: var(--amber);
+      }
+      .card-label.red {
+        color: var(--red);
+      }
+      .card-label.green {
+        color: var(--green);
+      }
+      .card-label.orange {
+        color: var(--orange);
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      .three-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      /* PROBLEM BOX */
+      .problem-box {
+        background: var(--orange-lt);
+        border: 1px solid #fed7aa;
+        border-left: 4px solid var(--orange);
+        border-radius: 8px;
+        padding: 20px 24px;
+        font-size: 15px;
+        color: var(--navy);
+        line-height: 1.7;
+        margin-bottom: 16px;
+      }
+
+      /* BULLET LIST */
+      .bullet-list {
+        list-style: none;
+      }
+      .bullet-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 7px 0;
+        font-size: 14px;
+        color: var(--body);
+        line-height: 1.5;
+        border-bottom: 1px solid var(--surface);
+      }
+      .bullet-list li:last-child {
+        border-bottom: none;
+      }
+      .bullet-list li::before {
+        content: "→";
+        color: var(--orange);
+        font-weight: 600;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* TABLES */
+      .proj-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      .proj-table th {
+        background: var(--navy);
+        color: var(--white);
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 500;
+        font-size: 12px;
+        letter-spacing: 0.04em;
+      }
+      .proj-table th:first-child {
+        border-radius: 8px 0 0 0;
+      }
+      .proj-table th:last-child {
+        border-radius: 0 8px 0 0;
+      }
+      .proj-table td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        color: var(--body);
+        vertical-align: top;
+        line-height: 1.5;
+      }
+      .proj-table tr:last-child td {
+        border-bottom: none;
+      }
+      .proj-table tr:nth-child(even) td {
+        background: var(--surface);
+      }
+      .proj-table td:first-child {
+        font-weight: 500;
+        color: var(--navy);
+      }
+
+      .code-pill {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        background: var(--navy);
+        color: #7dd3fc;
+        padding: 2px 7px;
+        border-radius: 4px;
+        display: inline-block;
+      }
+      .badge {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 8px;
+        border-radius: 4px;
+        display: inline-block;
+      }
+      .badge-blue {
+        background: var(--blue-lt);
+        color: var(--blue);
+      }
+      .badge-teal {
+        background: var(--teal-lt);
+        color: var(--teal);
+      }
+      .badge-amber {
+        background: var(--amber-lt);
+        color: var(--amber);
+      }
+      .badge-red {
+        background: var(--red-lt);
+        color: var(--red);
+      }
+      .badge-green {
+        background: var(--green-lt);
+        color: var(--green);
+      }
+      .badge-orange {
+        background: var(--orange-lt);
+        color: var(--orange);
+      }
+
+      /* FLOW STEPS */
+      .flow-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        margin: 8px 0;
+      }
+      .flow-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 12px 0;
+        position: relative;
+      }
+      .flow-step:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        left: 14px;
+        top: 44px;
+        bottom: -12px;
+        width: 1px;
+        background: var(--border);
+      }
+      .flow-dot {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 600;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .fd-blue {
+        background: var(--blue-lt);
+        color: var(--blue);
+      }
+      .fd-red {
+        background: var(--red-lt);
+        color: var(--red);
+        border: 2px solid #fca5a5;
+      }
+      .fd-teal {
+        background: var(--teal-lt);
+        color: var(--teal);
+      }
+      .fd-orange {
+        background: var(--orange-lt);
+        color: var(--orange);
+        border: 2px solid #fed7aa;
+      }
+      .flow-content {
+        flex: 1;
+      }
+      .flow-title {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--navy);
+      }
+      .flow-note {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .pain-badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 500;
+        background: var(--red-lt);
+        color: var(--red);
+        border: 1px solid #fca5a5;
+        border-radius: 4px;
+        padding: 1px 7px;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+      .fix-badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 500;
+        background: var(--green-lt);
+        color: var(--green);
+        border: 1px solid #86efac;
+        border-radius: 4px;
+        padding: 1px 7px;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+
+      /* USER STORY */
+      .story-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 20px;
+        margin-bottom: 12px;
+      }
+      .story-id {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--orange);
+        margin-bottom: 6px;
+      }
+      .story-text {
+        font-size: 14px;
+        color: var(--navy);
+        font-weight: 500;
+        margin-bottom: 10px;
+        line-height: 1.5;
+      }
+      .story-ac {
+        font-size: 13px;
+        color: var(--body);
+        background: var(--surface);
+        border-radius: 6px;
+        padding: 10px 12px;
+        line-height: 1.6;
+      }
+      .story-ac strong {
+        color: var(--teal);
+      }
+      .moscow-tag {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 3px;
+        margin-left: 8px;
+        vertical-align: middle;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .must {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .should {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .could {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+      .wont {
+        background: #f3f4f6;
+        color: #6b7280;
+      }
+
+      /* GAP TABLE */
+      .gap-row {
+        display: grid;
+        grid-template-columns: 1.4fr 1.6fr 1.6fr 0.8fr;
+        gap: 1px;
+        background: var(--border);
+        margin-bottom: 1px;
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .gap-row.header {
+        background: var(--navy);
+        border-radius: 8px 8px 0 0;
+      }
+      .gap-cell {
+        padding: 10px 14px;
+        font-size: 12.5px;
+        color: var(--body);
+        background: var(--white);
+        line-height: 1.4;
+      }
+      .gap-row.header .gap-cell {
+        background: var(--navy);
+        color: var(--white);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+      }
+      .gap-row:last-child {
+        margin-bottom: 0;
+        border-radius: 0 0 8px 8px;
+        overflow: hidden;
+      }
+
+      /* SQL SECTION */
+      .sql-block {
+        background: #0f172a;
+        border-radius: 10px;
+        padding: 20px 24px;
+        margin-bottom: 12px;
+        border: 1px solid #1e293b;
+        overflow-x: auto;
+      }
+      .sql-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748b;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      .sql-title {
+        font-size: 13px;
+        font-weight: 500;
+        color: #94a3b8;
+        margin-bottom: 10px;
+      }
+      pre {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12.5px;
+        line-height: 1.7;
+        color: #e2e8f0;
+        white-space: pre;
+      }
+      .kw {
+        color: #7dd3fc;
+      } /* keywords */
+      .fn {
+        color: #a78bfa;
+      } /* functions */
+      .str {
+        color: #86efac;
+      } /* strings/values */
+      .cm {
+        color: #475569;
+        font-style: italic;
+      } /* comments */
+      .num {
+        color: #fca5a5;
+      } /* numbers */
+
+      /* RTM */
+      .rtm-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      .rtm-table th {
+        background: var(--navy);
+        color: #fff;
+        padding: 9px 12px;
+        text-align: left;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+      }
+      .rtm-table td {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--border);
+        color: var(--body);
+        vertical-align: middle;
+      }
+      .rtm-table tr:nth-child(even) td {
+        background: var(--surface);
+      }
+
+      /* RATING BARS */
+      .rating-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--surface);
+      }
+      .rating-row:last-child {
+        border-bottom: none;
+      }
+      .rating-label {
+        font-size: 13px;
+        color: var(--body);
+        width: 200px;
+        flex-shrink: 0;
+      }
+      .rating-track {
+        flex: 1;
+        height: 6px;
+        background: var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .rating-fill {
+        height: 100%;
+        border-radius: 10px;
+      }
+      .rating-score {
+        font-size: 13px;
+        font-weight: 600;
+        width: 40px;
+        text-align: right;
+      }
+
+      /* DELIVERABLES GRID */
+      .del-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      .del-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px;
+        transition:
+          border-color 0.2s,
+          transform 0.2s;
+      }
+      .del-card:hover {
+        border-color: var(--orange);
+        transform: translateY(-2px);
+      }
+      .del-num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      .del-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 4px;
+        line-height: 1.3;
+      }
+      .del-tool {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .del-icon {
+        font-size: 20px;
+        margin-bottom: 8px;
+      }
+
+      /* AI GRID */
+      .ai-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      .ai-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px;
+      }
+      .ai-stage {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--orange);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .ai-tool {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--navy);
+        margin-bottom: 4px;
+      }
+      .ai-desc {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      /* CALLOUTS */
+      .callout {
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-bottom: 12px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+      }
+      .callout-icon {
+        font-size: 20px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .callout-title {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 4px;
+      }
+      .callout-text {
+        font-size: 13px;
+        line-height: 1.6;
+      }
+      .callout.recruiter {
+        background: var(--red-lt);
+        border: 1px solid #fca5a5;
+      }
+      .callout.recruiter .callout-title {
+        color: var(--red);
+      }
+      .callout.recruiter .callout-text {
+        color: #7f1d1d;
+      }
+      .callout.hm {
+        background: var(--amber-lt);
+        border: 1px solid #fde68a;
+      }
+      .callout.hm .callout-title {
+        color: var(--amber);
+      }
+      .callout.hm .callout-text {
+        color: #78350f;
+      }
+      .callout.senior {
+        background: var(--green-lt);
+        border: 1px solid #86efac;
+      }
+      .callout.senior .callout-title {
+        color: var(--green);
+      }
+      .callout.senior .callout-text {
+        color: #14532d;
+      }
+      .callout.diff {
+        background: var(--blue-lt);
+        border: 1px solid #bfdbfe;
+      }
+      .callout.diff .callout-title {
+        color: var(--blue);
+      }
+      .callout.diff .callout-text {
+        color: #1e3a8a;
+      }
+
+      /* PARETO */
+      .pareto-bar-wrap {
+        padding: 8px 0;
+      }
+      .pareto-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+      .pareto-label {
+        font-size: 12.5px;
+        color: var(--body);
+        width: 180px;
+        flex-shrink: 0;
+      }
+      .pareto-track {
+        flex: 1;
+        height: 22px;
+        background: var(--surface);
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative;
+      }
+      .pareto-fill {
+        height: 100%;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        padding-left: 8px;
+      }
+      .pareto-pct {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--white);
+      }
+      .pareto-count {
+        font-size: 12px;
+        color: var(--muted);
+        width: 80px;
+        text-align: right;
+      }
+
+      /* FIVE WHYS CHAIN */
+      .why-chain {
+        counter-reset: why;
+      }
+      .why-step {
+        display: flex;
+        gap: 14px;
+        padding: 12px 0;
+        border-bottom: 1px dashed var(--border);
+      }
+      .why-step:last-child {
+        border-bottom: none;
+      }
+      .why-num {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        background: var(--orange-lt);
+        color: var(--orange);
+        font-size: 11px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .why-num.rc {
+        background: var(--green-lt);
+        color: var(--green);
+      }
+      .why-q {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--navy);
+        margin-bottom: 3px;
+      }
+      .why-a {
+        font-size: 12.5px;
+        color: var(--muted);
+      }
+
+      /* DATASET BOX */
+      .dataset-info {
+        background: var(--navy);
+        border-radius: 12px;
+        padding: 24px;
+        color: rgba(255, 255, 255, 0.85);
+        margin-bottom: 16px;
+      }
+      .dataset-info h4 {
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+      .dataset-cols {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+      .dataset-col {
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 6px;
+        padding: 10px 12px;
+      }
+      .dataset-col-name {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: #7dd3fc;
+        margin-bottom: 3px;
+      }
+      .dataset-col-type {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      /* JIRA BOARD */
+      .jira-board {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 12px;
+      }
+      .jira-col {
+        background: var(--surface);
+        border-radius: 10px;
+        padding: 14px;
+      }
+      .jira-col-head {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .jira-col-count {
+        background: var(--border);
+        color: var(--muted);
+        font-size: 10px;
+        padding: 1px 6px;
+        border-radius: 10px;
+      }
+      .jira-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+      }
+      .jira-card:last-child {
+        margin-bottom: 0;
+      }
+      .jira-type {
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+      .jira-text {
+        font-size: 12px;
+        color: var(--navy);
+        line-height: 1.4;
+        font-weight: 500;
+      }
+      .jira-id {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--muted);
+        margin-top: 5px;
+      }
+      .type-epic {
+        color: var(--blue);
+      }
+      .type-story {
+        color: var(--teal);
+      }
+      .type-task {
+        color: var(--amber);
+      }
+      .type-bug {
+        color: var(--red);
+      }
+
+      /* DASHBOARD WIREFRAME */
+      .dashboard-frame {
+        background: var(--navy);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .dash-title-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+      }
+      .dash-title {
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .dash-sub {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 11px;
+      }
+      .dash-kpi-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .dash-kpi {
+        background: rgba(255, 255, 255, 0.07);
+        border-radius: 8px;
+        padding: 14px;
+        text-align: center;
+      }
+      .dash-kpi-val {
+        font-size: 22px;
+        font-weight: 600;
+        color: #fff;
+        letter-spacing: -0.5px;
+      }
+      .dash-kpi-lab {
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 3px;
+      }
+      .dash-kpi-chg {
+        font-size: 10px;
+        margin-top: 4px;
+      }
+      .chg-red {
+        color: #fca5a5;
+      }
+      .chg-green {
+        color: #86efac;
+      }
+      .dash-chart-row {
+        display: grid;
+        grid-template-columns: 1.6fr 1fr;
+        gap: 10px;
+      }
+      .dash-chart {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 14px;
+      }
+      .dash-chart-title {
+        font-size: 11px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.6);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 12px;
+      }
+      /* Mini bar chart */
+      .mini-bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+        height: 70px;
+      }
+      .mini-bar {
+        flex: 1;
+        border-radius: 3px 3px 0 0;
+      }
+      .mini-bar-lab {
+        font-size: 9px;
+        color: rgba(255, 255, 255, 0.4);
+        margin-top: 4px;
+        text-align: center;
+      }
+      .mini-bars-wrap {
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+        height: 70px;
+      }
+      /* Mini donut placeholder */
+      .donut-placeholder {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        border: 12px solid rgba(255, 255, 255, 0.1);
+        border-top-color: #fb923c;
+        border-right-color: #60a5fa;
+        margin: 0 auto 8px;
+      }
+      .donut-legend {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .donut-leg-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.5);
+      }
+      .donut-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 2px;
+        flex-shrink: 0;
+      }
+
+      footer {
+        background: var(--navy);
+        color: rgba(255, 255, 255, 0.6);
+        text-align: center;
+        padding: 32px 24px;
+        font-size: 13px;
+        margin-top: 60px;
+      }
+      footer strong {
+        color: var(--white);
+      }
+
+      @media (max-width: 680px) {
+        .metrics-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .two-col,
+        .three-col,
+        .del-grid,
+        .ai-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero h1 {
+          font-size: 26px;
+        }
+        .gap-row {
+          grid-template-columns: 1fr 1fr;
+        }
+        .jira-board {
+          grid-template-columns: 1fr 1fr;
+        }
+        .dataset-cols {
+          grid-template-columns: 1fr 1fr;
+        }
+        .dash-kpi-row {
+          grid-template-columns: 1fr 1fr;
+        }
+        .dash-chart-row {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAV -->
+    <nav>
+      <a class="nav-brand" href="#">DC</a>
+      <ul class="nav-links">
+        <li><a href="#">About</a></li>
+        <li><a href="#">Projects</a></li>
+        <li><a href="#">Skills</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <span class="nav-badge">🍕 Project 4 of 5</span>
+    </nav>
+
+    <div class="page-wrap">
+      <!-- HERO -->
+      <section class="hero">
+        <div class="eyebrow">
+          Business Analyst Portfolio — E-Commerce Domain
+        </div>
+        <h1>Zomato Refund &amp; Delivery<br />Failure Process Analysis</h1>
+        <p class="hero-sub">
+          A full BA case study using Zomato's publicly available order dataset —
+          tracing a spike in refund-related support tickets to a root cause of
+          missing real-time order status visibility. Includes 5-Whys RCA,
+          As-Is/To-Be process mapping, MoSCoW-prioritised backlog, 15 SQL
+          queries, mock Jira board, and a business intelligence dashboard.
+          Demonstrates the complete BA lifecycle applied to India's largest
+          food-delivery platform.
+        </p>
+        <div class="tag-row">
+          <span class="tag orange">E-Commerce / Food Delivery</span>
+          <span class="tag orange">Zomato Public Dataset</span>
+          <span class="tag blue">Requirements Engineering</span>
+          <span class="tag blue">SQL Analysis</span>
+          <span class="tag teal">Root Cause Analysis</span>
+          <span class="tag teal">Process Mapping</span>
+          <span class="tag amber">MoSCoW Prioritisation</span>
+          <span class="tag amber">Power BI / Excel</span>
+          <span class="tag">Draw.io</span>
+          <span class="tag">Jira (Simulated)</span>
+        </div>
+      </section>
+
+      <!-- METRICS -->
+      <section class="section">
+        <div class="metrics-grid">
+          <div class="metric highlight">
+            <span class="metric-val">34%</span>
+            <span class="metric-label"
+              >Refund tickets traced to missing order-status visibility (root
+              cause)</span
+            >
+          </div>
+          <div class="metric">
+            <span class="metric-val">15</span>
+            <span class="metric-label"
+              >SQL queries written against simulated Zomato order dataset</span
+            >
+          </div>
+          <div class="metric blue-hi">
+            <span class="metric-val">10</span>
+            <span class="metric-label"
+              >User stories with full acceptance criteria and MoSCoW
+              priority</span
+            >
+          </div>
+          <div class="metric">
+            <span class="metric-val">6</span>
+            <span class="metric-label"
+              >Process gaps identified across refund handling workflow</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- DATASET -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-orange">📦</div>
+          <div class="section-title">
+            Dataset Overview <span>Zomato Public Order Dataset — Kaggle</span>
+          </div>
+        </div>
+        <div class="dataset-info">
+          <h4>
+            Dataset: Zomato Order &amp; Restaurant Data (Kaggle) — 10,000+
+            records simulated for BA analysis
+          </h4>
+          <div class="dataset-cols">
+            <div class="dataset-col">
+              <div class="dataset-col-name">order_id</div>
+              <div class="dataset-col-type">VARCHAR — Primary Key</div>
+            </div>
+            <div class="dataset-col">
+              <div class="dataset-col-name">customer_id</div>
+              <div class="dataset-col-type">VARCHAR — FK to customers</div>
+            </div>
+            <div class="dataset-col">
+              <div class="dataset-col-name">restaurant_id</div>
+              <div class="dataset-col-name"></div>
+              <div class="dataset-col-type">VARCHAR — FK to restaurants</div>
+            </div>
+            <div class="dataset-col">
+              <div class="dataset-col-name">order_date</div>
+              <div class="dataset-col-type">DATE — Order placed timestamp</div>
+            </div>
+            <div class="dataset-col">
+              <div class="dataset-col-name">delivery_time_mins</div>
+              <div class="dataset-col-type">INT — Actual delivery duration</div>
+            </div>
+            <div class="dataset-col">
+              <div class="dataset-col-name">promised_delivery_mins</div>
+              <div class="dataset-col-type">INT — ETA shown to customer</div>
+            </div>
+            <div class="dataset-col">
+              <div class="dataset-col-name">order_value</div>
+              <div class="dataset-col-type">DECIMAL — INR order amount</div>
+            </div>
+            <div class="dataset-col">
+              <div class="dataset-col-name">order_status</div>
+              <div class="dataset-col-type">
+                ENUM — Delivered/Cancelled/Refund
+              </div>
+            </div>
+            <div class="dataset-col">
+              <div class="dataset-col-name">refund_raised</div>
+              <div class="dataset-col-type">BOOLEAN — Refund request flag</div>
+            </div>
+            <div class="dataset-col">
+              <div class="dataset-col-name">refund_reason</div>
+              <div class="dataset-col-type">
+                VARCHAR — Category of complaint
+              </div>
+            </div>
+            <div class="dataset-col">
+              <div class="dataset-col-name">refund_resolution_days</div>
+              <div class="dataset-col-type">INT — Days to close refund</div>
+            </div>
+            <div class="dataset-col">
+              <div class="dataset-col-name">support_ticket_raised</div>
+              <div class="dataset-col-type">BOOLEAN — Customer escalation</div>
+            </div>
+            <div class="dataset-col">
+              <div class="dataset-col-name">csat_score</div>
+              <div class="dataset-col-type">INT (1–5) — Post-order rating</div>
+            </div>
+            <div class="dataset-col">
+              <div class="dataset-col-name">city</div>
+              <div class="dataset-col-type">VARCHAR — Delivery city</div>
+            </div>
+            <div class="dataset-col">
+              <div class="dataset-col-name">cuisine_type</div>
+              <div class="dataset-col-type">VARCHAR — Food category</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label orange">
+            Dataset Source &amp; Simulation Note
+          </div>
+          <p style="font-size: 13.5px; color: var(--body); line-height: 1.7">
+            The base dataset structure references the publicly available
+            <strong>Zomato Restaurants Dataset</strong> on Kaggle (originally
+            released for restaurant ratings analysis). For this BA project, the
+            dataset was extended with order-lifecycle and refund columns —
+            simulated using realistic distributions derived from Zomato's
+            published operational reports and industry benchmarks. The
+            simulation was scripted in Python using the Faker and Pandas
+            libraries, producing 10,000 order records across 12 Indian cities.
+            All findings below are based on this extended simulation, clearly
+            labelled as such.
+          </p>
+        </div>
+      </section>
+
+      <!-- PROBLEM STATEMENT -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-red">⚡</div>
+          <div class="section-title">Business Problem &amp; Objective</div>
+        </div>
+        <div class="problem-box">
+          Zomato's customer support team has seen a
+          <strong
+            >27% quarter-on-quarter increase in refund-related support
+            tickets</strong
+          >. Manual investigation revealed that a significant volume of tickets
+          are raised not because the order failed, but because customers could
+          not see real-time delivery status updates — leading them to assume the
+          order was lost and raise a refund request. This creates unnecessary
+          refund processing overhead, increases average resolution time, and
+          drives down CSAT scores — costing an estimated
+          <strong>₹3–5 crore annually</strong> in preventable refund payouts and
+          support agent time.
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-label blue">Project Objective</div>
+            <p style="font-size: 14px; color: var(--body); line-height: 1.6">
+              Conduct a full BA analysis of Zomato's refund and delivery failure
+              process — identify the root cause of unnecessary refund ticket
+              volume, document requirements for a visibility-first fix, and
+              produce a prioritised improvement backlog with measurable KPIs.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-label teal">Scope</div>
+            <p
+              style="
+                font-size: 13px;
+                color: var(--muted);
+                font-weight: 500;
+                margin-bottom: 6px;
+              "
+            >
+              In Scope
+            </p>
+            <ul class="bullet-list" style="margin-bottom: 10px">
+              <li>
+                Order placement → delivery → refund request → resolution
+                workflow
+              </li>
+              <li>Customer-facing tracking and notification touchpoints</li>
+              <li>Support ticket classification and refund reason analysis</li>
+            </ul>
+            <p
+              style="
+                font-size: 13px;
+                color: var(--muted);
+                font-weight: 500;
+                margin-bottom: 6px;
+              "
+            >
+              Out of Scope
+            </p>
+            <ul class="bullet-list">
+              <li>Restaurant partner onboarding and menu management</li>
+              <li>Payment gateway infrastructure changes</li>
+              <li>Delivery partner app features and incentive structures</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- STAKEHOLDER ANALYSIS -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-blue">👥</div>
+          <div class="section-title">Stakeholder Analysis</div>
+        </div>
+        <div class="card">
+          <table class="proj-table">
+            <thead>
+              <tr>
+                <th>Stakeholder</th>
+                <th>Role</th>
+                <th>Interest</th>
+                <th>Influence</th>
+                <th>Engagement Strategy</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>VP Customer Experience</td>
+                <td>Executive sponsor</td>
+                <td><span class="badge badge-red">High</span></td>
+                <td><span class="badge badge-red">High</span></td>
+                <td>Weekly status reports; approves BRD</td>
+              </tr>
+              <tr>
+                <td>Customer Support Manager</td>
+                <td>Process owner — ticket handling</td>
+                <td><span class="badge badge-red">High</span></td>
+                <td><span class="badge badge-orange">Medium</span></td>
+                <td>Primary requirements informant</td>
+              </tr>
+              <tr>
+                <td>Product Manager — Order Tracking</td>
+                <td>Owns tracking feature roadmap</td>
+                <td><span class="badge badge-red">High</span></td>
+                <td><span class="badge badge-red">High</span></td>
+                <td>Requirements sign-off stakeholder</td>
+              </tr>
+              <tr>
+                <td>Customer (End User)</td>
+                <td>Initiates refund/ticket</td>
+                <td><span class="badge badge-red">High</span></td>
+                <td><span class="badge badge-teal">Low</span></td>
+                <td>CSAT surveys; user research sessions</td>
+              </tr>
+              <tr>
+                <td>Finance / Refunds Team</td>
+                <td>Processes approved refunds</td>
+                <td><span class="badge badge-orange">Medium</span></td>
+                <td><span class="badge badge-orange">Medium</span></td>
+                <td>Consulted on SLA thresholds</td>
+              </tr>
+              <tr>
+                <td>Engineering Lead — Backend</td>
+                <td>Builds notification/API layer</td>
+                <td><span class="badge badge-orange">Medium</span></td>
+                <td><span class="badge badge-red">High</span></td>
+                <td>Technical feasibility review</td>
+              </tr>
+              <tr>
+                <td>Delivery Partner Network</td>
+                <td>Source of real-time location data</td>
+                <td><span class="badge badge-teal">Low</span></td>
+                <td><span class="badge badge-orange">Medium</span></td>
+                <td>Informed of scope changes</td>
+              </tr>
+              <tr>
+                <td>Legal / Compliance</td>
+                <td>Refund policy enforcement</td>
+                <td><span class="badge badge-teal">Low</span></td>
+                <td><span class="badge badge-orange">Medium</span></td>
+                <td>Consulted on refund eligibility rules</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ROOT CAUSE ANALYSIS — 5 WHYS -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-amber">🎯</div>
+          <div class="section-title">
+            Root Cause Analysis <span>5-Whys Method</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label red">
+            Problem Statement: Refund-related support tickets have increased 27%
+            QoQ despite no increase in failed deliveries
+          </div>
+          <div class="why-chain" style="margin-top: 12px">
+            <div class="why-step">
+              <div class="why-num">W1</div>
+              <div>
+                <div class="why-q">
+                  Why are customers raising refund tickets for orders that were
+                  actually delivered?
+                </div>
+                <div class="why-a">
+                  → Because customers could not see real-time delivery status
+                  and assumed the order was lost or cancelled.
+                </div>
+              </div>
+            </div>
+            <div class="why-step">
+              <div class="why-num">W2</div>
+              <div>
+                <div class="why-q">
+                  Why could customers not see real-time delivery status?
+                </div>
+                <div class="why-a">
+                  → Because the tracking screen shows only 3 static states
+                  (Order Placed → Preparing → Out for Delivery), with no live
+                  location or estimated arrival time updates.
+                </div>
+              </div>
+            </div>
+            <div class="why-step">
+              <div class="why-num">W3</div>
+              <div>
+                <div class="why-q">
+                  Why does the tracking screen only show static states?
+                </div>
+                <div class="why-a">
+                  → Because the live GPS tracking API for delivery partners was
+                  never integrated into the customer-facing tracking module — it
+                  feeds only the internal ops dashboard.
+                </div>
+              </div>
+            </div>
+            <div class="why-step">
+              <div class="why-num">W4</div>
+              <div>
+                <div class="why-q">
+                  Why was the GPS API not integrated into the customer tracking
+                  module?
+                </div>
+                <div class="why-a">
+                  → Because when the tracking feature was originally scoped,
+                  real-time customer visibility was classified as a "Phase 2"
+                  enhancement. Phase 2 was deprioritised after Phase 1 launch
+                  and never re-added to the roadmap.
+                </div>
+              </div>
+            </div>
+            <div class="why-step">
+              <div class="why-num rc">RC</div>
+              <div>
+                <div class="why-q" style="color: var(--green)">
+                  Root Cause: Incomplete original feature scope —
+                  customer-facing real-time tracking was deferred and never
+                  re-prioritised
+                </div>
+                <div class="why-a">
+                  Fix: Raise a formal requirements change request to integrate
+                  the delivery partner GPS API into the customer tracking
+                  module, with proactive push notifications at key order
+                  milestones. This single improvement is estimated to eliminate
+                  34% of current refund ticket volume.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- PARETO -->
+        <div class="card">
+          <div class="card-label orange">
+            Refund Reason Pareto Analysis — Top categories by ticket volume
+          </div>
+          <div class="pareto-bar-wrap">
+            <div class="pareto-row">
+              <div class="pareto-label">No tracking visibility</div>
+              <div class="pareto-track">
+                <div
+                  class="pareto-fill"
+                  style="width: 68%; background: #f97316"
+                >
+                  <span class="pareto-pct">34%</span>
+                </div>
+              </div>
+              <div class="pareto-count">3,400 tickets</div>
+            </div>
+            <div class="pareto-row">
+              <div class="pareto-label">Late delivery (&gt;20 min delay)</div>
+              <div class="pareto-track">
+                <div
+                  class="pareto-fill"
+                  style="width: 46%; background: #fb923c"
+                >
+                  <span class="pareto-pct">23%</span>
+                </div>
+              </div>
+              <div class="pareto-count">2,300 tickets</div>
+            </div>
+            <div class="pareto-row">
+              <div class="pareto-label">Wrong item delivered</div>
+              <div class="pareto-track">
+                <div
+                  class="pareto-fill"
+                  style="width: 32%; background: #fdba74"
+                >
+                  <span class="pareto-pct">16%</span>
+                </div>
+              </div>
+              <div class="pareto-count">1,600 tickets</div>
+            </div>
+            <div class="pareto-row">
+              <div class="pareto-label">Order quality issue</div>
+              <div class="pareto-track">
+                <div
+                  class="pareto-fill"
+                  style="width: 24%; background: #fed7aa"
+                >
+                  <span class="pareto-pct">12%</span>
+                </div>
+              </div>
+              <div class="pareto-count">1,200 tickets</div>
+            </div>
+            <div class="pareto-row">
+              <div class="pareto-label">Restaurant cancelled</div>
+              <div class="pareto-track">
+                <div
+                  class="pareto-fill"
+                  style="width: 18%; background: #e5e7eb"
+                >
+                  <span class="pareto-pct">9%</span>
+                </div>
+              </div>
+              <div class="pareto-count">900 tickets</div>
+            </div>
+            <div class="pareto-row">
+              <div class="pareto-label">Other / unclassified</div>
+              <div class="pareto-track">
+                <div
+                  class="pareto-fill"
+                  style="width: 12%; background: #e5e7eb"
+                >
+                  <span class="pareto-pct">6%</span>
+                </div>
+              </div>
+              <div class="pareto-count">600 tickets</div>
+            </div>
+            <p style="font-size: 12px; color: var(--muted); margin-top: 12px">
+              📊 <strong>Pareto Insight:</strong> The top 2 categories (no
+              tracking visibility + late delivery) account for 57% of all refund
+              tickets — and the top category alone (no tracking) is preventable
+              without any food quality or logistics change. This is the
+              highest-ROI fix available.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- AS-IS / TO-BE PROCESS -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-amber">🔄</div>
+          <div class="section-title">
+            Process Analysis <span>As-Is vs. To-Be</span>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-label red">
+              As-Is Process — Current Broken State
+            </div>
+            <div class="flow-wrap">
+              <div class="flow-step">
+                <div class="flow-dot fd-blue">1</div>
+                <div class="flow-content">
+                  <div class="flow-title">
+                    Customer places order on Zomato app
+                  </div>
+                  <div class="flow-note">
+                    Order confirmed — customer sees estimated delivery time
+                  </div>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="flow-dot fd-orange">2</div>
+                <div class="flow-content">
+                  <div class="flow-title">
+                    Tracking screen shows static status only
+                    <span class="pain-badge">⚠ Pain Point</span>
+                  </div>
+                  <div class="flow-note">
+                    No live map, no GPS location — just "Out for Delivery" with
+                    no ETA update
+                  </div>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="flow-dot fd-orange">3</div>
+                <div class="flow-content">
+                  <div class="flow-title">
+                    Customer waits beyond promised ETA
+                    <span class="pain-badge">⚠ Pain Point</span>
+                  </div>
+                  <div class="flow-note">
+                    No proactive delay notification sent — customer has zero
+                    visibility
+                  </div>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="flow-dot fd-red">4</div>
+                <div class="flow-content">
+                  <div class="flow-title">
+                    Customer contacts support / raises refund
+                    <span class="pain-badge">⚠ Pain Point</span>
+                  </div>
+                  <div class="flow-note">
+                    34% of these tickets are for orders still in transit —
+                    preventable escalation
+                  </div>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="flow-dot fd-red">5</div>
+                <div class="flow-content">
+                  <div class="flow-title">
+                    Agent manually investigates order status
+                    <span class="pain-badge">⚠ Pain Point</span>
+                  </div>
+                  <div class="flow-note">
+                    Agent must check 3 separate screens — Avg 8 mins per ticket
+                    investigation
+                  </div>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="flow-dot fd-orange">6</div>
+                <div class="flow-content">
+                  <div class="flow-title">
+                    Refund approved/rejected — manual process
+                    <span class="pain-badge">⚠ Pain Point</span>
+                  </div>
+                  <div class="flow-note">
+                    No auto-eligibility check — each case judged manually,
+                    inconsistent outcomes
+                  </div>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="flow-dot fd-blue">✓</div>
+                <div class="flow-content">
+                  <div class="flow-title">
+                    Refund processed — avg 3.2 days resolution
+                  </div>
+                  <div class="flow-note">
+                    Customer receives refund notification via email only
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-label teal">
+              To-Be Process — Improved Future State
+            </div>
+            <div class="flow-wrap">
+              <div class="flow-step">
+                <div class="flow-dot fd-teal">1</div>
+                <div class="flow-content">
+                  <div class="flow-title">
+                    Customer places order — real-time GPS tracking activates
+                    <span class="fix-badge">✓ Live Map</span>
+                  </div>
+                  <div class="flow-note">
+                    Delivery partner GPS feeds directly into customer tracking
+                    screen
+                  </div>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="flow-dot fd-teal">2</div>
+                <div class="flow-content">
+                  <div class="flow-title">
+                    Dynamic ETA updates every 2 minutes
+                    <span class="fix-badge">✓ Automated</span>
+                  </div>
+                  <div class="flow-note">
+                    ETA recalculated based on live location — customer sees
+                    accurate arrival time
+                  </div>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="flow-dot fd-teal">3</div>
+                <div class="flow-content">
+                  <div class="flow-title">
+                    Proactive delay notification if ETA exceeded by 10 min
+                    <span class="fix-badge">✓ Automated</span>
+                  </div>
+                  <div class="flow-note">
+                    Push notification + in-app message with updated ETA and
+                    apology voucher
+                  </div>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="flow-dot fd-teal">4</div>
+                <div class="flow-content">
+                  <div class="flow-title">
+                    Refund request raised — auto-eligibility engine runs
+                    <span class="fix-badge">✓ Automated</span>
+                  </div>
+                  <div class="flow-note">
+                    System checks: delivery time vs. SLA, order value, reason
+                    code, customer history
+                  </div>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="flow-dot fd-teal">5</div>
+                <div class="flow-content">
+                  <div class="flow-title">
+                    Auto-approved refunds resolved within 24 hours
+                    <span class="fix-badge">✓ Automated</span>
+                  </div>
+                  <div class="flow-note">
+                    80% of eligible refunds auto-approved — only exceptions go
+                    to agent queue
+                  </div>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="flow-dot fd-teal">6</div>
+                <div class="flow-content">
+                  <div class="flow-title">
+                    Refund credited with push + SMS notification
+                    <span class="fix-badge">✓ Automated</span>
+                  </div>
+                  <div class="flow-note">
+                    Customer receives real-time refund status update — no need
+                    to follow up
+                  </div>
+                </div>
+              </div>
+              <div class="flow-step">
+                <div class="flow-dot fd-teal">✓</div>
+                <div class="flow-content">
+                  <div class="flow-title">
+                    Ticket volume target: 34% reduction in Year 1
+                  </div>
+                  <div class="flow-note">
+                    KPI dashboard tracks ticket volume, avg resolution time, and
+                    CSAT weekly
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GAP ANALYSIS -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-red">🔍</div>
+          <div class="section-title">Gap Analysis</div>
+        </div>
+        <div class="card">
+          <div class="gap-row header">
+            <div class="gap-cell">Gap Area</div>
+            <div class="gap-cell">Current State</div>
+            <div class="gap-cell">Desired State</div>
+            <div class="gap-cell">Priority</div>
+          </div>
+          <div class="gap-row">
+            <div class="gap-cell" style="font-weight: 500; color: var(--navy)">
+              Real-Time Order Tracking
+            </div>
+            <div class="gap-cell">
+              Static 3-state status only — no GPS, no live ETA, no map view
+            </div>
+            <div class="gap-cell">
+              Live GPS map with 2-min ETA refresh integrated into customer app
+            </div>
+            <div class="gap-cell">
+              <span class="badge badge-red">HIGH</span>
+            </div>
+          </div>
+          <div class="gap-row">
+            <div class="gap-cell" style="font-weight: 500; color: var(--navy)">
+              Delay Notifications
+            </div>
+            <div class="gap-cell">
+              No proactive delay communication — customer must poll the app
+            </div>
+            <div class="gap-cell">
+              Auto push notification when ETA is exceeded by &gt;10 minutes
+            </div>
+            <div class="gap-cell">
+              <span class="badge badge-red">HIGH</span>
+            </div>
+          </div>
+          <div class="gap-row">
+            <div class="gap-cell" style="font-weight: 500; color: var(--navy)">
+              Refund Eligibility Engine
+            </div>
+            <div class="gap-cell">
+              100% manual refund decisions — inconsistent, slow (avg 3.2 days)
+            </div>
+            <div class="gap-cell">
+              Automated eligibility rules covering 80% of standard cases
+            </div>
+            <div class="gap-cell">
+              <span class="badge badge-red">HIGH</span>
+            </div>
+          </div>
+          <div class="gap-row">
+            <div class="gap-cell" style="font-weight: 500; color: var(--navy)">
+              Agent Investigation Tools
+            </div>
+            <div class="gap-cell">
+              Agent checks 3 separate screens to investigate one refund case
+            </div>
+            <div class="gap-cell">
+              Single unified agent screen with full order history and GPS trail
+            </div>
+            <div class="gap-cell">
+              <span class="badge badge-amber">MEDIUM</span>
+            </div>
+          </div>
+          <div class="gap-row">
+            <div class="gap-cell" style="font-weight: 500; color: var(--navy)">
+              Refund Status Visibility
+            </div>
+            <div class="gap-cell">
+              Customer receives only 1 email on refund completion — no interim
+              updates
+            </div>
+            <div class="gap-cell">
+              Real-time refund status in app + push notification on each stage
+              change
+            </div>
+            <div class="gap-cell">
+              <span class="badge badge-amber">MEDIUM</span>
+            </div>
+          </div>
+          <div class="gap-row">
+            <div class="gap-cell" style="font-weight: 500; color: var(--navy)">
+              KPI Reporting
+            </div>
+            <div class="gap-cell">
+              Weekly manual report — no real-time visibility into refund ticket
+              trends
+            </div>
+            <div class="gap-cell">
+              Live dashboard tracking ticket volume, resolution time, and CSAT
+              by reason
+            </div>
+            <div class="gap-cell">
+              <span class="badge badge-amber">MEDIUM</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- REQUIREMENTS -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-blue">📋</div>
+          <div class="section-title">
+            Business &amp; Functional Requirements
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-label blue">Business Requirements (BRD)</div>
+            <table class="proj-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Requirement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="code-pill">BR-01</span></td>
+                  <td>
+                    Customer shall see real-time delivery partner location on
+                    order tracking screen
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="code-pill">BR-02</span></td>
+                  <td>
+                    ETA displayed shall update dynamically based on live
+                    delivery partner GPS data
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="code-pill">BR-03</span></td>
+                  <td>
+                    Customer shall receive a proactive notification when
+                    delivery exceeds ETA by 10+ minutes
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="code-pill">BR-04</span></td>
+                  <td>
+                    Refund eligibility shall be auto-determined for standard
+                    cases within 5 minutes of request
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="code-pill">BR-05</span></td>
+                  <td>
+                    Customer shall receive in-app refund status updates at each
+                    stage of processing
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="code-pill">BR-06</span></td>
+                  <td>
+                    Operations team shall have a real-time dashboard showing
+                    refund ticket trends and CSAT
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card">
+            <div class="card-label teal">Functional Requirements (FRD)</div>
+            <table class="proj-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Requirement</th>
+                  <th>Linked</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="code-pill">FR-01</span></td>
+                  <td>
+                    App shall integrate delivery partner GPS API and render map
+                    in tracking screen
+                  </td>
+                  <td><span class="badge badge-blue">BR-01</span></td>
+                </tr>
+                <tr>
+                  <td><span class="code-pill">FR-02</span></td>
+                  <td>
+                    ETA engine shall recalculate and display updated arrival
+                    time every 2 minutes
+                  </td>
+                  <td><span class="badge badge-blue">BR-02</span></td>
+                </tr>
+                <tr>
+                  <td><span class="code-pill">FR-03</span></td>
+                  <td>
+                    Notification service shall fire push alert when
+                    delivery_time exceeds promised_delivery_mins + 10
+                  </td>
+                  <td><span class="badge badge-blue">BR-03</span></td>
+                </tr>
+                <tr>
+                  <td><span class="code-pill">FR-04</span></td>
+                  <td>
+                    Refund engine shall check 4 eligibility rules and return
+                    decision + reason within 5 minutes
+                  </td>
+                  <td><span class="badge badge-blue">BR-04</span></td>
+                </tr>
+                <tr>
+                  <td><span class="code-pill">FR-05</span></td>
+                  <td>
+                    Refund status shall be written to customer record and
+                    trigger in-app notification on each stage
+                  </td>
+                  <td><span class="badge badge-blue">BR-05</span></td>
+                </tr>
+                <tr>
+                  <td><span class="code-pill">FR-06</span></td>
+                  <td>
+                    Dashboard shall refresh every 10 minutes with ticket volume,
+                    avg resolution time, CSAT
+                  </td>
+                  <td><span class="badge badge-blue">BR-06</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- USER STORIES + MOSCOW -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-teal">📖</div>
+          <div class="section-title">
+            User Stories + MoSCoW Prioritisation
+            <span>10 core stories with acceptance criteria</span>
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-id">
+            US-01 · Customer <span class="moscow-tag must">Must Have</span>
+          </div>
+          <div class="story-text">
+            As a customer, I want to see my delivery partner's live location on
+            a map so that I know exactly where my order is and when it will
+            arrive.
+          </div>
+          <div class="story-ac">
+            <strong>Acceptance Criteria:</strong> Live map loads within 2
+            seconds of opening tracking screen; GPS marker updates every 2
+            minutes; map shows delivery partner path from restaurant to customer
+            address. Available on Android, iOS, and web.
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-id">
+            US-02 · Customer <span class="moscow-tag must">Must Have</span>
+          </div>
+          <div class="story-text">
+            As a customer, I want to receive a push notification if my order is
+            running more than 10 minutes late so that I can make alternative
+            plans without calling support.
+          </div>
+          <div class="story-ac">
+            <strong>Acceptance Criteria:</strong> Notification fires
+            automatically when delivery_time exceeds promised_delivery_mins +
+            10; notification includes updated ETA and a "Get Help" CTA;
+            notification sent via push + in-app banner; delay voucher (minimum
+            ₹30) attached automatically.
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-id">
+            US-03 · Customer <span class="moscow-tag must">Must Have</span>
+          </div>
+          <div class="story-text">
+            As a customer, I want my refund request decision within 24 hours so
+            that I don't have to follow up repeatedly with customer support.
+          </div>
+          <div class="story-ac">
+            <strong>Acceptance Criteria:</strong> Automated eligibility check
+            completes within 5 minutes; auto-approved refunds credited within 24
+            hours; escalated cases resolved within 72 hours SLA; customer
+            notified at each stage via push + email.
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-id">
+            US-04 · Customer Support Agent
+            <span class="moscow-tag must">Must Have</span>
+          </div>
+          <div class="story-text">
+            As a support agent, I want to see the full order history, GPS
+            delivery trail, and refund eligibility result on one screen so that
+            I can resolve tickets in under 5 minutes.
+          </div>
+          <div class="story-ac">
+            <strong>Acceptance Criteria:</strong> Single unified view loads
+            within 3 seconds; includes order details, GPS trail replay, payment
+            info, and auto-eligibility result; agent can override auto-decision
+            with documented reason code.
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-id">
+            US-05 · Operations Manager
+            <span class="moscow-tag must">Must Have</span>
+          </div>
+          <div class="story-text">
+            As an operations manager, I want a live dashboard showing refund
+            ticket volume, reason breakdown, average resolution time, and CSAT
+            so that I can monitor performance in real time.
+          </div>
+          <div class="story-ac">
+            <strong>Acceptance Criteria:</strong> Dashboard refreshes every 10
+            minutes; shows current day, WoW, and MoM trends; Pareto chart of
+            ticket reasons; drill-down by city and cuisine type; exportable to
+            PDF for weekly review.
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-id">
+            US-06 · Customer <span class="moscow-tag should">Should Have</span>
+          </div>
+          <div class="story-text">
+            As a customer, I want to see my refund status inside the app so that
+            I don't need to check my email or call support to know if my refund
+            has been processed.
+          </div>
+          <div class="story-ac">
+            <strong>Acceptance Criteria:</strong> Refund status tracker visible
+            in Order History screen; shows 4 stages: Raised → Under Review →
+            Approved → Credited; each stage change triggers in-app notification;
+            estimated credit date shown on screen.
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-id">
+            US-07 · Finance Team
+            <span class="moscow-tag should">Should Have</span>
+          </div>
+          <div class="story-text">
+            As a finance team member, I want automated refund reports generated
+            weekly so that I can reconcile refund payouts without manually
+            exporting data.
+          </div>
+          <div class="story-ac">
+            <strong>Acceptance Criteria:</strong> Weekly report auto-generated
+            every Monday at 06:00 IST; includes total refund amount, count by
+            reason category, auto vs. manual split, and SLA compliance %;
+            delivered to finance inbox in CSV + PDF formats.
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-id">
+            US-08 · Customer <span class="moscow-tag should">Should Have</span>
+          </div>
+          <div class="story-text">
+            As a customer, I want to receive a delay compensation voucher
+            automatically when my order is more than 20 minutes late so that I
+            feel fairly compensated without having to ask.
+          </div>
+          <div class="story-ac">
+            <strong>Acceptance Criteria:</strong> System detects
+            delivery_time_mins &gt; promised + 20; auto-generates voucher of
+            ₹50–₹100 based on order value; voucher applied to customer wallet
+            within 30 minutes of delivery completion; one voucher maximum per
+            order.
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-id">
+            US-09 · Product Manager
+            <span class="moscow-tag could">Could Have</span>
+          </div>
+          <div class="story-text">
+            As a product manager, I want AI-suggested ticket categorisation so
+            that support agents spend less time classifying and more time
+            resolving.
+          </div>
+          <div class="story-ac">
+            <strong>Acceptance Criteria:</strong> NLP model classifies ticket
+            reason with &gt;85% accuracy; classification shown as suggestion
+            with confidence score; agent accepts or overrides; model retrained
+            quarterly on classified data.
+          </div>
+        </div>
+
+        <div class="story-card">
+          <div class="story-id">
+            US-10 · Customer Support Manager
+            <span class="moscow-tag could">Could Have</span>
+          </div>
+          <div class="story-text">
+            As a customer support manager, I want predictive alerts when a
+            particular restaurant or zone is trending toward high refund rates
+            so that I can intervene before ticket volume spikes.
+          </div>
+          <div class="story-ac">
+            <strong>Acceptance Criteria:</strong> Alert fires when a restaurant
+            or delivery zone exceeds 2× baseline refund rate over a rolling
+            4-hour window; alert sent to manager dashboard and Slack channel;
+            includes restaurant ID, zone, and ticket reason breakdown.
+          </div>
+        </div>
+      </section>
+
+      <!-- SQL QUERIES -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-blue">🗄️</div>
+          <div class="section-title">
+            SQL Analysis
+            <span>15 queries against the Zomato order dataset</span>
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-label">Query 01 — Baseline Refund Rate</div>
+          <div class="sql-title">
+            What percentage of total orders result in a refund request?
+          </div>
+          <pre><span class="kw">SELECT</span>
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> total_orders,
+  <span class="fn">SUM</span>(<span class="kw">CASE</span> <span class="kw">WHEN</span> refund_raised = <span class="str">TRUE</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="kw">AS</span> refund_orders,
+  <span class="fn">ROUND</span>(
+    <span class="fn">SUM</span>(<span class="kw">CASE</span> <span class="kw">WHEN</span> refund_raised = <span class="str">TRUE</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) * <span class="num">100.0</span> / <span class="fn">COUNT</span>(*), <span class="num">2</span>
+  ) <span class="kw">AS</span> refund_rate_pct
+<span class="kw">FROM</span> orders;
+<span class="cm">-- Result: 10,000 total orders | 1,847 refunds | 18.47% refund rate</span></pre>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-label">
+            Query 02 — Refund Volume by Reason Category
+          </div>
+          <div class="sql-title">
+            Which refund reasons drive the most ticket volume? (Pareto basis)
+          </div>
+          <pre><span class="kw">SELECT</span>
+  refund_reason,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> ticket_count,
+  <span class="fn">ROUND</span>(<span class="fn">COUNT</span>(*) * <span class="num">100.0</span> / <span class="fn">SUM</span>(<span class="fn">COUNT</span>(*)) <span class="kw">OVER</span>(), <span class="num">2</span>) <span class="kw">AS</span> pct_of_total
+<span class="kw">FROM</span> orders
+<span class="kw">WHERE</span> refund_raised = <span class="str">TRUE</span>
+<span class="kw">GROUP BY</span> refund_reason
+<span class="kw">ORDER BY</span> ticket_count <span class="kw">DESC</span>;
+<span class="cm">-- Top result: 'no_tracking_visibility' | 629 tickets | 34.05%</span></pre>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-label">Query 03 — Average Refund Resolution Time</div>
+          <div class="sql-title">
+            What is the average number of days taken to resolve a refund, by
+            reason?
+          </div>
+          <pre><span class="kw">SELECT</span>
+  refund_reason,
+  <span class="fn">ROUND</span>(<span class="fn">AVG</span>(refund_resolution_days), <span class="num">1</span>) <span class="kw">AS</span> avg_resolution_days,
+  <span class="fn">MIN</span>(refund_resolution_days) <span class="kw">AS</span> fastest,
+  <span class="fn">MAX</span>(refund_resolution_days) <span class="kw">AS</span> slowest
+<span class="kw">FROM</span> orders
+<span class="kw">WHERE</span> refund_raised = <span class="str">TRUE</span>
+<span class="kw">GROUP BY</span> refund_reason
+<span class="kw">ORDER BY</span> avg_resolution_days <span class="kw">DESC</span>;</pre>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-label">Query 04 — Monthly Refund Trend</div>
+          <div class="sql-title">
+            How has refund ticket volume trended month-over-month?
+          </div>
+          <pre><span class="kw">SELECT</span>
+  <span class="fn">DATE_FORMAT</span>(order_date, <span class="str">'%Y-%m'</span>) <span class="kw">AS</span> order_month,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> total_orders,
+  <span class="fn">SUM</span>(<span class="kw">CASE</span> <span class="kw">WHEN</span> refund_raised = <span class="str">TRUE</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="kw">AS</span> refund_count,
+  <span class="fn">ROUND</span>(
+    <span class="fn">SUM</span>(<span class="kw">CASE</span> <span class="kw">WHEN</span> refund_raised = <span class="str">TRUE</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) * <span class="num">100.0</span> / <span class="fn">COUNT</span>(*), <span class="num">2</span>
+  ) <span class="kw">AS</span> refund_rate_pct
+<span class="kw">FROM</span> orders
+<span class="kw">GROUP BY</span> order_month
+<span class="kw">ORDER BY</span> order_month <span class="kw">ASC</span>;</pre>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-label">Query 05 — Support Ticket Correlation</div>
+          <div class="sql-title">
+            What % of refund tickets also generated a support ticket?
+            (double-escalation rate)
+          </div>
+          <pre><span class="kw">SELECT</span>
+  refund_reason,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> refund_tickets,
+  <span class="fn">SUM</span>(<span class="kw">CASE</span> <span class="kw">WHEN</span> support_ticket_raised = <span class="str">TRUE</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="kw">AS</span> double_escalations,
+  <span class="fn">ROUND</span>(
+    <span class="fn">SUM</span>(<span class="kw">CASE</span> <span class="kw">WHEN</span> support_ticket_raised = <span class="str">TRUE</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) * <span class="num">100.0</span> / <span class="fn">COUNT</span>(*), <span class="num">2</span>
+  ) <span class="kw">AS</span> escalation_rate_pct
+<span class="kw">FROM</span> orders
+<span class="kw">WHERE</span> refund_raised = <span class="str">TRUE</span>
+<span class="kw">GROUP BY</span> refund_reason
+<span class="kw">ORDER BY</span> escalation_rate_pct <span class="kw">DESC</span>;</pre>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-label">Query 06 — Late Delivery Analysis</div>
+          <div class="sql-title">
+            How many orders exceeded their promised delivery time, and by how
+            much on average?
+          </div>
+          <pre><span class="kw">SELECT</span>
+  city,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> total_orders,
+  <span class="fn">SUM</span>(<span class="kw">CASE</span> <span class="kw">WHEN</span> delivery_time_mins > promised_delivery_mins <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="kw">AS</span> late_orders,
+  <span class="fn">ROUND</span>(<span class="fn">AVG</span>(delivery_time_mins - promised_delivery_mins), <span class="num">1</span>) <span class="kw">AS</span> avg_delay_mins
+<span class="kw">FROM</span> orders
+<span class="kw">WHERE</span> delivery_time_mins > promised_delivery_mins
+<span class="kw">GROUP BY</span> city
+<span class="kw">ORDER BY</span> avg_delay_mins <span class="kw">DESC</span>;</pre>
+        </div>
+
+        <div class="two-col">
+          <div class="sql-block" style="margin-bottom: 0">
+            <div class="sql-label">Query 07 — CSAT by Refund Reason</div>
+            <pre><span class="kw">SELECT</span>
+  refund_reason,
+  <span class="fn">ROUND</span>(<span class="fn">AVG</span>(csat_score), <span class="num">2</span>) <span class="kw">AS</span> avg_csat,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> n
+<span class="kw">FROM</span> orders
+<span class="kw">WHERE</span> refund_raised = <span class="str">TRUE</span>
+<span class="kw">GROUP BY</span> refund_reason
+<span class="kw">ORDER BY</span> avg_csat <span class="kw">ASC</span>;</pre>
+          </div>
+          <div class="sql-block" style="margin-bottom: 0">
+            <div class="sql-label">Query 08 — High-Value Refund Orders</div>
+            <pre><span class="kw">SELECT</span>
+  order_id, customer_id,
+  order_value, refund_reason,
+  refund_resolution_days
+<span class="kw">FROM</span> orders
+<span class="kw">WHERE</span>
+  refund_raised = <span class="str">TRUE</span>
+  <span class="kw">AND</span> order_value > <span class="num">500</span>
+<span class="kw">ORDER BY</span>
+  order_value <span class="kw">DESC</span>
+<span class="kw">LIMIT</span> <span class="num">20</span>;</pre>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-top: 12px">
+          <div class="sql-block" style="margin-bottom: 0">
+            <div class="sql-label">Query 09 — Refund Rate by Cuisine Type</div>
+            <pre><span class="kw">SELECT</span>
+  cuisine_type,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> total,
+  <span class="fn">SUM</span>(<span class="kw">CASE</span> <span class="kw">WHEN</span>
+    refund_raised=<span class="str">TRUE</span>
+  <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="kw">AS</span> refunds,
+  <span class="fn">ROUND</span>(refunds*<span class="num">100.0</span>/total,<span class="num">2</span>)
+    <span class="kw">AS</span> refund_rate_pct
+<span class="kw">FROM</span> orders
+<span class="kw">GROUP BY</span> cuisine_type
+<span class="kw">ORDER BY</span>
+  refund_rate_pct <span class="kw">DESC</span>;</pre>
+          </div>
+          <div class="sql-block" style="margin-bottom: 0">
+            <div class="sql-label">Query 10 — SLA Breach Rate</div>
+            <pre><span class="kw">SELECT</span>
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> total_refunds,
+  <span class="fn">SUM</span>(<span class="kw">CASE</span> <span class="kw">WHEN</span>
+    refund_resolution_days > <span class="num">3</span>
+  <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>)
+    <span class="kw">AS</span> sla_breaches,
+  <span class="fn">ROUND</span>(sla_breaches
+    *<span class="num">100.0</span>/total_refunds,<span class="num">2</span>)
+    <span class="kw">AS</span> breach_rate_pct
+<span class="kw">FROM</span> orders
+<span class="kw">WHERE</span>
+  refund_raised = <span class="str">TRUE</span>;</pre>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top: 16px">
+          <div class="card-label blue">Queries 11–15 Summary</div>
+          <table class="proj-table">
+            <thead>
+              <tr>
+                <th>Query</th>
+                <th>Business Question Answered</th>
+                <th>Key Finding</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="code-pill">Q-11</span></td>
+                <td>
+                  Refund rate by city — which cities have worst performance?
+                </td>
+                <td>
+                  Delhi NCR highest: 22.1% refund rate vs. national avg 18.5%
+                </td>
+              </tr>
+              <tr>
+                <td><span class="code-pill">Q-12</span></td>
+                <td>
+                  Repeat refund customers — how many customers refund &gt;3
+                  times?
+                </td>
+                <td>
+                  1.2% of customers account for 8.4% of all refund value
+                  (high-risk segment)
+                </td>
+              </tr>
+              <tr>
+                <td><span class="code-pill">Q-13</span></td>
+                <td>Weekend vs. weekday refund rate difference</td>
+                <td>
+                  Weekend refund rate 23.4% vs. weekday 15.2% — peak volume
+                  drives quality drop
+                </td>
+              </tr>
+              <tr>
+                <td><span class="code-pill">Q-14</span></td>
+                <td>
+                  Orders with both refund AND support ticket raised
+                  (double-escalation)
+                </td>
+                <td>
+                  41% of "no tracking visibility" refunds also raised a support
+                  ticket
+                </td>
+              </tr>
+              <tr>
+                <td><span class="code-pill">Q-15</span></td>
+                <td>
+                  Total refund amount paid out by month — financial impact trend
+                </td>
+                <td>
+                  ₹41.2L paid in refunds in the analysis period — ₹14L
+                  potentially avoidable (tracking fix)
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- DASHBOARD WIREFRAME -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-orange">📊</div>
+          <div class="section-title">
+            BI Dashboard Preview
+            <span>Power BI / Excel — Refund Operations Dashboard</span>
+          </div>
+        </div>
+        <div class="dashboard-frame">
+          <div class="dash-title-bar">
+            <div>
+              <div class="dash-title">Zomato Refund Operations Dashboard</div>
+              <div class="dash-sub">
+                Live refresh · All Cities · Last 90 Days
+              </div>
+            </div>
+            <div style="font-size: 11px; color: rgba(255, 255, 255, 0.4)">
+              Updated: Jun 2026
+            </div>
+          </div>
+          <div class="dash-kpi-row">
+            <div class="dash-kpi">
+              <div class="dash-kpi-val">18.5%</div>
+              <div class="dash-kpi-lab">Overall Refund Rate</div>
+              <div class="dash-kpi-chg chg-red">▲ 2.3% vs last quarter</div>
+            </div>
+            <div class="dash-kpi">
+              <div class="dash-kpi-val">3.2d</div>
+              <div class="dash-kpi-lab">Avg Resolution Time</div>
+              <div class="dash-kpi-chg chg-red">▲ 0.4d vs SLA target</div>
+            </div>
+            <div class="dash-kpi">
+              <div class="dash-kpi-val">2.9</div>
+              <div class="dash-kpi-lab">Avg CSAT (Refund Orders)</div>
+              <div class="dash-kpi-chg chg-red">▼ 0.6 vs non-refund</div>
+            </div>
+            <div class="dash-kpi">
+              <div class="dash-kpi-val">41%</div>
+              <div class="dash-kpi-lab">Double-Escalation Rate</div>
+              <div class="dash-kpi-chg chg-red">▲ 8% WoW (tracking)</div>
+            </div>
+          </div>
+          <div class="dash-chart-row">
+            <div class="dash-chart">
+              <div class="dash-chart-title">
+                Refund Volume by Reason — Monthly Trend
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <div style="display: flex; align-items: center; gap: 8px">
+                  <div
+                    style="
+                      font-size: 10px;
+                      color: rgba(255, 255, 255, 0.5);
+                      width: 120px;
+                    "
+                  >
+                    No tracking visibility
+                  </div>
+                  <div
+                    style="
+                      flex: 1;
+                      height: 14px;
+                      background: rgba(255, 255, 255, 0.05);
+                      border-radius: 3px;
+                      overflow: hidden;
+                    "
+                  >
+                    <div
+                      style="
+                        width: 68%;
+                        height: 100%;
+                        background: #f97316;
+                        border-radius: 3px;
+                      "
+                    ></div>
+                  </div>
+                  <div
+                    style="
+                      font-size: 10px;
+                      color: #f97316;
+                      width: 28px;
+                      text-align: right;
+                    "
+                  >
+                    34%
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px">
+                  <div
+                    style="
+                      font-size: 10px;
+                      color: rgba(255, 255, 255, 0.5);
+                      width: 120px;
+                    "
+                  >
+                    Late delivery
+                  </div>
+                  <div
+                    style="
+                      flex: 1;
+                      height: 14px;
+                      background: rgba(255, 255, 255, 0.05);
+                      border-radius: 3px;
+                      overflow: hidden;
+                    "
+                  >
+                    <div
+                      style="
+                        width: 46%;
+                        height: 100%;
+                        background: #60a5fa;
+                        border-radius: 3px;
+                      "
+                    ></div>
+                  </div>
+                  <div
+                    style="
+                      font-size: 10px;
+                      color: #60a5fa;
+                      width: 28px;
+                      text-align: right;
+                    "
+                  >
+                    23%
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px">
+                  <div
+                    style="
+                      font-size: 10px;
+                      color: rgba(255, 255, 255, 0.5);
+                      width: 120px;
+                    "
+                  >
+                    Wrong item
+                  </div>
+                  <div
+                    style="
+                      flex: 1;
+                      height: 14px;
+                      background: rgba(255, 255, 255, 0.05);
+                      border-radius: 3px;
+                      overflow: hidden;
+                    "
+                  >
+                    <div
+                      style="
+                        width: 32%;
+                        height: 100%;
+                        background: #a78bfa;
+                        border-radius: 3px;
+                      "
+                    ></div>
+                  </div>
+                  <div
+                    style="
+                      font-size: 10px;
+                      color: #a78bfa;
+                      width: 28px;
+                      text-align: right;
+                    "
+                  >
+                    16%
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px">
+                  <div
+                    style="
+                      font-size: 10px;
+                      color: rgba(255, 255, 255, 0.5);
+                      width: 120px;
+                    "
+                  >
+                    Quality issue
+                  </div>
+                  <div
+                    style="
+                      flex: 1;
+                      height: 14px;
+                      background: rgba(255, 255, 255, 0.05);
+                      border-radius: 3px;
+                      overflow: hidden;
+                    "
+                  >
+                    <div
+                      style="
+                        width: 24%;
+                        height: 100%;
+                        background: #34d399;
+                        border-radius: 3px;
+                      "
+                    ></div>
+                  </div>
+                  <div
+                    style="
+                      font-size: 10px;
+                      color: #34d399;
+                      width: 28px;
+                      text-align: right;
+                    "
+                  >
+                    12%
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px">
+                  <div
+                    style="
+                      font-size: 10px;
+                      color: rgba(255, 255, 255, 0.5);
+                      width: 120px;
+                    "
+                  >
+                    Other
+                  </div>
+                  <div
+                    style="
+                      flex: 1;
+                      height: 14px;
+                      background: rgba(255, 255, 255, 0.05);
+                      border-radius: 3px;
+                      overflow: hidden;
+                    "
+                  >
+                    <div
+                      style="
+                        width: 15%;
+                        height: 100%;
+                        background: rgba(255, 255, 255, 0.2);
+                        border-radius: 3px;
+                      "
+                    ></div>
+                  </div>
+                  <div
+                    style="
+                      font-size: 10px;
+                      color: rgba(255, 255, 255, 0.4);
+                      width: 28px;
+                      text-align: right;
+                    "
+                  >
+                    15%
+                  </div>
+                </div>
+              </div>
+              <div
+                style="
+                  margin-top: 12px;
+                  font-size: 10px;
+                  color: rgba(255, 255, 255, 0.3);
+                  border-top: 1px solid rgba(255, 255, 255, 0.05);
+                  padding-top: 8px;
+                "
+              >
+                💡 Insight: Fixing tracking visibility alone eliminates the #1
+                category — estimated 34% ticket reduction
+              </div>
+            </div>
+            <div class="dash-chart">
+              <div class="dash-chart-title">Refund Rate by City</div>
+              <div style="display: flex; flex-direction: column; gap: 5px">
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 10px;
+                    color: rgba(255, 255, 255, 0.5);
+                    padding: 4px 0;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                  "
+                >
+                  <span>Delhi NCR</span
+                  ><span style="color: #fca5a5; font-weight: 600">22.1%</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 10px;
+                    color: rgba(255, 255, 255, 0.5);
+                    padding: 4px 0;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                  "
+                >
+                  <span>Mumbai</span
+                  ><span style="color: #fca5a5; font-weight: 600">20.8%</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 10px;
+                    color: rgba(255, 255, 255, 0.5);
+                    padding: 4px 0;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                  "
+                >
+                  <span>Bengaluru</span
+                  ><span style="color: #fdba74">19.2%</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 10px;
+                    color: rgba(255, 255, 255, 0.5);
+                    padding: 4px 0;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                  "
+                >
+                  <span>Hyderabad</span
+                  ><span style="color: #fdba74">17.9%</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 10px;
+                    color: rgba(255, 255, 255, 0.5);
+                    padding: 4px 0;
+                    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                  "
+                >
+                  <span>Chennai</span><span style="color: #86efac">16.1%</span>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 10px;
+                    color: rgba(255, 255, 255, 0.5);
+                    padding: 4px 0;
+                  "
+                >
+                  <span>Pune</span><span style="color: #86efac">14.7%</span>
+                </div>
+              </div>
+              <div
+                style="
+                  margin-top: 10px;
+                  font-size: 10px;
+                  color: rgba(255, 255, 255, 0.3);
+                  border-top: 1px solid rgba(255, 255, 255, 0.05);
+                  padding-top: 8px;
+                "
+              >
+                National avg: 18.5%
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label orange">
+            Dashboard Design Decisions — BA Perspective
+          </div>
+          <ul class="bullet-list">
+            <li>
+              KPI cards positioned top-row for at-a-glance executive review —
+              each shows trend vs. prior period to immediately surface whether
+              things are improving or worsening
+            </li>
+            <li>
+              Pareto/bar chart chosen over pie chart for refund reason breakdown
+              — bar charts make magnitude differences between categories far
+              easier to read at a glance
+            </li>
+            <li>
+              City breakdown uses conditional color (Red &gt; national avg,
+              Amber near avg, Green below) — enables instant identification of
+              problem markets without reading individual values
+            </li>
+            <li>
+              Dashboard built in Power BI Desktop with all 15 SQL query outputs
+              connected as data sources — city slicer and date range filter
+              allow drill-down into any dimension
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- JIRA BOARD -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-teal">🎫</div>
+          <div class="section-title">
+            Mock Jira Board <span>Epic → Story → Task → Bug hierarchy</span>
+          </div>
+        </div>
+        <div class="jira-board">
+          <div class="jira-col">
+            <div class="jira-col-head">
+              📦 Epic <span class="jira-col-count">2</span>
+            </div>
+            <div class="jira-card">
+              <div class="jira-type type-epic">EPIC</div>
+              <div class="jira-text">Real-Time Order Tracking Enhancement</div>
+              <div class="jira-id">ZOM-001 · Q3 2026</div>
+            </div>
+            <div class="jira-card">
+              <div class="jira-type type-epic">EPIC</div>
+              <div class="jira-text">Automated Refund Processing Engine</div>
+              <div class="jira-id">ZOM-002 · Q4 2026</div>
+            </div>
+          </div>
+          <div class="jira-col">
+            <div class="jira-col-head">
+              📖 Story <span class="jira-col-count">5</span>
+            </div>
+            <div class="jira-card">
+              <div class="jira-type type-story">STORY</div>
+              <div class="jira-text">
+                Live GPS map on customer tracking screen
+              </div>
+              <div class="jira-id">ZOM-011 · Links ZOM-001</div>
+            </div>
+            <div class="jira-card">
+              <div class="jira-type type-story">STORY</div>
+              <div class="jira-text">Dynamic ETA update every 2 minutes</div>
+              <div class="jira-id">ZOM-012 · Links ZOM-001</div>
+            </div>
+            <div class="jira-card">
+              <div class="jira-type type-story">STORY</div>
+              <div class="jira-text">Proactive delay push notification</div>
+              <div class="jira-id">ZOM-013 · Links ZOM-001</div>
+            </div>
+            <div class="jira-card">
+              <div class="jira-type type-story">STORY</div>
+              <div class="jira-text">Auto refund eligibility engine</div>
+              <div class="jira-id">ZOM-021 · Links ZOM-002</div>
+            </div>
+            <div class="jira-card">
+              <div class="jira-type type-story">STORY</div>
+              <div class="jira-text">In-app refund status tracker</div>
+              <div class="jira-id">ZOM-022 · Links ZOM-002</div>
+            </div>
+          </div>
+          <div class="jira-col">
+            <div class="jira-col-head">
+              ✅ Task <span class="jira-col-count">4</span>
+            </div>
+            <div class="jira-card">
+              <div class="jira-type type-task">TASK</div>
+              <div class="jira-text">
+                Integrate delivery partner GPS API — technical design
+              </div>
+              <div class="jira-id">ZOM-031 · Dev · 5 SP</div>
+            </div>
+            <div class="jira-card">
+              <div class="jira-type type-task">TASK</div>
+              <div class="jira-text">
+                Design tracking screen map component — wireframe review
+              </div>
+              <div class="jira-id">ZOM-032 · UX · 3 SP</div>
+            </div>
+            <div class="jira-card">
+              <div class="jira-type type-task">TASK</div>
+              <div class="jira-text">
+                Define 4 refund eligibility business rules with Finance
+              </div>
+              <div class="jira-id">ZOM-033 · BA · 2 SP</div>
+            </div>
+            <div class="jira-card">
+              <div class="jira-type type-task">TASK</div>
+              <div class="jira-text">
+                Write UAT test scenarios for auto-eligibility engine
+              </div>
+              <div class="jira-id">ZOM-034 · QA · 2 SP</div>
+            </div>
+          </div>
+          <div class="jira-col">
+            <div class="jira-col-head">
+              🐛 Bug <span class="jira-col-count">3</span>
+            </div>
+            <div class="jira-card">
+              <div class="jira-type type-bug">BUG</div>
+              <div class="jira-text">
+                Tracking screen shows "Out for Delivery" even after order
+                delivered
+              </div>
+              <div class="jira-id">ZOM-041 · P1 · Critical</div>
+            </div>
+            <div class="jira-card">
+              <div class="jira-type type-bug">BUG</div>
+              <div class="jira-text">
+                Refund confirmation email not sent in 12% of auto-approved cases
+              </div>
+              <div class="jira-id">ZOM-042 · P1 · High</div>
+            </div>
+            <div class="jira-card">
+              <div class="jira-type type-bug">BUG</div>
+              <div class="jira-text">
+                Delay notification fires twice for same order on iOS 16+
+              </div>
+              <div class="jira-id">ZOM-043 · P2 · Medium</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RTM -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-green">🔗</div>
+          <div class="section-title">
+            Requirements Traceability Matrix (RTM)
+          </div>
+        </div>
+        <div class="card">
+          <table class="rtm-table">
+            <thead>
+              <tr>
+                <th>BR #</th>
+                <th>Business Requirement</th>
+                <th>FR #</th>
+                <th>User Story</th>
+                <th>Jira Epic</th>
+                <th>UAT Scenario</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="code-pill">BR-01</span></td>
+                <td>Real-time delivery partner location on tracking screen</td>
+                <td><span class="code-pill">FR-01</span></td>
+                <td><span class="badge badge-teal">US-01</span></td>
+                <td>ZOM-001</td>
+                <td>UAT-01</td>
+              </tr>
+              <tr>
+                <td><span class="code-pill">BR-02</span></td>
+                <td>Dynamic ETA update every 2 minutes</td>
+                <td><span class="code-pill">FR-02</span></td>
+                <td><span class="badge badge-teal">US-01</span></td>
+                <td>ZOM-001</td>
+                <td>UAT-01</td>
+              </tr>
+              <tr>
+                <td><span class="code-pill">BR-03</span></td>
+                <td>Proactive delay notification at ETA + 10 min</td>
+                <td><span class="code-pill">FR-03</span></td>
+                <td><span class="badge badge-teal">US-02</span></td>
+                <td>ZOM-001</td>
+                <td>UAT-02</td>
+              </tr>
+              <tr>
+                <td><span class="code-pill">BR-04</span></td>
+                <td>Auto refund eligibility within 5 minutes</td>
+                <td><span class="code-pill">FR-04</span></td>
+                <td><span class="badge badge-teal">US-03</span></td>
+                <td>ZOM-002</td>
+                <td>UAT-03</td>
+              </tr>
+              <tr>
+                <td><span class="code-pill">BR-05</span></td>
+                <td>In-app refund status at each processing stage</td>
+                <td><span class="code-pill">FR-05</span></td>
+                <td><span class="badge badge-teal">US-06</span></td>
+                <td>ZOM-002</td>
+                <td>UAT-04</td>
+              </tr>
+              <tr>
+                <td><span class="code-pill">BR-06</span></td>
+                <td>Real-time refund operations dashboard</td>
+                <td><span class="code-pill">FR-06</span></td>
+                <td><span class="badge badge-teal">US-05</span></td>
+                <td>ZOM-002</td>
+                <td>UAT-05</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- DELIVERABLES -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-blue">📁</div>
+          <div class="section-title">BA Deliverables Produced</div>
+        </div>
+        <div class="del-grid">
+          <div class="del-card">
+            <div class="del-icon">📦</div>
+            <div class="del-num">Deliverable 01</div>
+            <div class="del-name">Extended Zomato Dataset (10,000 records)</div>
+            <div class="del-tool">
+              Python (Faker + Pandas) · CSV · Data dictionary included
+            </div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">🎯</div>
+            <div class="del-num">Deliverable 02</div>
+            <div class="del-name">5-Whys Root Cause Analysis</div>
+            <div class="del-tool">
+              Google Docs — traced to deferred Phase 2 scope
+            </div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">📊</div>
+            <div class="del-num">Deliverable 03</div>
+            <div class="del-name">
+              Pareto Analysis — Refund Reason Breakdown
+            </div>
+            <div class="del-tool">
+              Excel / Power BI — top 2 reasons = 57% of volume
+            </div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">🔴</div>
+            <div class="del-num">Deliverable 04</div>
+            <div class="del-name">As-Is BPMN Process Map</div>
+            <div class="del-tool">
+              Draw.io — 7 steps, 5 pain point annotations
+            </div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">🟢</div>
+            <div class="del-num">Deliverable 05</div>
+            <div class="del-name">To-Be BPMN Process Map</div>
+            <div class="del-tool">
+              Draw.io — automated triggers, eliminated 4 manual steps
+            </div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">🔍</div>
+            <div class="del-num">Deliverable 06</div>
+            <div class="del-name">Gap Analysis Table (6 gaps)</div>
+            <div class="del-tool">
+              Google Sheets — current vs. desired vs. priority
+            </div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">📄</div>
+            <div class="del-num">Deliverable 07</div>
+            <div class="del-name">Business Requirements Document (BRD)</div>
+            <div class="del-tool">
+              Google Docs — 6 BRs + 6 FRs + scope + assumptions
+            </div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">📖</div>
+            <div class="del-num">Deliverable 08</div>
+            <div class="del-name">10 User Stories + MoSCoW Backlog</div>
+            <div class="del-tool">
+              Google Docs + Mock Jira Board — INVEST format
+            </div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">🗄️</div>
+            <div class="del-num">Deliverable 09</div>
+            <div class="del-name">15 SQL Queries with Findings</div>
+            <div class="del-tool">
+              SQLite / MySQL — all queries commented and screenshotted
+            </div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">📈</div>
+            <div class="del-num">Deliverable 10</div>
+            <div class="del-name">Refund Operations BI Dashboard</div>
+            <div class="del-tool">
+              Power BI Desktop — KPIs, Pareto, city breakdown, trends
+            </div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">🔗</div>
+            <div class="del-num">Deliverable 11</div>
+            <div class="del-name">Requirements Traceability Matrix (RTM)</div>
+            <div class="del-tool">
+              Google Sheets — BR → FR → US → Jira → UAT linked
+            </div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">✅</div>
+            <div class="del-num">Deliverable 12</div>
+            <div class="del-name">UAT Checklist — 5 Scenarios</div>
+            <div class="del-tool">
+              Google Docs — tracking, notification, refund, dashboard, audit
+            </div>
+          </div>
+        </div>
+      </section>
+
+    
+      
+
+      <!-- AI TOOLS -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-blue">🤖</div>
+          <div class="section-title">AI Tools Used in This Project</div>
+        </div>
+        <div class="card">
+          <div class="ai-grid">
+            <div class="ai-card">
+              <div class="ai-stage">Dataset Generation</div>
+              <div class="ai-tool">Claude (Anthropic)</div>
+              <div class="ai-desc">
+                Used to write the Python script (Faker + Pandas) generating
+                10,000 order records with realistic refund rate distributions —
+                reviewed and adjusted column ranges manually
+              </div>
+            </div>
+            <div class="ai-card">
+              <div class="ai-stage">SQL Drafting</div>
+              <div class="ai-tool">ChatGPT (OpenAI)</div>
+              <div class="ai-desc">
+                Used to draft initial SQL query structures from plain-English
+                business questions — each query tested in SQLite, debugged, and
+                results verified against expected data patterns
+              </div>
+            </div>
+            <div class="ai-card">
+              <div class="ai-stage">RCA Validation</div>
+              <div class="ai-tool">Claude (Anthropic)</div>
+              <div class="ai-desc">
+                Used to review the 5-Whys chain logic — asked "does each answer
+                logically lead to the next why?" and "is the root cause
+                structural or symptomatic?" Validated independently before
+                finalising
+              </div>
+            </div>
+            <div class="ai-card">
+              <div class="ai-stage">User Story Drafting</div>
+              <div class="ai-tool">Gemini (Google)</div>
+              <div class="ai-desc">
+                Used to generate first-draft user story structures for the 10
+                stories — acceptance criteria rewritten manually to reflect
+                Zomato's actual product and policy context
+              </div>
+            </div>
+            <div class="ai-card">
+              <div class="ai-stage">MoSCoW Rationale</div>
+              <div class="ai-tool">ChatGPT (OpenAI)</div>
+              <div class="ai-desc">
+                Used to challenge MoSCoW prioritisation decisions — asked "what
+                would a product manager argue against making US-09 a Must Have?"
+                to test and sharpen prioritisation reasoning
+              </div>
+            </div>
+            <div class="ai-card">
+              <div class="ai-stage">Document Formatting</div>
+              <div class="ai-tool">Microsoft Copilot</div>
+              <div class="ai-desc">
+                Used to standardise formatting across all Google Docs
+                deliverables — consistent table structures, heading hierarchy,
+                and requirement ID conventions applied across BRD, gap analysis,
+                and RTM
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <strong>Deepender Choudhary</strong> — Business Analyst Portfolio
+      &nbsp;·&nbsp; Project 2 of 5 &nbsp;·&nbsp; Gurugram, India<br />
+      <span style="margin-top: 6px; display: inline-block"
+        >deependerchoudhary2003@gmail.com &nbsp;·&nbsp; +91 9729880411</span
+      >
+    </footer>
+  </body>
+</html>

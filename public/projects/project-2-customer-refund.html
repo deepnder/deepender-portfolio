@@ -1,0 +1,3651 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Project 2 — Customer Refund Process Improvement | Deepender Choudhary
+    </title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --navy: #0b1f3a;
+        --blue: #1352a2;
+        --blue-lt: #e8f0fc;
+        --teal: #0d7a6e;
+        --teal-lt: #e3f5f3;
+        --amber: #b45309;
+        --amber-lt: #fef3cd;
+        --red: #b91c1c;
+        --red-lt: #fef2f2;
+        --green: #166534;
+        --green-lt: #dcfce7;
+        --ink: #111827;
+        --body: #374151;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --surface: #f9fafb;
+        --white: #ffffff;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #f3f4f6;
+        color: var(--ink);
+        line-height: 1.6;
+        min-height: 100vh;
+        font-size: 16px;
+      }
+
+      /* NAV */
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.97);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--border);
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .nav-brand {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--navy);
+        text-decoration: none;
+      }
+      .nav-links {
+        display: flex;
+        gap: 20px;
+        list-style: none;
+      }
+      .nav-links a {
+        font-size: 13px;
+        color: var(--muted);
+        text-decoration: none;
+      }
+      .nav-links a:hover {
+        color: var(--blue);
+      }
+      .nav-badge {
+        font-size: 12px;
+        font-weight: 500;
+        background: var(--teal-lt);
+        color: var(--teal);
+        padding: 4px 12px;
+        border-radius: 20px;
+        white-space: nowrap;
+      }
+      @media (max-width: 600px) {
+        .nav-links {
+          display: none;
+        }
+      }
+
+      /* LAYOUT */
+      .page-wrap {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 16px 80px;
+      }
+      @media (min-width: 600px) {
+        .page-wrap {
+          padding: 0 24px 80px;
+        }
+      }
+
+      /* HERO */
+      .hero {
+        padding: 40px 0 32px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 32px;
+      }
+      @media (min-width: 600px) {
+        .hero {
+          padding: 56px 0 40px;
+          margin-bottom: 40px;
+        }
+      }
+      .eyebrow {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--teal);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .eyebrow::before {
+        content: "";
+        display: block;
+        width: 20px;
+        height: 2px;
+        background: var(--teal);
+      }
+      .hero h1 {
+        font-size: 26px;
+        font-weight: 600;
+        color: var(--navy);
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+        margin-bottom: 14px;
+      }
+      @media (min-width: 600px) {
+        .hero h1 {
+          font-size: 36px;
+          letter-spacing: -0.8px;
+        }
+      }
+      .hero-sub {
+        font-size: 14px;
+        color: var(--body);
+        line-height: 1.7;
+        margin-bottom: 24px;
+      }
+      @media (min-width: 600px) {
+        .hero-sub {
+          font-size: 16px;
+          max-width: 620px;
+        }
+      }
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 0;
+      }
+      .tag {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        color: var(--body);
+        background: var(--white);
+      }
+      .tag.teal {
+        background: var(--teal-lt);
+        color: var(--teal);
+        border-color: #99e6de;
+      }
+      .tag.blue {
+        background: var(--blue-lt);
+        color: var(--blue);
+        border-color: #bfdbfe;
+      }
+      .tag.amber {
+        background: var(--amber-lt);
+        color: var(--amber);
+        border-color: #fde68a;
+      }
+      .tag.green {
+        background: var(--green-lt);
+        color: var(--green);
+        border-color: #86efac;
+      }
+
+      /* METRICS */
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 32px;
+      }
+      @media (min-width: 600px) {
+        .metrics-grid {
+          grid-template-columns: repeat(4, 1fr);
+          gap: 12px;
+          margin-bottom: 40px;
+        }
+      }
+      .metric {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px 12px;
+        text-align: center;
+      }
+      @media (min-width: 600px) {
+        .metric {
+          padding: 20px 16px;
+        }
+      }
+      .metric-val {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--navy);
+        display: block;
+        line-height: 1;
+        margin-bottom: 6px;
+      }
+      @media (min-width: 600px) {
+        .metric-val {
+          font-size: 28px;
+        }
+      }
+      .metric-label {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+      .metric.hl-teal {
+        border-color: #99e6de;
+        background: var(--teal-lt);
+      }
+      .metric.hl-teal .metric-val {
+        color: var(--teal);
+      }
+      .metric.hl-blue {
+        border-color: #bfdbfe;
+        background: var(--blue-lt);
+      }
+      .metric.hl-blue .metric-val {
+        color: var(--blue);
+      }
+
+      /* SECTION */
+      .section {
+        margin-bottom: 40px;
+      }
+      @media (min-width: 600px) {
+        .section {
+          margin-bottom: 48px;
+        }
+      }
+      .section-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      @media (min-width: 600px) {
+        .section-head {
+          margin-bottom: 20px;
+        }
+      }
+      .section-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      .si-teal {
+        background: var(--teal-lt);
+        color: var(--teal);
+      }
+      .si-blue {
+        background: var(--blue-lt);
+        color: var(--blue);
+      }
+      .si-amber {
+        background: var(--amber-lt);
+        color: var(--amber);
+      }
+      .si-green {
+        background: var(--green-lt);
+        color: var(--green);
+      }
+      .si-red {
+        background: var(--red-lt);
+        color: var(--red);
+      }
+      .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--navy);
+      }
+      @media (min-width: 600px) {
+        .section-title {
+          font-size: 18px;
+        }
+      }
+      .section-title span {
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--muted);
+        margin-left: 6px;
+      }
+
+      /* CARDS */
+      .card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+      @media (min-width: 600px) {
+        .card {
+          padding: 24px;
+          margin-bottom: 16px;
+        }
+      }
+      .card-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      .card-label.teal {
+        color: var(--teal);
+      }
+      .card-label.blue {
+        color: var(--blue);
+      }
+      .card-label.amber {
+        color: var(--amber);
+      }
+      .card-label.red {
+        color: var(--red);
+      }
+      .card-label.green {
+        color: var(--green);
+      }
+
+      /* GRID LAYOUTS */
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      @media (min-width: 640px) {
+        .two-col {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .three-col {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      @media (min-width: 640px) {
+        .three-col {
+          grid-template-columns: 1fr 1fr 1fr;
+        }
+      }
+
+      /* PROBLEM BOX */
+      .problem-box {
+        background: var(--teal-lt);
+        border: 1px solid #99e6de;
+        border-left: 4px solid var(--teal);
+        border-radius: 8px;
+        padding: 16px 18px;
+        font-size: 14px;
+        color: var(--navy);
+        line-height: 1.7;
+        margin-bottom: 14px;
+      }
+      @media (min-width: 600px) {
+        .problem-box {
+          padding: 20px 24px;
+          font-size: 15px;
+        }
+      }
+
+      /* BULLET LIST */
+      .bullet-list {
+        list-style: none;
+      }
+      .bullet-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 6px 0;
+        font-size: 13px;
+        color: var(--body);
+        line-height: 1.5;
+        border-bottom: 1px solid var(--surface);
+      }
+      .bullet-list li:last-child {
+        border-bottom: none;
+      }
+      .bullet-list li::before {
+        content: "→";
+        color: var(--teal);
+        font-weight: 600;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* TABLES */
+      .proj-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+      }
+      @media (min-width: 600px) {
+        .proj-table {
+          font-size: 13px;
+        }
+      }
+      .proj-table th {
+        background: var(--navy);
+        color: #fff;
+        padding: 9px 12px;
+        text-align: left;
+        font-weight: 500;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+      }
+      .proj-table th:first-child {
+        border-radius: 8px 0 0 0;
+      }
+      .proj-table th:last-child {
+        border-radius: 0 8px 0 0;
+      }
+      .proj-table td {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--border);
+        color: var(--body);
+        vertical-align: top;
+        line-height: 1.5;
+      }
+      .proj-table tr:last-child td {
+        border-bottom: none;
+      }
+      .proj-table tr:nth-child(even) td {
+        background: var(--surface);
+      }
+      .proj-table td:first-child {
+        font-weight: 500;
+        color: var(--navy);
+      }
+      .table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 8px;
+      }
+
+      /* BADGES & PILLS */
+      .code-pill {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        background: var(--navy);
+        color: #7dd3fc;
+        padding: 2px 6px;
+        border-radius: 4px;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      .badge {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 2px 7px;
+        border-radius: 4px;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      .badge-blue {
+        background: var(--blue-lt);
+        color: var(--blue);
+      }
+      .badge-teal {
+        background: var(--teal-lt);
+        color: var(--teal);
+      }
+      .badge-amber {
+        background: var(--amber-lt);
+        color: var(--amber);
+      }
+      .badge-red {
+        background: var(--red-lt);
+        color: var(--red);
+      }
+      .badge-green {
+        background: var(--green-lt);
+        color: var(--green);
+      }
+
+      /* USER STORIES */
+      .story-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 10px;
+      }
+      @media (min-width: 600px) {
+        .story-card {
+          padding: 18px 20px;
+          margin-bottom: 12px;
+        }
+      }
+      .story-id {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--teal);
+        margin-bottom: 6px;
+      }
+      .story-text {
+        font-size: 13px;
+        color: var(--navy);
+        font-weight: 500;
+        margin-bottom: 8px;
+        line-height: 1.5;
+      }
+      @media (min-width: 600px) {
+        .story-text {
+          font-size: 14px;
+        }
+      }
+      .story-ac {
+        font-size: 12px;
+        color: var(--body);
+        background: var(--surface);
+        border-radius: 6px;
+        padding: 10px 12px;
+        line-height: 1.6;
+      }
+      .story-ac strong {
+        color: var(--teal);
+      }
+
+      /* GAP TABLE */
+      .gap-wrap {
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .gap-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+        background: var(--border);
+        margin-bottom: 1px;
+      }
+      @media (min-width: 640px) {
+        .gap-row {
+          grid-template-columns: 1.3fr 1.5fr 1.5fr 0.7fr;
+        }
+      }
+      .gap-row.header {
+        background: var(--navy);
+      }
+      .gap-row:last-child {
+        margin-bottom: 0;
+      }
+      .gap-cell {
+        padding: 10px 12px;
+        font-size: 12px;
+        color: var(--body);
+        background: var(--white);
+        line-height: 1.4;
+      }
+      .gap-row.header .gap-cell {
+        background: var(--navy);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+      }
+
+      /* RATINGS */
+      .rating-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--surface);
+      }
+      .rating-row:last-child {
+        border-bottom: none;
+      }
+      .rating-label {
+        font-size: 12px;
+        color: var(--body);
+        width: 160px;
+        flex-shrink: 0;
+      }
+      @media (min-width: 600px) {
+        .rating-label {
+          font-size: 13px;
+          width: 200px;
+        }
+      }
+      .rating-track {
+        flex: 1;
+        height: 6px;
+        background: var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .rating-fill {
+        height: 100%;
+        border-radius: 10px;
+      }
+      .rating-score {
+        font-size: 12px;
+        font-weight: 600;
+        width: 36px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+      @media (min-width: 600px) {
+        .rating-score {
+          font-size: 13px;
+        }
+      }
+
+      /* RTM */
+      .rtm-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px;
+      }
+      @media (min-width: 600px) {
+        .rtm-table {
+          font-size: 12px;
+        }
+      }
+      .rtm-table th {
+        background: var(--navy);
+        color: #fff;
+        padding: 8px 10px;
+        text-align: left;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+      }
+      .rtm-table td {
+        padding: 8px 10px;
+        border-bottom: 1px solid var(--border);
+        color: var(--body);
+        vertical-align: middle;
+      }
+      .rtm-table tr:nth-child(even) td {
+        background: var(--surface);
+      }
+
+      /* DELIVERABLES */
+      .del-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      @media (min-width: 640px) {
+        .del-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+        }
+      }
+      .del-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px;
+        transition:
+          border-color 0.2s,
+          transform 0.2s;
+      }
+      .del-card:hover {
+        border-color: var(--teal);
+        transform: translateY(-2px);
+      }
+      .del-icon {
+        font-size: 18px;
+        margin-bottom: 6px;
+      }
+      .del-num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      .del-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 3px;
+        line-height: 1.3;
+      }
+      .del-tool {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      /* CALLOUTS */
+      .callout {
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 10px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .callout-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .callout-title {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 3px;
+      }
+      .callout-text {
+        font-size: 12px;
+        line-height: 1.6;
+      }
+      @media (min-width: 600px) {
+        .callout-text {
+          font-size: 13px;
+        }
+      }
+      .callout.recruiter {
+        background: var(--red-lt);
+        border: 1px solid #fca5a5;
+      }
+      .callout.recruiter .callout-title {
+        color: var(--red);
+      }
+      .callout.recruiter .callout-text {
+        color: #7f1d1d;
+      }
+      .callout.hm {
+        background: var(--amber-lt);
+        border: 1px solid #fde68a;
+      }
+      .callout.hm .callout-title {
+        color: var(--amber);
+      }
+      .callout.hm .callout-text {
+        color: #78350f;
+      }
+      .callout.senior {
+        background: var(--green-lt);
+        border: 1px solid #86efac;
+      }
+      .callout.senior .callout-title {
+        color: var(--green);
+      }
+      .callout.senior .callout-text {
+        color: #14532d;
+      }
+      .callout.diff {
+        background: var(--teal-lt);
+        border: 1px solid #99e6de;
+      }
+      .callout.diff .callout-title {
+        color: var(--teal);
+      }
+      .callout.diff .callout-text {
+        color: #064e3b;
+      }
+
+      /* AI GRID */
+      .ai-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      @media (min-width: 640px) {
+        .ai-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+        }
+      }
+      .ai-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px;
+      }
+      .ai-stage {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--teal);
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .ai-tool {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--navy);
+        margin-bottom: 3px;
+      }
+      .ai-desc {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      /* DIAGRAM WRAP */
+      .diag-wrap {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+      @media (min-width: 600px) {
+        .diag-wrap {
+          padding: 24px;
+          margin-bottom: 16px;
+        }
+      }
+      .diag-eyebrow {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      .diag-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 3px;
+      }
+      @media (min-width: 600px) {
+        .diag-title {
+          font-size: 16px;
+        }
+      }
+      .diag-sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 14px;
+      }
+      .svg-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .svg-scroll svg {
+        min-width: 460px;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 12px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        flex-shrink: 0;
+      }
+
+      /* FLOW STEPS */
+      .flow-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .flow-step {
+        display: flex;
+        gap: 12px;
+        padding: 10px 0;
+        position: relative;
+        border-bottom: 1px solid var(--surface);
+      }
+      .flow-step:last-child {
+        border-bottom: none;
+      }
+      .flow-dot {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .fd-red {
+        background: var(--red-lt);
+        color: var(--red);
+        border: 1.5px solid #fca5a5;
+      }
+      .fd-teal {
+        background: var(--teal-lt);
+        color: var(--teal);
+        border: 1.5px solid #9fe1cb;
+      }
+      .fd-blue {
+        background: var(--blue-lt);
+        color: var(--blue);
+      }
+      .fd-gray {
+        background: #f1efe8;
+        color: #5f5e5a;
+      }
+      .fd-amber {
+        background: var(--amber-lt);
+        color: var(--amber);
+      }
+      .flow-title {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--navy);
+        line-height: 1.4;
+      }
+      .flow-note {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .pain-badge {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 500;
+        background: var(--red-lt);
+        color: var(--red);
+        border: 1px solid #fca5a5;
+        border-radius: 4px;
+        padding: 1px 6px;
+        margin-left: 6px;
+        vertical-align: middle;
+      }
+      .fix-badge {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 500;
+        background: var(--green-lt);
+        color: var(--green);
+        border: 1px solid #86efac;
+        border-radius: 4px;
+        padding: 1px 6px;
+        margin-left: 6px;
+        vertical-align: middle;
+      }
+
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 32px 0;
+      }
+      @media (min-width: 600px) {
+        .divider {
+          margin: 40px 0;
+        }
+      }
+
+      /* FOOTER */
+      footer {
+        background: var(--navy);
+        color: rgba(255, 255, 255, 0.6);
+        text-align: center;
+        padding: 28px 16px;
+        font-size: 12px;
+        margin-top: 48px;
+      }
+      @media (min-width: 600px) {
+        footer {
+          padding: 32px 24px;
+          font-size: 13px;
+        }
+      }
+      footer strong {
+        color: #fff;
+      }
+
+      /* JIRA BOARD */
+      .jira-board {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      @media (min-width: 640px) {
+        .jira-board {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .jira-col {
+        background: var(--surface);
+        border-radius: 10px;
+        padding: 12px;
+      }
+      .jira-col-head {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--border);
+      }
+      .jira-col-head.todo {
+        color: var(--muted);
+        border-color: var(--border);
+      }
+      .jira-col-head.progress {
+        color: var(--blue);
+        border-color: var(--blue);
+      }
+      .jira-col-head.done {
+        color: var(--green);
+        border-color: var(--green);
+      }
+      .jira-ticket {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 10px;
+        margin-bottom: 8px;
+        font-size: 12px;
+      }
+      .jira-ticket:last-child {
+        margin-bottom: 0;
+      }
+      .jira-id {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--blue);
+        margin-bottom: 4px;
+      }
+      .jira-title {
+        font-size: 12px;
+        color: var(--navy);
+        font-weight: 500;
+        line-height: 1.3;
+        margin-bottom: 6px;
+      }
+      .jira-tags {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+      }
+      .jira-tag {
+        font-size: 10px;
+        padding: 1px 6px;
+        border-radius: 3px;
+        font-weight: 500;
+      }
+      .jt-story {
+        background: #ede9fe;
+        color: #5b21b6;
+      }
+      .jt-bug {
+        background: var(--red-lt);
+        color: var(--red);
+      }
+      .jt-task {
+        background: var(--blue-lt);
+        color: var(--blue);
+      }
+      .jt-epic {
+        background: var(--amber-lt);
+        color: var(--amber);
+      }
+
+      /* INFO HIGHLIGHT */
+      .info-box {
+        background: var(--teal-lt);
+        border: 1px solid #99e6de;
+        border-left: 4px solid var(--teal);
+        border-radius: 8px;
+        padding: 14px 16px;
+        font-size: 13px;
+        color: var(--navy);
+        line-height: 1.6;
+        margin-bottom: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a class="nav-brand" href="#">DC</a>
+      <ul class="nav-links">
+        <li><a href="#diagrams">Diagrams</a></li>
+        <li><a href="#requirements">Requirements</a></li>
+        <li><a href="#stories">User Stories</a></li>
+        <li><a href="#jira">JIRA Board</a></li>
+      </ul>
+      <span class="nav-badge">🛒 Project 2 of 5</span>
+    </nav>
+
+    <div class="page-wrap">
+      <!-- HERO -->
+      <section class="hero">
+        <div class="eyebrow">
+          Business Analyst Portfolio — E-Commerce Domain
+        </div>
+        <h1>Customer Refund Process<br />Improvement Analysis</h1>
+        <p class="hero-sub">
+          A complete BA case study on e-commerce refund workflow failures — from
+          5-Whys root cause analysis and BPMN process mapping to full
+          requirements documentation, 10 user stories, and a mock JIRA sprint
+          board. Demonstrates BA methodology applied beyond aviation into a
+          universally understood domain.
+        </p>
+        <div class="tag-row">
+          <span class="tag teal">E-Commerce / Customer Ops</span>
+          <span class="tag teal">Requirements Engineering</span>
+          <span class="tag teal">Process Improvement</span>
+          <span class="tag blue">BPMN 2.0</span>
+          <span class="tag blue">Root Cause Analysis</span>
+          <span class="tag blue">User Stories</span>
+          <span class="tag amber">JIRA / Agile</span>
+          <span class="tag amber">Gap Analysis</span>
+          <span class="tag green">SQL Analytics</span>
+          <span class="tag">Google Docs</span>
+          <span class="tag">Excel</span>
+        </div>
+      </section>
+
+      <!-- METRICS -->
+      <section class="section">
+        <div class="metrics-grid">
+          <div class="metric hl-teal">
+            <span class="metric-val">35%</span
+            ><span class="metric-label"
+              >Rise in refund support tickets — the core problem</span
+            >
+          </div>
+          <div class="metric">
+            <span class="metric-val">6.2 days</span
+            ><span class="metric-label"
+              >Avg refund resolution time vs 3-day SLA target</span
+            >
+          </div>
+          <div class="metric hl-blue">
+            <span class="metric-val">10</span
+            ><span class="metric-label"
+              >User stories with full INVEST acceptance criteria</span
+            >
+          </div>
+          
+        </div>
+      </section>
+
+      <!-- PROBLEM -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-red">⚡</div>
+          <div class="section-title">Business Problem &amp; Objective</div>
+        </div>
+        <div class="problem-box">
+          An e-commerce platform experienced a
+          <strong>35% increase in refund-related support tickets</strong> over
+          the previous quarter. Average refund resolution time rose to
+          <strong>6.2 days</strong> against a 3-day SLA target. Investigation
+          revealed that
+          <strong>68% of all contacts were status enquiry calls</strong> —
+          customers simply did not know where their refund was. The root cause
+          was the absence of real-time refund status visibility in the
+          customer-facing application.
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-label teal">Project Objective</div>
+            <p style="font-size: 14px; color: var(--body); line-height: 1.6">
+              Identify the root cause of rising refund support ticket volume,
+              redesign the refund handling process, and document business and
+              functional requirements for a real-time refund status feature that
+              eliminates avoidable customer contacts.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-label blue">Business Goals</div>
+            <ul class="bullet-list">
+              <li>
+                Reduce refund-related support tickets by 30% within 60 days of
+                go-live
+              </li>
+              <li>
+                Reduce average resolution time from 6.2 days to under 3 days
+              </li>
+              <li>
+                Improve refund experience CSAT from 3.1 to above 4.0 within 90
+                days
+              </li>
+              <li>
+                Create an auditable refund workflow with complete status trail
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-label green">In Scope</div>
+            <ul class="bullet-list">
+              <li>Customer-facing refund status visibility on order page</li>
+              <li>Automated status notifications at each state change</li>
+              <li>Operations team bulk refund processing workflow</li>
+              <li>SLA monitoring and compliance reporting</li>
+              <li>Auto-trigger logic for standard cancellation refunds</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-label red">Out of Scope</div>
+            <ul class="bullet-list">
+              <li>Payment gateway configuration changes</li>
+              <li>Fraud detection or chargeback handling</li>
+              <li>Refund policy changes (eligibility criteria)</li>
+              <li>Return merchandise authorisation (RMA) process</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- STAKEHOLDERS -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-blue">👥</div>
+          <div class="section-title">Stakeholder Analysis</div>
+        </div>
+        <div class="card">
+          <div class="table-scroll">
+            <table class="proj-table">
+              <thead>
+                <tr>
+                  <th>Stakeholder</th>
+                  <th>Role</th>
+                  <th>Interest</th>
+                  <th>Influence</th>
+                  <th>Engagement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Product Manager</td>
+                  <td>Feature owner and backlog priority</td>
+                  <td><span class="badge badge-red">High</span></td>
+                  <td><span class="badge badge-red">High</span></td>
+                  <td>Lead sponsor</td>
+                </tr>
+                <tr>
+                  <td>Customer (End User)</td>
+                  <td>Primary process recipient</td>
+                  <td><span class="badge badge-red">High</span></td>
+                  <td><span class="badge badge-teal">Low</span></td>
+                  <td>CSAT surveys</td>
+                </tr>
+                <tr>
+                  <td>Operations Agent</td>
+                  <td>Refund processing executor</td>
+                  <td><span class="badge badge-red">High</span></td>
+                  <td><span class="badge badge-amber">Medium</span></td>
+                  <td>Key informant</td>
+                </tr>
+                <tr>
+                  <td>Finance Manager</td>
+                  <td>Refund value and cost owner</td>
+                  <td><span class="badge badge-amber">Medium</span></td>
+                  <td><span class="badge badge-red">High</span></td>
+                  <td>Consulted</td>
+                </tr>
+                <tr>
+                  <td>Engineering Lead</td>
+                  <td>Technical implementation owner</td>
+                  <td><span class="badge badge-amber">Medium</span></td>
+                  <td><span class="badge badge-red">High</span></td>
+                  <td>Consulted</td>
+                </tr>
+                <tr>
+                  <td>Quality Manager</td>
+                  <td>SLA compliance and performance</td>
+                  <td><span class="badge badge-red">High</span></td>
+                  <td><span class="badge badge-amber">Medium</span></td>
+                  <td>Reviewed</td>
+                </tr>
+                <tr>
+                  <td>CRM / Data Team</td>
+                  <td>Reporting and data pipeline owner</td>
+                  <td><span class="badge badge-amber">Medium</span></td>
+                  <td><span class="badge badge-amber">Medium</span></td>
+                  <td>Informed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- DIAGRAMS -->
+      <section class="section" id="diagrams">
+        <div class="section-head">
+          <div class="section-icon si-amber">📊</div>
+          <div class="section-title">
+            Process Diagrams
+            <span
+              >5 diagrams — As-Is · To-Be · Swimlane · Stakeholder Map · Gap
+              Matrix</span
+            >
+          </div>
+        </div>
+
+        <!-- DIAGRAM 1 — AS-IS -->
+        <div class="diag-wrap">
+          <div class="diag-eyebrow">Diagram 1 of 5</div>
+          <div class="diag-title">
+            As-Is Process Flow — Current broken refund state
+          </div>
+          <div class="diag-sub">
+            How refunds are handled today — 5 critical pain points driving 35%
+            ticket increase
+          </div>
+
+          <!-- Mobile: card-based flow -->
+          <div class="flow-wrap">
+            <div class="flow-step">
+              <div class="flow-dot fd-gray">S</div>
+              <div>
+                <div class="flow-title">
+                  Customer requests refund / cancellation
+                </div>
+                <div class="flow-note">
+                  Order cancellation or return initiated
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-red">1</div>
+              <div>
+                <div class="flow-title">
+                  Agent manually reviews order in CRM
+                  <span class="pain-badge">⚠ Pain</span>
+                </div>
+                <div class="flow-note">
+                  No auto-trigger. Every refund reviewed manually regardless of
+                  eligibility.
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-red">2</div>
+              <div>
+                <div class="flow-title">
+                  Agent manually initiates refund in payment system
+                  <span class="pain-badge">⚠ Pain</span>
+                </div>
+                <div class="flow-note">
+                  No auto-trigger for standard cancellations. 3–4 min wasted per
+                  case.
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-red">3</div>
+              <div>
+                <div class="flow-title">
+                  No status update sent to customer
+                  <span class="pain-badge">⚠ Pain</span>
+                </div>
+                <div class="flow-note">
+                  Customer has no idea refund was initiated. Calls support to
+                  check.
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-red">4</div>
+              <div>
+                <div class="flow-title">
+                  Customer calls support for status
+                  <span class="pain-badge">⚠ Pain</span>
+                </div>
+                <div class="flow-note">
+                  68% of all refund contacts are avoidable status enquiries.
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-red">5</div>
+              <div>
+                <div class="flow-title">
+                  No visible status on order page
+                  <span class="pain-badge">⚠ Pain</span>
+                </div>
+                <div class="flow-note">
+                  Customer cannot self-serve. Repeat calls on same refund.
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-gray">E</div>
+              <div>
+                <div class="flow-title">
+                  Refund processed (days later — no trail)
+                </div>
+                <div class="flow-note">
+                  No audit trail. Avg 6.2 days. SLA breached.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #e24b4a"></div>
+              Pain point
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #888780"></div>
+              Start / End
+            </div>
+          </div>
+        </div>
+
+        <!-- DIAGRAM 2 — TO-BE -->
+        <div class="diag-wrap">
+          <div class="diag-eyebrow">Diagram 2 of 5</div>
+          <div class="diag-title">
+            To-Be Process Flow — Improved future state
+          </div>
+          <div class="diag-sub">
+            3 manual steps automated. Customer calls expected to drop by 30%.
+          </div>
+          <div class="flow-wrap">
+            <div class="flow-step">
+              <div class="flow-dot fd-gray">S</div>
+              <div>
+                <div class="flow-title">
+                  Customer requests refund / cancellation
+                </div>
+                <div class="flow-note">
+                  Submitted via app, website, or support agent
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-teal">1</div>
+              <div>
+                <div class="flow-title">
+                  System auto-validates eligibility
+                  <span class="fix-badge">✓ Automated</span>
+                </div>
+                <div class="flow-note">
+                  Standard cancellations auto-approved. Edge cases flagged for
+                  agent review.
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-teal">2</div>
+              <div>
+                <div class="flow-title">
+                  Refund auto-initiated within 4 hours
+                  <span class="fix-badge">✓ Automated</span>
+                </div>
+                <div class="flow-note">
+                  No agent touchpoint needed for eligible standard refunds.
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-teal">3</div>
+              <div>
+                <div class="flow-title">
+                  Customer notified at every status change
+                  <span class="fix-badge">✓ Automated</span>
+                </div>
+                <div class="flow-note">
+                  SMS + email on: Pending → Approved → Processing → Completed /
+                  Failed.
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-blue">4</div>
+              <div>
+                <div class="flow-title">
+                  Real-time status visible on order page
+                  <span class="fix-badge">✓ Self-serve</span>
+                </div>
+                <div class="flow-note">
+                  Customer can track progress without calling support. 5 status
+                  states, colour-coded.
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-teal">5</div>
+              <div>
+                <div class="flow-title">
+                  Failed refund shows plain-language reason + support link
+                  <span class="fix-badge">✓ Improved</span>
+                </div>
+                <div class="flow-note">
+                  No confusing error codes. Customer knows exactly what to do
+                  next.
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-gray">E</div>
+              <div>
+                <div class="flow-title">
+                  Refund completed with full audit trail
+                </div>
+                <div class="flow-note">
+                  All status changes logged with timestamps. SLA tracked
+                  end-to-end.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #1d9e75"></div>
+              Automated
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #378add"></div>
+              Self-serve
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #888780"></div>
+              Start / End
+            </div>
+          </div>
+        </div>
+
+        <!-- DIAGRAM 3 — SWIMLANE -->
+        <div class="diag-wrap">
+          <div class="diag-eyebrow">Diagram 3 of 5</div>
+          <div class="diag-title">
+            Swimlane Diagram — Who does what in the To-Be process
+          </div>
+          <div class="diag-sub">
+            3 lanes: Customer · Ops Agent · System / Platform
+          </div>
+          <div class="svg-scroll">
+            <svg
+              width="100%"
+              viewBox="0 0 620 520"
+              role="img"
+              style="
+                font-family: &quot;Inter&quot;, sans-serif;
+                min-width: 460px;
+              "
+            >
+              <title>Refund Process Swimlane</title>
+              <desc>
+                Swimlane showing responsibilities across Customer, Ops Agent,
+                and System lanes
+              </desc>
+              <defs>
+                <marker
+                  id="sw1"
+                  viewBox="0 0 10 10"
+                  refX="8"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto-start-reverse"
+                >
+                  <path
+                    d="M2 1L8 5L2 9"
+                    fill="none"
+                    stroke="#5F5E5A"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </marker>
+              </defs>
+
+              <!-- Lane backgrounds -->
+              <rect
+                x="0"
+                y="36"
+                width="200"
+                height="484"
+                fill="#E3F5F3"
+                opacity=".25"
+              />
+              <rect
+                x="200"
+                y="36"
+                width="200"
+                height="484"
+                fill="#E6F1FB"
+                opacity=".25"
+              />
+              <rect
+                x="400"
+                y="36"
+                width="220"
+                height="484"
+                fill="#FAEEDA"
+                opacity=".25"
+              />
+
+              <!-- Lane headers -->
+              <rect x="0" y="0" width="200" height="36" fill="#E3F5F3" />
+              <text
+                x="100"
+                y="22"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="13"
+                font-weight="500"
+                fill="#085041"
+              >
+                Customer
+              </text>
+              <rect x="200" y="0" width="200" height="36" fill="#E6F1FB" />
+              <text
+                x="300"
+                y="22"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="13"
+                font-weight="500"
+                fill="#0C447C"
+              >
+                Ops Agent
+              </text>
+              <rect x="400" y="0" width="220" height="36" fill="#FAEEDA" />
+              <text
+                x="510"
+                y="22"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="13"
+                font-weight="500"
+                fill="#633806"
+              >
+                System / Platform
+              </text>
+
+              <!-- Dividers -->
+              <line
+                x1="200"
+                y1="0"
+                x2="200"
+                y2="520"
+                stroke="#E5E7EB"
+                stroke-width=".5"
+              />
+              <line
+                x1="400"
+                y1="0"
+                x2="400"
+                y2="520"
+                stroke="#E5E7EB"
+                stroke-width=".5"
+              />
+              <line
+                x1="620"
+                y1="0"
+                x2="620"
+                y2="520"
+                stroke="#E5E7EB"
+                stroke-width=".5"
+              />
+
+              <!-- ROW 1 -->
+              <rect
+                x="10"
+                y="52"
+                width="175"
+                height="44"
+                rx="6"
+                fill="#E3F5F3"
+                stroke="#9FE1CB"
+                stroke-width=".5"
+              />
+              <text
+                x="97"
+                y="70"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#085041"
+              >
+                Submits refund request
+              </text>
+              <text
+                x="97"
+                y="86"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#0F6E56"
+              >
+                App / website / agent
+              </text>
+              <line
+                x1="185"
+                y1="74"
+                x2="410"
+                y2="74"
+                stroke="#5F5E5A"
+                stroke-width=".5"
+                stroke-dasharray="4 3"
+                marker-end="url(#sw1)"
+              />
+
+              <!-- ROW 2 — system validates -->
+              <rect
+                x="410"
+                y="118"
+                width="195"
+                height="44"
+                rx="6"
+                fill="#FAEEDA"
+                stroke="#FAC775"
+                stroke-width=".5"
+              />
+              <text
+                x="507"
+                y="136"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#633806"
+              >
+                Auto-validates eligibility
+              </text>
+              <text
+                x="507"
+                y="152"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#854F0B"
+              >
+                Standard → auto-approve
+              </text>
+              <line
+                x1="410"
+                y1="140"
+                x2="392"
+                y2="140"
+                stroke="#5F5E5A"
+                stroke-width=".5"
+                marker-end="url(#sw1)"
+              />
+
+              <!-- Agent reviews edge cases -->
+              <rect
+                x="210"
+                y="118"
+                width="175"
+                height="44"
+                rx="6"
+                fill="#E6F1FB"
+                stroke="#B5D4F4"
+                stroke-width=".5"
+              />
+              <text
+                x="297"
+                y="136"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#0C447C"
+              >
+                Reviews edge cases only
+              </text>
+              <text
+                x="297"
+                y="152"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#185FA5"
+              >
+                Non-standard refunds
+              </text>
+              <line
+                x1="297"
+                y1="162"
+                x2="297"
+                y2="182"
+                stroke="#5F5E5A"
+                stroke-width=".5"
+                stroke-dasharray="3 3"
+              />
+
+              <!-- System initiates refund -->
+              <rect
+                x="410"
+                y="188"
+                width="195"
+                height="44"
+                rx="6"
+                fill="#FAEEDA"
+                stroke="#FAC775"
+                stroke-width=".5"
+              />
+              <text
+                x="507"
+                y="206"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#633806"
+              >
+                Initiates refund automatically
+              </text>
+              <text
+                x="507"
+                y="222"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#854F0B"
+              >
+                Within 4 hours of approval
+              </text>
+
+              <!-- System sends notification -->
+              <rect
+                x="410"
+                y="258"
+                width="195"
+                height="44"
+                rx="6"
+                fill="#FAEEDA"
+                stroke="#FAC775"
+                stroke-width=".5"
+              />
+              <text
+                x="507"
+                y="276"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#633806"
+              >
+                Sends status notification
+              </text>
+              <text
+                x="507"
+                y="292"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#854F0B"
+              >
+                SMS + email at every state change
+              </text>
+              <line
+                x1="410"
+                y1="280"
+                x2="192"
+                y2="280"
+                stroke="#5F5E5A"
+                stroke-width=".5"
+                marker-end="url(#sw1)"
+              />
+
+              <!-- Customer sees status -->
+              <rect
+                x="10"
+                y="258"
+                width="175"
+                height="44"
+                rx="6"
+                fill="#E3F5F3"
+                stroke="#9FE1CB"
+                stroke-width=".5"
+              />
+              <text
+                x="97"
+                y="276"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#085041"
+              >
+                Sees status on order page
+              </text>
+              <text
+                x="97"
+                y="292"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#0F6E56"
+              >
+                No need to call support
+              </text>
+              <line
+                x1="97"
+                y1="302"
+                x2="97"
+                y2="330"
+                stroke="#5F5E5A"
+                stroke-width=".5"
+                stroke-dasharray="3 3"
+              />
+
+              <!-- System logs + updates -->
+              <rect
+                x="410"
+                y="328"
+                width="195"
+                height="44"
+                rx="6"
+                fill="#FAEEDA"
+                stroke="#FAC775"
+                stroke-width=".5"
+              />
+              <text
+                x="507"
+                y="346"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#633806"
+              >
+                Updates refund status log
+              </text>
+              <text
+                x="507"
+                y="362"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#854F0B"
+              >
+                Audit trail maintained
+              </text>
+
+              <!-- Customer receives refund -->
+              <rect
+                x="10"
+                y="398"
+                width="175"
+                height="44"
+                rx="6"
+                fill="#E3F5F3"
+                stroke="#9FE1CB"
+                stroke-width=".5"
+              />
+              <text
+                x="97"
+                y="416"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#085041"
+              >
+                Refund credited to account
+              </text>
+              <text
+                x="97"
+                y="432"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#0F6E56"
+              >
+                Notified automatically
+              </text>
+
+              <!-- CSAT -->
+              <rect
+                x="410"
+                y="468"
+                width="195"
+                height="36"
+                rx="6"
+                fill="#FAEEDA"
+                stroke="#FAC775"
+                stroke-width=".5"
+              />
+              <text
+                x="507"
+                y="490"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#633806"
+              >
+                Sends CSAT survey
+              </text>
+
+              <!-- SLA Monitor -->
+              <rect
+                x="210"
+                y="398"
+                width="175"
+                height="44"
+                rx="6"
+                fill="#E6F1FB"
+                stroke="#B5D4F4"
+                stroke-width=".5"
+              />
+              <text
+                x="297"
+                y="416"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#0C447C"
+              >
+                Monitors SLA compliance
+              </text>
+              <text
+                x="297"
+                y="432"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#185FA5"
+              >
+                Dashboard alert at 80%
+              </text>
+            </svg>
+          </div>
+          <div class="legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #1d9e75"></div>
+              Customer
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #378add"></div>
+              Ops Agent
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #ba7517"></div>
+              System / Platform
+            </div>
+          </div>
+        </div>
+
+        <!-- DIAGRAM 4 — STAKEHOLDER MAP -->
+        <div class="diag-wrap">
+          <div class="diag-eyebrow">Diagram 4 of 5</div>
+          <div class="diag-title">Stakeholder Power / Interest Map</div>
+          <div class="diag-sub">
+            7 stakeholders plotted by influence and interest level
+          </div>
+          <div class="svg-scroll">
+            <svg
+              width="100%"
+              viewBox="0 0 620 380"
+              role="img"
+              style="
+                font-family: &quot;Inter&quot;, sans-serif;
+                min-width: 460px;
+              "
+            >
+              <title>Stakeholder Map</title>
+              <desc>
+                2x2 matrix plotting 7 stakeholders by power and interest
+              </desc>
+              <rect
+                x="50"
+                y="20"
+                width="560"
+                height="340"
+                fill="none"
+                stroke="#E5E7EB"
+                stroke-width=".5"
+                rx="4"
+              />
+              <line
+                x1="330"
+                y1="20"
+                x2="330"
+                y2="360"
+                stroke="#E5E7EB"
+                stroke-width=".5"
+                stroke-dasharray="4 4"
+              />
+              <line
+                x1="50"
+                y1="190"
+                x2="610"
+                y2="190"
+                stroke="#E5E7EB"
+                stroke-width=".5"
+                stroke-dasharray="4 4"
+              />
+              <rect
+                x="330"
+                y="20"
+                width="280"
+                height="170"
+                fill="#DCFCE7"
+                opacity=".3"
+              />
+              <rect
+                x="50"
+                y="20"
+                width="280"
+                height="170"
+                fill="#FEF3CD"
+                opacity=".3"
+              />
+              <text
+                x="355"
+                y="40"
+                font-size="12"
+                font-weight="500"
+                fill="#166534"
+              >
+                Manage closely
+              </text>
+              <text
+                x="65"
+                y="40"
+                font-size="12"
+                font-weight="500"
+                fill="#B45309"
+              >
+                Keep satisfied
+              </text>
+              <text
+                x="65"
+                y="210"
+                font-size="12"
+                font-weight="500"
+                fill="#6B7280"
+              >
+                Monitor
+              </text>
+              <text
+                x="355"
+                y="210"
+                font-size="12"
+                font-weight="500"
+                fill="#1352A2"
+              >
+                Keep informed
+              </text>
+              <text
+                x="310"
+                y="375"
+                text-anchor="middle"
+                font-size="11"
+                fill="#6B7280"
+              >
+                Interest →
+              </text>
+              <text
+                x="18"
+                y="190"
+                text-anchor="middle"
+                font-size="11"
+                fill="#6B7280"
+                transform="rotate(-90,18,190)"
+              >
+                Power →
+              </text>
+              <!-- Manage closely -->
+              <rect
+                x="340"
+                y="40"
+                width="140"
+                height="44"
+                rx="6"
+                fill="#E3F5F3"
+                stroke="#9FE1CB"
+                stroke-width=".5"
+              />
+              <text
+                x="410"
+                y="58"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#085041"
+              >
+                Product Manager
+              </text>
+              <text
+                x="410"
+                y="74"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#0F6E56"
+              >
+                Lead sponsor. High/High.
+              </text>
+              <rect
+                x="340"
+                y="112"
+                width="130"
+                height="44"
+                rx="6"
+                fill="#E6F1FB"
+                stroke="#B5D4F4"
+                stroke-width=".5"
+              />
+              <text
+                x="405"
+                y="130"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#0C447C"
+              >
+                Ops Agent
+              </text>
+              <text
+                x="405"
+                y="146"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#185FA5"
+              >
+                Key informant. High/Med.
+              </text>
+              <rect
+                x="490"
+                y="112"
+                width="110"
+                height="44"
+                rx="6"
+                fill="#E3F5F3"
+                stroke="#9FE1CB"
+                stroke-width=".5"
+              />
+              <text
+                x="545"
+                y="130"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#085041"
+              >
+                Quality Mgr
+              </text>
+              <text
+                x="545"
+                y="146"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#0F6E56"
+              >
+                SLA owner.
+              </text>
+              <!-- Keep satisfied -->
+              <rect
+                x="60"
+                y="40"
+                width="140"
+                height="44"
+                rx="6"
+                fill="#FAEEDA"
+                stroke="#FAC775"
+                stroke-width=".5"
+              />
+              <text
+                x="130"
+                y="58"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#633806"
+              >
+                Finance Manager
+              </text>
+              <text
+                x="130"
+                y="74"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#854F0B"
+              >
+                High power. Med interest.
+              </text>
+              <rect
+                x="60"
+                y="112"
+                width="140"
+                height="44"
+                rx="6"
+                fill="#FAEEDA"
+                stroke="#FAC775"
+                stroke-width=".5"
+              />
+              <text
+                x="130"
+                y="130"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#633806"
+              >
+                Engineering Lead
+              </text>
+              <text
+                x="130"
+                y="146"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#854F0B"
+              >
+                High power. Med interest.
+              </text>
+              <!-- Keep informed -->
+              <rect
+                x="350"
+                y="220"
+                width="125"
+                height="44"
+                rx="6"
+                fill="#E6F1FB"
+                stroke="#B5D4F4"
+                stroke-width=".5"
+              />
+              <text
+                x="412"
+                y="238"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#0C447C"
+              >
+                Customer
+              </text>
+              <text
+                x="412"
+                y="254"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#185FA5"
+              >
+                High interest. Low power.
+              </text>
+              <!-- Monitor -->
+              <rect
+                x="60"
+                y="280"
+                width="130"
+                height="44"
+                rx="6"
+                fill="#F1EFE8"
+                stroke="#B4B2A9"
+                stroke-width=".5"
+              />
+              <text
+                x="125"
+                y="298"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#444441"
+              >
+                CRM / Data Team
+              </text>
+              <text
+                x="125"
+                y="314"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#5F5E5A"
+              >
+                Low/Med. Informed.
+              </text>
+            </svg>
+          </div>
+        </div>
+
+        <!-- DIAGRAM 5 — GAP MATRIX -->
+        <div class="diag-wrap">
+          <div class="diag-eyebrow">Diagram 5 of 5</div>
+          <div class="diag-title">Gap Analysis Priority Matrix</div>
+          <div class="diag-sub">
+            6 gaps plotted by business impact vs effort to fix
+          </div>
+          <div class="svg-scroll">
+            <svg
+              width="100%"
+              viewBox="0 0 620 400"
+              role="img"
+              style="
+                font-family: &quot;Inter&quot;, sans-serif;
+                min-width: 460px;
+              "
+            >
+              <title>Gap Priority Matrix</title>
+              <desc>
+                2x2 matrix showing 6 process gaps by impact and effort
+              </desc>
+              <rect
+                x="50"
+                y="20"
+                width="560"
+                height="360"
+                fill="none"
+                stroke="#E5E7EB"
+                stroke-width=".5"
+                rx="4"
+              />
+              <line
+                x1="330"
+                y1="20"
+                x2="330"
+                y2="380"
+                stroke="#E5E7EB"
+                stroke-width=".5"
+                stroke-dasharray="4 4"
+              />
+              <line
+                x1="50"
+                y1="200"
+                x2="610"
+                y2="200"
+                stroke="#E5E7EB"
+                stroke-width=".5"
+                stroke-dasharray="4 4"
+              />
+              <rect
+                x="50"
+                y="20"
+                width="280"
+                height="180"
+                fill="#DCFCE7"
+                opacity=".3"
+              />
+              <rect
+                x="330"
+                y="20"
+                width="280"
+                height="180"
+                fill="#FEF3CD"
+                opacity=".3"
+              />
+              <text
+                x="65"
+                y="42"
+                font-size="12"
+                font-weight="500"
+                fill="#166534"
+              >
+                Quick wins — DO FIRST
+              </text>
+              <text
+                x="345"
+                y="42"
+                font-size="12"
+                font-weight="500"
+                fill="#B45309"
+              >
+                Strategic investments
+              </text>
+              <text
+                x="65"
+                y="220"
+                font-size="12"
+                font-weight="500"
+                fill="#6B7280"
+              >
+                Low priority
+              </text>
+              <text
+                x="345"
+                y="220"
+                font-size="12"
+                font-weight="500"
+                fill="#1352A2"
+              >
+                Fill-ins
+              </text>
+              <text
+                x="310"
+                y="395"
+                text-anchor="middle"
+                font-size="11"
+                fill="#6B7280"
+              >
+                Effort to fix →
+              </text>
+              <!-- Quick wins -->
+              <rect
+                x="60"
+                y="50"
+                width="148"
+                height="52"
+                rx="8"
+                fill="#E3F5F3"
+                stroke="#9FE1CB"
+                stroke-width=".5"
+              />
+              <text
+                x="134"
+                y="70"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#085041"
+              >
+                Status visibility on order page
+              </text>
+              <text
+                x="134"
+                y="88"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#0F6E56"
+              >
+                Low effort. High impact. 30% ticket drop.
+              </text>
+              <rect
+                x="60"
+                y="122"
+                width="148"
+                height="52"
+                rx="8"
+                fill="#E3F5F3"
+                stroke="#9FE1CB"
+                stroke-width=".5"
+              />
+              <text
+                x="134"
+                y="140"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#085041"
+              >
+                Status notifications
+              </text>
+              <text
+                x="134"
+                y="158"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#0F6E56"
+              >
+                Config change only. High impact.
+              </text>
+              <!-- Strategic -->
+              <rect
+                x="345"
+                y="50"
+                width="145"
+                height="52"
+                rx="8"
+                fill="#FAEEDA"
+                stroke="#FAC775"
+                stroke-width=".5"
+              />
+              <text
+                x="417"
+                y="68"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#633806"
+              >
+                Auto-trigger for refunds
+              </text>
+              <text
+                x="417"
+                y="86"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#854F0B"
+              >
+                Medium effort. High long-term ROI.
+              </text>
+              <rect
+                x="502"
+                y="122"
+                width="100"
+                height="52"
+                rx="8"
+                fill="#FAEEDA"
+                stroke="#FAC775"
+                stroke-width=".5"
+              />
+              <text
+                x="552"
+                y="140"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#633806"
+              >
+                Live ops dashboard
+              </text>
+              <text
+                x="552"
+                y="158"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#854F0B"
+              >
+                BI build needed.
+              </text>
+              <!-- Fill-ins -->
+              <rect
+                x="345"
+                y="240"
+                width="145"
+                height="52"
+                rx="8"
+                fill="#E6F1FB"
+                stroke="#B5D4F4"
+                stroke-width=".5"
+              />
+              <text
+                x="417"
+                y="258"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#0C447C"
+              >
+                Cross-team reporting
+              </text>
+              <text
+                x="417"
+                y="276"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#185FA5"
+              >
+                CRM + product shared dashboard.
+              </text>
+              <rect
+                x="345"
+                y="316"
+                width="145"
+                height="52"
+                rx="8"
+                fill="#E6F1FB"
+                stroke="#B5D4F4"
+                stroke-width=".5"
+              />
+              <text
+                x="417"
+                y="334"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="12"
+                font-weight="500"
+                fill="#0C447C"
+              >
+                Amount validation engine
+              </text>
+              <text
+                x="417"
+                y="352"
+                text-anchor="middle"
+                dominant-baseline="central"
+                font-size="11"
+                fill="#185FA5"
+              >
+                Overpayment prevention logic.
+              </text>
+            </svg>
+          </div>
+          <p
+            style="
+              font-size: 13px;
+              color: var(--muted);
+              margin-top: 12px;
+              padding: 12px 14px;
+              background: var(--surface);
+              border-radius: 8px;
+              line-height: 1.6;
+            "
+          >
+            <strong style="color: var(--ink)">Key insight:</strong> Refund
+            status visibility and automated notifications are the highest-return
+            quick wins — both achievable with configuration changes, no major
+            engineering effort, yet expected to reduce support ticket volume by
+            30%.
+          </p>
+        </div>
+      </section>
+
+      <!-- ROOT CAUSE ANALYSIS -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-amber">🎯</div>
+          <div class="section-title">
+            Root Cause Analysis <span>5-Whys Method</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label red">
+            Problem: 35% increase in refund-related support tickets
+          </div>
+          <div class="flow-wrap">
+            <div class="flow-step">
+              <div class="flow-dot fd-red">W1</div>
+              <div>
+                <div class="flow-title">
+                  Customers are calling to ask about refund status
+                </div>
+                <div class="flow-note">
+                  → There is no visible refund status in the app or website
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-red">W2</div>
+              <div>
+                <div class="flow-title">
+                  Refund status was not built into the product
+                </div>
+                <div class="flow-note">
+                  → It was in the original product roadmap but deprioritised in
+                  favour of payment feature development
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-red">W3</div>
+              <div>
+                <div class="flow-title">
+                  It was deprioritised in the roadmap
+                </div>
+                <div class="flow-note">
+                  → The product team did not have quantified data on refund
+                  contact volume at time of prioritisation
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-red">W4</div>
+              <div>
+                <div class="flow-title">
+                  Contact volume data was unavailable to the product team
+                </div>
+                <div class="flow-note">
+                  → CRM and product teams operate in silos — no shared reporting
+                  dashboard between them
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-teal">RC</div>
+              <div>
+                <div class="flow-title" style="color: var(--teal)">
+                  Root Cause: Organisational silo between CRM Ops and Product
+                  teams
+                </div>
+                <div class="flow-note">
+                  Fix requires both the feature (refund status UI) AND a shared
+                  cross-functional reporting framework. Fixing only the feature
+                  without fixing data sharing will cause the same prioritisation
+                  failure next time.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GAP ANALYSIS TABLE -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-red">🔍</div>
+          <div class="section-title">Gap Analysis</div>
+        </div>
+        <div class="card">
+          <div class="table-scroll">
+            <div class="gap-wrap">
+              <div class="gap-row header">
+                <div class="gap-cell">Gap Area</div>
+                <div class="gap-cell">Current State</div>
+                <div class="gap-cell">Desired State</div>
+                <div class="gap-cell">Priority</div>
+              </div>
+              <div class="gap-row">
+                <div
+                  class="gap-cell"
+                  style="font-weight: 500; color: var(--navy)"
+                >
+                  Refund status visibility
+                </div>
+                <div class="gap-cell">
+                  No customer-facing status — customer must call to check
+                </div>
+                <div class="gap-cell">
+                  Real-time status on order page — 5 states, colour-coded
+                </div>
+                <div class="gap-cell">
+                  <span class="badge badge-red">HIGH</span>
+                </div>
+              </div>
+              <div class="gap-row">
+                <div
+                  class="gap-cell"
+                  style="font-weight: 500; color: var(--navy)"
+                >
+                  Status notifications
+                </div>
+                <div class="gap-cell">
+                  No automated updates sent to customer
+                </div>
+                <div class="gap-cell">
+                  Trigger notification at every status change event
+                </div>
+                <div class="gap-cell">
+                  <span class="badge badge-red">HIGH</span>
+                </div>
+              </div>
+              <div class="gap-row">
+                <div
+                  class="gap-cell"
+                  style="font-weight: 500; color: var(--navy)"
+                >
+                  Auto-trigger logic
+                </div>
+                <div class="gap-cell">
+                  Manual initiation for all refunds regardless of type
+                </div>
+                <div class="gap-cell">
+                  Auto-trigger for standard cancellations within 4 hours
+                </div>
+                <div class="gap-cell">
+                  <span class="badge badge-amber">MED</span>
+                </div>
+              </div>
+              <div class="gap-row">
+                <div
+                  class="gap-cell"
+                  style="font-weight: 500; color: var(--navy)"
+                >
+                  SLA monitoring
+                </div>
+                <div class="gap-cell">
+                  Retrospective reports only — no real-time visibility
+                </div>
+                <div class="gap-cell">
+                  Live compliance dashboard with breach risk alerts
+                </div>
+                <div class="gap-cell">
+                  <span class="badge badge-amber">MED</span>
+                </div>
+              </div>
+              <div class="gap-row">
+                <div
+                  class="gap-cell"
+                  style="font-weight: 500; color: var(--navy)"
+                >
+                  Cross-team reporting
+                </div>
+                <div class="gap-cell">
+                  CRM and product use separate tools — no shared data
+                </div>
+                <div class="gap-cell">
+                  Shared ops dashboard informing backlog decisions
+                </div>
+                <div class="gap-cell">
+                  <span class="badge badge-amber">MED</span>
+                </div>
+              </div>
+              <div class="gap-row">
+                <div
+                  class="gap-cell"
+                  style="font-weight: 500; color: var(--navy)"
+                >
+                  Failure communication
+                </div>
+                <div class="gap-cell">
+                  Error code displayed — customer doesn't understand it
+                </div>
+                <div class="gap-cell">
+                  Plain-language reason + support link for failed refunds
+                </div>
+                <div class="gap-cell">
+                  <span class="badge badge-teal">LOW</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- REQUIREMENTS -->
+      <section class="section" id="requirements">
+        <div class="section-head">
+          <div class="section-icon si-blue">📋</div>
+          <div class="section-title">
+            Business &amp; Functional Requirements
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-label blue">Business Requirements (BRD)</div>
+            <div class="table-scroll">
+              <table class="proj-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Requirement</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="code-pill">BR-01</span></td>
+                    <td>
+                      Customers shall be able to view real-time refund status on
+                      the order detail page
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><span class="code-pill">BR-02</span></td>
+                    <td>
+                      Customers shall receive automated notification at every
+                      refund status change
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><span class="code-pill">BR-03</span></td>
+                    <td>
+                      Failed refunds shall display a plain-language reason and
+                      support contact link
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><span class="code-pill">BR-04</span></td>
+                    <td>
+                      Operations team shall have a bulk refund processing view
+                      with filters
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><span class="code-pill">BR-05</span></td>
+                    <td>
+                      System shall auto-trigger refund initiation within 4 hours
+                      of eligible cancellations
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><span class="code-pill">BR-06</span></td>
+                    <td>
+                      Refund amount shall be validated against original order
+                      value before processing
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-label teal">Functional Requirements (FRD)</div>
+            <div class="table-scroll">
+              <table class="proj-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Requirement</th>
+                    <th>BR</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="code-pill">FR-01</span></td>
+                    <td>
+                      Status page shall load within 2 seconds and display 5
+                      states with colour coding
+                    </td>
+                    <td><span class="badge badge-blue">BR-01</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="code-pill">FR-02</span></td>
+                    <td>
+                      Email/SMS notification shall fire within 5 minutes of each
+                      status change
+                    </td>
+                    <td><span class="badge badge-blue">BR-02</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="code-pill">FR-03</span></td>
+                    <td>
+                      Failed refund message shall show plain-language reason,
+                      not error code
+                    </td>
+                    <td><span class="badge badge-blue">BR-03</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="code-pill">FR-04</span></td>
+                    <td>
+                      Bulk view shall support filter by status, date, amount,
+                      category; select up to 50
+                    </td>
+                    <td><span class="badge badge-blue">BR-04</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="code-pill">FR-05</span></td>
+                    <td>
+                      Auto-trigger shall fire within 4 hours of cancellation
+                      approval for eligible orders
+                    </td>
+                    <td><span class="badge badge-blue">BR-05</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="code-pill">FR-06</span></td>
+                    <td>
+                      Amount validation shall run on every refund; mismatches
+                      routed to supervisor
+                    </td>
+                    <td><span class="badge badge-blue">BR-06</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label amber">Non-Functional Requirements</div>
+          <div class="three-col">
+            <div>
+              <p
+                style="
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: var(--amber);
+                  margin-bottom: 4px;
+                "
+              >
+                Performance
+              </p>
+              <p style="font-size: 13px; color: var(--body)">
+                Status page loads within 2 seconds of customer access
+              </p>
+            </div>
+            <div>
+              <p
+                style="
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: var(--amber);
+                  margin-bottom: 4px;
+                "
+              >
+                Availability
+              </p>
+              <p style="font-size: 13px; color: var(--body)">
+                Refund status module maintains 99.5% uptime
+              </p>
+            </div>
+            <div>
+              <p
+                style="
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: var(--amber);
+                  margin-bottom: 4px;
+                "
+              >
+                Scalability
+              </p>
+              <p style="font-size: 13px; color: var(--body)">
+                System handles 10,000+ concurrent refund status requests
+              </p>
+            </div>
+            <div>
+              <p
+                style="
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: var(--amber);
+                  margin-bottom: 4px;
+                "
+              >
+                Compliance
+              </p>
+              <p style="font-size: 13px; color: var(--body)">
+                All refund records retained minimum 5 years for audit
+              </p>
+            </div>
+            <div>
+              <p
+                style="
+                  font-size: 12px;
+                  font-weight: 600;
+                  color: var(--amber);
+                  margin-bottom: 4px;
+                "
+              >
+                Security
+              </p>
+              <p style="font-size: 13px; color: var(--body)">
+                Status page accessible via deep-link without login for 30 days
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- USER STORIES -->
+      <section class="section" id="stories">
+        <div class="section-head">
+          <div class="section-icon si-teal">📖</div>
+          <div class="section-title">
+            User Stories
+            <span>10 INVEST-format stories with acceptance criteria</span>
+          </div>
+        </div>
+        <div class="story-card">
+          <div class="story-id">US-01 · Customer</div>
+          <div class="story-text">
+            As a customer, I want to see my refund status on the order page so
+            that I don't need to call support.
+          </div>
+          <div class="story-ac">
+            <strong>AC:</strong> Status visible within 2 seconds; shows 5 states
+            (Pending/Approved/Processing/Completed/Failed) with colour coding;
+            updates in real-time without page refresh.
+          </div>
+        </div>
+        <div class="story-card">
+          <div class="story-id">US-02 · Customer</div>
+          <div class="story-text">
+            As a customer, I want email and SMS notifications at each status
+            change so that I am informed without having to check manually.
+          </div>
+          <div class="story-ac">
+            <strong>AC:</strong> Notification sends within 5 minutes of status
+            change; includes amount, expected credit date, and reference number.
+          </div>
+        </div>
+        <div class="story-card">
+          <div class="story-id">US-03 · Customer</div>
+          <div class="story-text">
+            As a customer, when my refund fails I want to know why in plain
+            language so that I can take appropriate action.
+          </div>
+          <div class="story-ac">
+            <strong>AC:</strong> Failure reason displayed in plain language (no
+            error codes); support chat link visible; case reference number
+            provided.
+          </div>
+        </div>
+        <div class="story-card">
+          <div class="story-id">US-04 · Ops Agent</div>
+          <div class="story-text">
+            As an operations agent, I want to process bulk refunds with filters
+            so that I can prioritise overdue cases efficiently.
+          </div>
+          <div class="story-ac">
+            <strong>AC:</strong> Filter by status, date, amount, category; bulk
+            selection up to 50 cases; status updates logged with agent ID and
+            timestamp.
+          </div>
+        </div>
+        <div class="story-card">
+          <div class="story-id">US-05 · Finance Manager</div>
+          <div class="story-text">
+            As a finance manager, I want refund volume and value reports by
+            category so that I can identify cost drivers.
+          </div>
+          <div class="story-ac">
+            <strong>AC:</strong> Report shows count + value by category;
+            daily/weekly/monthly views; exportable to Excel in one click.
+          </div>
+        </div>
+        <div class="story-card">
+          <div class="story-id">US-06 · Quality Manager</div>
+          <div class="story-text">
+            As a quality manager, I want to see refund SLA compliance % on a
+            dashboard so that I can manage team performance proactively.
+          </div>
+          <div class="story-ac">
+            <strong>AC:</strong> Dashboard shows SLA compliance %, average
+            resolution time, and breach count by agent; refreshes every 15
+            minutes.
+          </div>
+        </div>
+        <div class="story-card">
+          <div class="story-id">US-07 · Ops Agent</div>
+          <div class="story-text">
+            As an operations agent, I want auto-triggered refund initiation so
+            that I don't need to manually process standard eligible
+            cancellations.
+          </div>
+          <div class="story-ac">
+            <strong>AC:</strong> Auto-trigger fires within 4 hours of approved
+            cancellation for eligible orders; non-standard cases flagged in
+            manual review queue with reason.
+          </div>
+        </div>
+        <div class="story-card">
+          <div class="story-id">US-08 · Finance Manager</div>
+          <div class="story-text">
+            As a finance manager, I want amount validation before processing so
+            that overpayments are prevented.
+          </div>
+          <div class="story-ac">
+            <strong>AC:</strong> Validation check runs on every refund
+            initiation; mismatches blocked and routed to supervisor queue with
+            discrepancy reason shown.
+          </div>
+        </div>
+        <div class="story-card">
+          <div class="story-id">US-09 · Customer</div>
+          <div class="story-text">
+            As a customer, I want to track my refund from a link in my
+            cancellation confirmation email so that I don't need to log into the
+            app.
+          </div>
+          <div class="story-ac">
+            <strong>AC:</strong> Deep-link in cancellation email opens refund
+            status page directly; no login required for status view; link valid
+            for 30 days.
+          </div>
+        </div>
+        <div class="story-card">
+          <div class="story-id">US-10 · Ops Manager</div>
+          <div class="story-text">
+            As an operations manager, I want a real-time refund queue dashboard
+            so that I can see queue health and SLA risk at a glance.
+          </div>
+          <div class="story-ac">
+            <strong>AC:</strong> Dashboard shows active queue count, SLA breach
+            risk cases, average age of open cases, and today's processed count;
+            accessible on mobile.
+          </div>
+        </div>
+      </section>
+
+      <!-- RTM -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-green">🔗</div>
+          <div class="section-title">Requirements Traceability Matrix</div>
+        </div>
+        <div class="card">
+          <div class="table-scroll">
+            <table class="rtm-table">
+              <thead>
+                <tr>
+                  <th>BR #</th>
+                  <th>Business Requirement</th>
+                  <th>FR #</th>
+                  <th>User Story</th>
+                  <th>UAT</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="code-pill">BR-01</span></td>
+                  <td>Real-time refund status on order page</td>
+                  <td><span class="code-pill">FR-01</span></td>
+                  <td><span class="badge badge-teal">US-01</span></td>
+                  <td>UAT-01</td>
+                </tr>
+                <tr>
+                  <td><span class="code-pill">BR-02</span></td>
+                  <td>Automated notifications at every status change</td>
+                  <td><span class="code-pill">FR-02</span></td>
+                  <td><span class="badge badge-teal">US-02</span></td>
+                  <td>UAT-02</td>
+                </tr>
+                <tr>
+                  <td><span class="code-pill">BR-03</span></td>
+                  <td>Plain-language failure reason + support link</td>
+                  <td><span class="code-pill">FR-03</span></td>
+                  <td><span class="badge badge-teal">US-03</span></td>
+                  <td>UAT-03</td>
+                </tr>
+                <tr>
+                  <td><span class="code-pill">BR-04</span></td>
+                  <td>Bulk refund processing view with filters</td>
+                  <td><span class="code-pill">FR-04</span></td>
+                  <td><span class="badge badge-teal">US-04</span></td>
+                  <td>UAT-04</td>
+                </tr>
+                <tr>
+                  <td><span class="code-pill">BR-05</span></td>
+                  <td>Auto-trigger refund within 4 hours</td>
+                  <td><span class="code-pill">FR-05</span></td>
+                  <td><span class="badge badge-teal">US-07</span></td>
+                  <td>UAT-05</td>
+                </tr>
+                <tr>
+                  <td><span class="code-pill">BR-06</span></td>
+                  <td>Amount validation before processing</td>
+                  <td><span class="code-pill">FR-06</span></td>
+                  <td><span class="badge badge-teal">US-08</span></td>
+                  <td>UAT-06</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- JIRA BOARD -->
+      <section class="section" id="jira">
+        <div class="section-head">
+          <div class="section-icon si-blue">🗂</div>
+          <div class="section-title">
+            Mock JIRA Sprint Board
+            <span>Refund Experience Improvement — Sprint 1</span>
+          </div>
+        </div>
+        <div class="info-box">
+          <strong>Epic:</strong> Refund Experience Improvement &nbsp;·&nbsp;
+          <strong>Sprint goal:</strong> Deliver customer-facing refund status
+          visibility and notification triggers &nbsp;·&nbsp;
+          <strong>Sprint duration:</strong> 2 weeks
+        </div>
+        <div class="jira-board">
+          <div class="jira-col">
+            <div class="jira-col-head todo">📋 To Do (4)</div>
+            <div class="jira-ticket">
+              <div class="jira-id">REF-07</div>
+              <div class="jira-title">
+                Build bulk refund processing view with status filters
+              </div>
+              <div class="jira-tags">
+                <span class="jira-tag jt-story">Story</span
+                ><span class="jira-tag jt-epic">US-04</span>
+              </div>
+            </div>
+            <div class="jira-ticket">
+              <div class="jira-id">REF-08</div>
+              <div class="jira-title">
+                Implement amount validation engine for overpayment prevention
+              </div>
+              <div class="jira-tags">
+                <span class="jira-tag jt-story">Story</span
+                ><span class="jira-tag jt-epic">US-08</span>
+              </div>
+            </div>
+            <div class="jira-ticket">
+              <div class="jira-id">REF-09</div>
+              <div class="jira-title">Build ops SLA compliance dashboard</div>
+              <div class="jira-tags">
+                <span class="jira-tag jt-story">Story</span
+                ><span class="jira-tag jt-epic">US-06</span>
+              </div>
+            </div>
+            <div class="jira-ticket">
+              <div class="jira-id">REF-10</div>
+              <div class="jira-title">
+                Finance report — refund volume and value by category
+              </div>
+              <div class="jira-tags">
+                <span class="jira-tag jt-story">Story</span
+                ><span class="jira-tag jt-epic">US-05</span>
+              </div>
+            </div>
+          </div>
+          <div class="jira-col">
+            <div class="jira-col-head progress">🔄 In Progress (3)</div>
+            <div class="jira-ticket">
+              <div class="jira-id">REF-01</div>
+              <div class="jira-title">
+                Implement real-time refund status widget on order detail page
+              </div>
+              <div class="jira-tags">
+                <span class="jira-tag jt-story">Story</span
+                ><span class="jira-tag jt-epic">US-01</span>
+              </div>
+            </div>
+            <div class="jira-ticket">
+              <div class="jira-id">REF-02</div>
+              <div class="jira-title">
+                Build email/SMS notification trigger on status change events
+              </div>
+              <div class="jira-tags">
+                <span class="jira-tag jt-story">Story</span
+                ><span class="jira-tag jt-epic">US-02</span>
+              </div>
+            </div>
+            <div class="jira-ticket">
+              <div class="jira-id">REF-BUG-01</div>
+              <div class="jira-title">
+                Status widget shows "Processing" for already-completed refunds —
+                UAT finding
+              </div>
+              <div class="jira-tags">
+                <span class="jira-tag jt-bug">Bug</span
+                ><span class="jira-tag jt-epic">UAT-01</span>
+              </div>
+            </div>
+          </div>
+          <div class="jira-col">
+            <div class="jira-col-head done">✅ Done (4)</div>
+            <div class="jira-ticket">
+              <div class="jira-id">REF-03</div>
+              <div class="jira-title">
+                Plain-language failure message + support chat deep-link
+              </div>
+              <div class="jira-tags">
+                <span class="jira-tag jt-story">Story</span
+                ><span class="jira-tag jt-epic">US-03</span>
+              </div>
+            </div>
+            <div class="jira-ticket">
+              <div class="jira-id">REF-05</div>
+              <div class="jira-title">
+                Auto-trigger refund initiation within 4 hours of eligible
+                cancellations
+              </div>
+              <div class="jira-tags">
+                <span class="jira-tag jt-story">Story</span
+                ><span class="jira-tag jt-epic">US-07</span>
+              </div>
+            </div>
+            <div class="jira-ticket">
+              <div class="jira-id">REF-06</div>
+              <div class="jira-title">
+                Deep-link in cancellation email — no-login status access for 30
+                days
+              </div>
+              <div class="jira-tags">
+                <span class="jira-tag jt-story">Story</span
+                ><span class="jira-tag jt-epic">US-09</span>
+              </div>
+            </div>
+            <div class="jira-ticket">
+              <div class="jira-id">REF-BUG-02</div>
+              <div class="jira-title">
+                Notification fires twice on same status change for users with
+                both SMS + email enabled
+              </div>
+              <div class="jira-tags">
+                <span class="jira-tag jt-bug">Bug</span
+                ><span class="jira-tag jt-epic">UAT-02</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DELIVERABLES -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-blue">📁</div>
+          <div class="section-title">BA Deliverables Produced</div>
+        </div>
+        <div class="del-grid">
+          <div class="del-card">
+            <div class="del-icon">📄</div>
+            <div class="del-num">01</div>
+            <div class="del-name">Business Requirements Document (BRD)</div>
+            <div class="del-tool">Google Docs — 6 BRs, scope, assumptions</div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">🔴</div>
+            <div class="del-num">02</div>
+            <div class="del-name">As-Is BPMN Process Map</div>
+            <div class="del-tool">5 pain points — manual & broken state</div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">🟢</div>
+            <div class="del-num">03</div>
+            <div class="del-name">To-Be BPMN Process Map</div>
+            <div class="del-tool">3 automation triggers — future state</div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">👥</div>
+            <div class="del-num">04</div>
+            <div class="del-name">
+              Stakeholder Analysis + Power/Interest Map
+            </div>
+            <div class="del-tool">7 stakeholders mapped and plotted</div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">🔍</div>
+            <div class="del-num">05</div>
+            <div class="del-name">Gap Analysis — 6 gaps prioritised</div>
+            <div class="del-tool">Google Sheets with priority matrix</div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">🎯</div>
+            <div class="del-num">06</div>
+            <div class="del-name">5-Whys Root Cause Analysis</div>
+            <div class="del-tool">
+              Traced to organisational silo — not just missing feature
+            </div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">📖</div>
+            <div class="del-num">07</div>
+            <div class="del-name">10 User Stories + Acceptance Criteria</div>
+            <div class="del-tool">Full INVEST format — Google Docs</div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">🔗</div>
+            <div class="del-num">08</div>
+            <div class="del-name">Requirements Traceability Matrix (RTM)</div>
+            <div class="del-tool">BR → FR → User Story → UAT linked</div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">🗂</div>
+            <div class="del-num">09</div>
+            <div class="del-name">Mock JIRA Sprint Board</div>
+            <div class="del-tool">
+              Epic → Stories → Bugs across 3 sprint columns
+            </div>
+          </div>
+        </div>
+      </section>
+
+   
+
+      <!-- AI TOOLS -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-blue">🤖</div>
+          <div class="section-title">AI Tools Used in This Project</div>
+        </div>
+        <div class="card">
+          <div class="ai-grid">
+            <div class="ai-card">
+              <div class="ai-stage">BRD Drafting</div>
+              <div class="ai-tool">Claude (Anthropic)</div>
+              <div class="ai-desc">
+                Used to generate first-draft BRD sections — each requirement
+                validated against real customer ops knowledge and refined for
+                measurability
+              </div>
+            </div>
+            <div class="ai-card">
+              <div class="ai-stage">User Stories</div>
+              <div class="ai-tool">ChatGPT (OpenAI)</div>
+              <div class="ai-desc">
+                Used to generate INVEST story structures — acceptance criteria
+                written and validated manually to ensure testability
+              </div>
+            </div>
+            <div class="ai-card">
+              <div class="ai-stage">RCA Structuring</div>
+              <div class="ai-tool">Claude (Anthropic)</div>
+              <div class="ai-desc">
+                Used to validate 5-Whys logic chain — confirmed root cause was
+                structural (silo) and not just symptomatic (missing feature)
+              </div>
+            </div>
+            <div class="ai-card">
+              <div class="ai-stage">Gap Analysis</div>
+              <div class="ai-tool">Gemini (Google)</div>
+              <div class="ai-desc">
+                Used to research industry-standard gap categories for refund
+                process improvement — validated against project context
+              </div>
+            </div>
+            <div class="ai-card">
+              <div class="ai-stage">JIRA Backlog</div>
+              <div class="ai-tool">ChatGPT (OpenAI)</div>
+              <div class="ai-desc">
+                Used to suggest realistic sprint structure and bug scenarios
+                from UAT — reviewed and edited to match the 10 user stories
+              </div>
+            </div>
+            <div class="ai-card">
+              <div class="ai-stage">Review &amp; QA</div>
+              <div class="ai-tool">Claude (Anthropic)</div>
+              <div class="ai-desc">
+                Used to review the complete project for BA gaps — asked "what
+                would a hiring manager say is missing?" before finalising
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <strong>Deepender Choudhary</strong> — Business Analyst Portfolio
+      &nbsp;·&nbsp; Project 2 of 5 &nbsp;·&nbsp; Gurugram, India<br />
+      <span style="margin-top: 6px; display: inline-block"
+        >deependerchoudhary2003@gmail.com &nbsp;·&nbsp; +91 9729880411</span
+      >
+    </footer>
+  </body>
+</html>

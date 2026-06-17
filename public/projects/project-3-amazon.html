@@ -1,0 +1,3289 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Project 3 — Amazon E-Commerce Sales Analytics | Deepender Choudhary
+    </title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --navy: #0b1f3a;
+        --orange: #c45000;
+        --orange-lt: #fef0e6;
+        --blue: #1352a2;
+        --blue-lt: #e8f0fc;
+        --teal: #0d7a6e;
+        --teal-lt: #e3f5f3;
+        --amber: #b45309;
+        --amber-lt: #fef3cd;
+        --red: #b91c1c;
+        --red-lt: #fef2f2;
+        --green: #166534;
+        --green-lt: #dcfce7;
+        --ink: #111827;
+        --body: #374151;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --surface: #f9fafb;
+        --white: #ffffff;
+        --amazon: #ff9900;
+        --amazon-dk: #c45000;
+        --amazon-navy: #131921;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #f3f4f6;
+        color: var(--ink);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      /* NAV */
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--amazon-navy);
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
+      .nav-brand {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--amazon);
+        letter-spacing: -0.5px;
+        text-decoration: none;
+      }
+      .nav-brand span {
+        color: #fff;
+        font-weight: 300;
+      }
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .nav-badge {
+        font-size: 11px;
+        font-weight: 600;
+        background: var(--amazon);
+        color: #000;
+        padding: 4px 12px;
+        border-radius: 20px;
+      }
+      .nav-links {
+        display: none;
+      }
+      @media (min-width: 640px) {
+        .nav-links {
+          display: flex;
+          gap: 20px;
+          list-style: none;
+        }
+        .nav-links a {
+          font-size: 13px;
+          color: rgba(255, 255, 255, 0.7);
+          text-decoration: none;
+        }
+        .nav-links a:hover {
+          color: var(--amazon);
+        }
+      }
+
+      /* PAGE */
+      .page-wrap {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 0 16px 80px;
+      }
+      @media (min-width: 640px) {
+        .page-wrap {
+          padding: 0 24px 80px;
+        }
+      }
+
+      /* HERO */
+      .hero {
+        padding: 40px 0 32px;
+        border-bottom: 2px solid var(--border);
+        margin-bottom: 32px;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-bg {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          #131921 0%,
+          #1a2a3a 50%,
+          #232f3e 100%
+        );
+        border-radius: 16px;
+        z-index: 0;
+      }
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        padding: 32px 28px;
+      }
+      .amazon-logo-area {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+      .amazon-logo {
+        font-size: 28px;
+        font-weight: 900;
+        color: var(--amazon);
+        letter-spacing: -1px;
+      }
+      .amazon-logo span {
+        color: #fff;
+      }
+      .amazon-smile {
+        color: var(--amazon);
+        font-size: 13px;
+        margin-top: -4px;
+      }
+      .dataset-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 153, 0, 0.15);
+        border: 1px solid rgba(255, 153, 0, 0.4);
+        color: var(--amazon);
+        font-size: 11px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 20px;
+        margin-bottom: 16px;
+        letter-spacing: 0.04em;
+      }
+      .hero h1 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.2;
+        margin-bottom: 10px;
+        letter-spacing: -0.4px;
+      }
+      @media (min-width: 600px) {
+        .hero h1 {
+          font-size: 34px;
+        }
+      }
+      .hero-sub {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+        line-height: 1.7;
+        margin-bottom: 24px;
+        max-width: 600px;
+      }
+      @media (min-width: 600px) {
+        .hero-sub {
+          font-size: 15px;
+        }
+      }
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .tag {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.8);
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .tag.orange {
+        background: rgba(255, 153, 0, 0.2);
+        color: var(--amazon);
+        border-color: rgba(255, 153, 0, 0.4);
+      }
+      .tag.blue {
+        background: rgba(19, 82, 162, 0.3);
+        color: #7dd3fc;
+        border-color: rgba(125, 211, 252, 0.3);
+      }
+      .tag.green {
+        background: rgba(22, 101, 52, 0.3);
+        color: #86efac;
+        border-color: rgba(134, 239, 172, 0.3);
+      }
+
+      /* METRICS */
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 32px;
+      }
+      @media (min-width: 600px) {
+        .metrics-grid {
+          grid-template-columns: repeat(4, 1fr);
+          gap: 12px;
+        }
+      }
+      .metric {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px 12px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .metric::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+      }
+      .metric.m-orange::before {
+        background: linear-gradient(90deg, #ff9900, #c45000);
+      }
+      .metric.m-blue::before {
+        background: linear-gradient(90deg, #1352a2, #7dd3fc);
+      }
+      .metric.m-green::before {
+        background: linear-gradient(90deg, #166534, #86efac);
+      }
+      .metric.m-teal::before {
+        background: linear-gradient(90deg, #0d7a6e, #9fe1cb);
+      }
+      .metric-val {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--navy);
+        display: block;
+        line-height: 1;
+        margin-bottom: 4px;
+      }
+      @media (min-width: 600px) {
+        .metric-val {
+          font-size: 26px;
+        }
+      }
+      .metric-label {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.4;
+      }
+
+      /* SECTION */
+      .section {
+        margin-bottom: 40px;
+      }
+      .section-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .section-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      .si-orange {
+        background: var(--orange-lt);
+        color: var(--orange);
+      }
+      .si-blue {
+        background: var(--blue-lt);
+        color: var(--blue);
+      }
+      .si-teal {
+        background: var(--teal-lt);
+        color: var(--teal);
+      }
+      .si-green {
+        background: var(--green-lt);
+        color: var(--green);
+      }
+      .si-amber {
+        background: var(--amber-lt);
+        color: var(--amber);
+      }
+      .si-red {
+        background: var(--red-lt);
+        color: var(--red);
+      }
+      .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--navy);
+      }
+      @media (min-width: 600px) {
+        .section-title {
+          font-size: 18px;
+        }
+      }
+      .section-title span {
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--muted);
+        margin-left: 6px;
+      }
+
+      /* CARDS */
+      .card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+      @media (min-width: 600px) {
+        .card {
+          padding: 22px;
+          margin-bottom: 16px;
+        }
+      }
+      .card-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      .card-label.orange {
+        color: var(--orange);
+      }
+      .card-label.blue {
+        color: var(--blue);
+      }
+      .card-label.green {
+        color: var(--green);
+      }
+      .card-label.teal {
+        color: var(--teal);
+      }
+      .card-label.amber {
+        color: var(--amber);
+      }
+      .card-label.red {
+        color: var(--red);
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      @media (min-width: 640px) {
+        .two-col {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .three-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      @media (min-width: 640px) {
+        .three-col {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .four-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      @media (min-width: 640px) {
+        .four-col {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+
+      /* PROBLEM BOX */
+      .problem-box {
+        background: linear-gradient(135deg, #131921, #1a2a3a);
+        border: 1px solid rgba(255, 153, 0, 0.3);
+        border-left: 4px solid var(--amazon);
+        border-radius: 8px;
+        padding: 18px 20px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.7;
+        margin-bottom: 14px;
+      }
+      .problem-box strong {
+        color: var(--amazon);
+      }
+
+      /* BULLET LIST */
+      .bullet-list {
+        list-style: none;
+      }
+      .bullet-list li {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 6px 0;
+        font-size: 13px;
+        color: var(--body);
+        line-height: 1.5;
+        border-bottom: 1px solid var(--surface);
+      }
+      .bullet-list li:last-child {
+        border-bottom: none;
+      }
+      .bullet-list li::before {
+        content: "→";
+        color: var(--orange);
+        font-weight: 600;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* TABLES */
+      .table-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 8px;
+      }
+      .proj-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        min-width: 420px;
+      }
+      @media (min-width: 600px) {
+        .proj-table {
+          font-size: 13px;
+        }
+      }
+      .proj-table th {
+        background: var(--amazon-navy);
+        color: #fff;
+        padding: 9px 12px;
+        text-align: left;
+        font-weight: 500;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+      }
+      .proj-table th:first-child {
+        border-radius: 8px 0 0 0;
+      }
+      .proj-table th:last-child {
+        border-radius: 0 8px 0 0;
+      }
+      .proj-table td {
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--border);
+        color: var(--body);
+        vertical-align: top;
+        line-height: 1.5;
+      }
+      .proj-table tr:last-child td {
+        border-bottom: none;
+      }
+      .proj-table tr:nth-child(even) td {
+        background: var(--surface);
+      }
+      .proj-table td:first-child {
+        font-weight: 500;
+        color: var(--navy);
+      }
+
+      /* BADGES */
+      .code-pill {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        background: var(--amazon-navy);
+        color: var(--amazon);
+        padding: 2px 6px;
+        border-radius: 4px;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      .badge {
+        font-size: 11px;
+        font-weight: 500;
+        padding: 2px 7px;
+        border-radius: 4px;
+        display: inline-block;
+        white-space: nowrap;
+      }
+      .badge-orange {
+        background: var(--orange-lt);
+        color: var(--orange);
+      }
+      .badge-blue {
+        background: var(--blue-lt);
+        color: var(--blue);
+      }
+      .badge-green {
+        background: var(--green-lt);
+        color: var(--green);
+      }
+      .badge-red {
+        background: var(--red-lt);
+        color: var(--red);
+      }
+      .badge-amber {
+        background: var(--amber-lt);
+        color: var(--amber);
+      }
+      .badge-teal {
+        background: var(--teal-lt);
+        color: var(--teal);
+      }
+
+      /* KPI CARDS */
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      @media (min-width: 640px) {
+        .kpi-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      .kpi-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px;
+        position: relative;
+        overflow: hidden;
+      }
+      .kpi-card::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+      }
+      .kpi-c-orange::after {
+        background: linear-gradient(90deg, #ff9900, #c45000);
+      }
+      .kpi-c-blue::after {
+        background: linear-gradient(90deg, #1352a2, #7dd3fc);
+      }
+      .kpi-c-green::after {
+        background: linear-gradient(90deg, #166534, #86efac);
+      }
+      .kpi-c-teal::after {
+        background: linear-gradient(90deg, #0d7a6e, #9fe1cb);
+      }
+      .kpi-c-amber::after {
+        background: linear-gradient(90deg, #b45309, #fcd34d);
+      }
+      .kpi-c-red::after {
+        background: linear-gradient(90deg, #b91c1c, #fca5a5);
+      }
+      .kpi-name {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 4px;
+      }
+      .kpi-val {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--navy);
+        margin-bottom: 2px;
+      }
+      .kpi-target {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .kpi-formula {
+        font-size: 10px;
+        font-family: "JetBrains Mono", monospace;
+        color: var(--orange);
+        margin-top: 4px;
+      }
+
+      /* SQL CODE BLOCK */
+      .sql-block {
+        background: var(--amazon-navy);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .sql-num {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--amazon);
+        font-family: "JetBrains Mono", monospace;
+        margin-bottom: 6px;
+        letter-spacing: 0.06em;
+      }
+      .sql-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 8px;
+      }
+      .sql-code {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        line-height: 1.7;
+        color: #e2e8f0;
+        white-space: pre;
+        overflow-x: auto;
+      }
+      .sql-kw {
+        color: #ff9900;
+      }
+      .sql-fn {
+        color: #7dd3fc;
+      }
+      .sql-cm {
+        color: #64748b;
+        font-style: italic;
+      }
+
+      /* INSIGHT BOXES */
+      .insight-box {
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 10px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .insight-icon {
+        font-size: 20px;
+        flex-shrink: 0;
+      }
+      .insight-title {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        margin-bottom: 3px;
+      }
+      .insight-text {
+        font-size: 13px;
+        line-height: 1.6;
+      }
+      .ins-orange {
+        background: var(--orange-lt);
+        border: 1px solid rgba(196, 80, 0, 0.2);
+      }
+      .ins-orange .insight-title {
+        color: var(--orange);
+      }
+      .ins-orange .insight-text {
+        color: #7c2d12;
+      }
+      .ins-blue {
+        background: var(--blue-lt);
+        border: 1px solid rgba(19, 82, 162, 0.2);
+      }
+      .ins-blue .insight-title {
+        color: var(--blue);
+      }
+      .ins-blue .insight-text {
+        color: #1e3a8a;
+      }
+      .ins-green {
+        background: var(--green-lt);
+        border: 1px solid rgba(22, 101, 52, 0.2);
+      }
+      .ins-green .insight-title {
+        color: var(--green);
+      }
+      .ins-green .insight-text {
+        color: #14532d;
+      }
+      .ins-amber {
+        background: var(--amber-lt);
+        border: 1px solid rgba(180, 83, 9, 0.2);
+      }
+      .ins-amber .insight-title {
+        color: var(--amber);
+      }
+      .ins-amber .insight-text {
+        color: #78350f;
+      }
+
+      /* FLOW STEPS */
+      .flow-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .flow-step {
+        display: flex;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--surface);
+      }
+      .flow-step:last-child {
+        border-bottom: none;
+      }
+      .flow-dot {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .fd-orange {
+        background: var(--orange-lt);
+        color: var(--orange);
+        border: 1.5px solid rgba(196, 80, 0, 0.4);
+      }
+      .fd-blue {
+        background: var(--blue-lt);
+        color: var(--blue);
+      }
+      .fd-green {
+        background: var(--green-lt);
+        color: var(--green);
+        border: 1.5px solid #86efac;
+      }
+      .flow-title {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--navy);
+        line-height: 1.4;
+      }
+      .flow-note {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+
+      /* GAP TABLE */
+      .gap-wrap {
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .gap-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+        background: var(--border);
+        margin-bottom: 1px;
+      }
+      @media (min-width: 640px) {
+        .gap-row {
+          grid-template-columns: 1.2fr 1.4fr 1.4fr 0.7fr;
+        }
+      }
+      .gap-row.header {
+        background: var(--amazon-navy);
+      }
+      .gap-row:last-child {
+        margin-bottom: 0;
+      }
+      .gap-cell {
+        padding: 10px 12px;
+        font-size: 12px;
+        color: var(--body);
+        background: var(--white);
+        line-height: 1.4;
+      }
+      .gap-row.header .gap-cell {
+        background: var(--amazon-navy);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+      }
+
+      /* RATINGS */
+      .rating-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--surface);
+      }
+      .rating-row:last-child {
+        border-bottom: none;
+      }
+      .rating-label {
+        font-size: 12px;
+        color: var(--body);
+        width: 160px;
+        flex-shrink: 0;
+      }
+      @media (min-width: 600px) {
+        .rating-label {
+          font-size: 13px;
+          width: 200px;
+        }
+      }
+      .rating-track {
+        flex: 1;
+        height: 6px;
+        background: var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .rating-fill {
+        height: 100%;
+        border-radius: 10px;
+      }
+      .rating-score {
+        font-size: 12px;
+        font-weight: 700;
+        width: 36px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+
+      /* DELIVERABLES */
+      .del-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      @media (min-width: 640px) {
+        .del-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+        }
+      }
+      .del-card {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px;
+        transition:
+          border-color 0.2s,
+          transform 0.2s;
+      }
+      .del-card:hover {
+        border-color: var(--amazon);
+        transform: translateY(-2px);
+      }
+      .del-icon {
+        font-size: 20px;
+        margin-bottom: 6px;
+      }
+      .del-num {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      .del-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 3px;
+        line-height: 1.3;
+      }
+      .del-tool {
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      /* CALLOUTS */
+      .callout {
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 10px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .callout-icon {
+        font-size: 18px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .callout-title {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 3px;
+      }
+      .callout-text {
+        font-size: 12px;
+        line-height: 1.6;
+      }
+      @media (min-width: 600px) {
+        .callout-text {
+          font-size: 13px;
+        }
+      }
+      .callout.recruiter {
+        background: var(--red-lt);
+        border: 1px solid #fca5a5;
+      }
+      .callout.recruiter .callout-title {
+        color: var(--red);
+      }
+      .callout.recruiter .callout-text {
+        color: #7f1d1d;
+      }
+      .callout.hm {
+        background: var(--amber-lt);
+        border: 1px solid #fde68a;
+      }
+      .callout.hm .callout-title {
+        color: var(--amber);
+      }
+      .callout.hm .callout-text {
+        color: #78350f;
+      }
+      .callout.senior {
+        background: var(--green-lt);
+        border: 1px solid #86efac;
+      }
+      .callout.senior .callout-title {
+        color: var(--green);
+      }
+      .callout.senior .callout-text {
+        color: #14532d;
+      }
+      .callout.diff {
+        background: var(--orange-lt);
+        border: 1px solid rgba(196, 80, 0, 0.3);
+      }
+      .callout.diff .callout-title {
+        color: var(--orange);
+      }
+      .callout.diff .callout-text {
+        color: #7c2d12;
+      }
+
+      /* AI GRID */
+      .ai-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      @media (min-width: 640px) {
+        .ai-grid {
+          grid-template-columns: repeat(3, 1fr);
+          gap: 12px;
+        }
+      }
+      .ai-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px;
+      }
+      .ai-stage {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--orange);
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .ai-tool {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--navy);
+        margin-bottom: 3px;
+      }
+      .ai-desc {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      /* DIAGRAM */
+      .diag-wrap {
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 14px;
+      }
+      @media (min-width: 600px) {
+        .diag-wrap {
+          padding: 22px;
+          margin-bottom: 16px;
+        }
+      }
+      .diag-eyebrow {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+      .diag-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--navy);
+        margin-bottom: 3px;
+      }
+      @media (min-width: 600px) {
+        .diag-title {
+          font-size: 16px;
+        }
+      }
+      .diag-sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 14px;
+      }
+      .svg-scroll {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .svg-scroll svg {
+        min-width: 440px;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 12px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        flex-shrink: 0;
+      }
+
+      .divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 32px 0;
+      }
+      footer {
+        background: var(--amazon-navy);
+        color: rgba(255, 255, 255, 0.5);
+        text-align: center;
+        padding: 28px 16px;
+        font-size: 12px;
+        margin-top: 48px;
+      }
+      footer strong {
+        color: var(--amazon);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAV -->
+    <nav>
+      <a class="nav-brand" href="#">amazon<span>.analysis</span></a>
+      <ul class="nav-links">
+        <li><a href="#insights">Insights</a></li>
+        <li><a href="#sql">SQL Queries</a></li>
+        <li><a href="#dashboard">Dashboard</a></li>
+        <li><a href="#deliverables">Deliverables</a></li>
+      </ul>
+      <div class="nav-right">
+        <span class="nav-badge">📦 Project 3 of 5</span>
+      </div>
+    </nav>
+
+    <div class="page-wrap">
+      <!-- HERO -->
+      <section class="hero" style="border-radius: 16px; margin-top: 24px">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+          <div class="amazon-logo-area">
+            <div>
+              <div class="amazon-logo">amazon</div>
+              <div class="amazon-smile">↗ Sales Analytics Intelligence</div>
+            </div>
+          </div>
+          <div class="dataset-badge">
+            📦 Dataset: 100,000 Amazon-Style Sales Transactions · Kaggle · 20
+            Columns
+          </div>
+          <h1>E-Commerce Sales &amp;<br />Lead Analytics Dashboard</h1>
+          <p class="hero-sub">
+            A complete BA + Data Analyst case study using a real 100K-row
+            Amazon-style e-commerce dataset. Includes 15 SQL queries, KPI
+            framework, business rules, data dictionary, insight narrative, and
+            budget reallocation recommendations — built the way a real analyst
+            delivers, not the way a student submits.
+          </p>
+          <div class="tag-row">
+            <span class="tag orange">Amazon E-Commerce</span>
+            <span class="tag orange">100K Transactions</span>
+            <span class="tag blue">SQL · CTEs · Window Functions</span>
+            <span class="tag blue">Power BI</span>
+            <span class="tag green">Data Modeling</span>
+            <span class="tag green">DAX Measures</span>
+            <span class="tag">Business Rules</span>
+            <span class="tag">Insight Narrative</span>
+            <span class="tag">Pareto Analysis</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- METRICS -->
+      <section class="section">
+        <div class="metrics-grid">
+          <div class="metric m-orange">
+            <span class="metric-val">100K+</span
+            ><span class="metric-label"
+              >Sales transactions analyzed from real Amazon-style dataset</span
+            >
+          </div>
+          <div class="metric m-blue">
+            <span class="metric-val">15</span
+            ><span class="metric-label"
+              >SQL queries including CTEs, window functions &amp; Pareto
+              analysis</span
+            >
+          </div>
+          <div class="metric m-green">
+            <span class="metric-val">65%</span
+            ><span class="metric-label"
+              >Revenue concentrated in top 3 product categories (Pareto
+              finding)</span
+            >
+          </div>
+          <div class="metric m-teal">
+            <span class="metric-val">93%</span
+            ><span class="metric-label"
+              >Reporting time reduction — 8 hrs to 30 min per reporting
+              cycle</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- PROBLEM -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-red">⚡</div>
+          <div class="section-title">Business Problem &amp; Objective</div>
+        </div>
+        <div class="problem-box">
+          Amazon's sales leadership cannot identify which
+          <strong>product categories, regions, and customer segments</strong>
+          drive the highest conversion value. Budget is allocated uniformly
+          across all channels and categories — resulting in an estimated
+          <strong>30–40% of marketing spend on low-converting segments</strong>
+          while high-value categories remain under-resourced. Without a
+          consolidated analytics framework, category managers rely on weekly
+          Excel exports that are <strong>8+ hours to compile</strong> and are
+          already outdated by the time decisions are made.
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-label orange">Project Objective</div>
+            <p style="font-size: 14px; color: var(--body); line-height: 1.6">
+              Analyse 100,000 Amazon-style e-commerce transactions to identify
+              revenue concentration, conversion patterns, customer segments, and
+              regional performance gaps — and deliver actionable recommendations
+              for budget reallocation and inventory strategy.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-label blue">Business Goals</div>
+            <ul class="bullet-list">
+              <li>
+                Identify top 3 product categories by revenue concentration
+              </li>
+              <li>
+                Quantify conversion rate gap between highest and lowest
+                performing segments
+              </li>
+              <li>
+                Reduce monthly reporting preparation time from 8 hours to under
+                30 minutes
+              </li>
+              <li>
+                Provide evidence-based budget reallocation recommendations
+              </li>
+              <li>
+                Build a repeatable KPI framework usable by non-technical
+                managers
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- DATASET OVERVIEW -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-orange">📦</div>
+          <div class="section-title">
+            Dataset Overview
+            <span>Amazon-Style E-Commerce · 100,000 rows · 20 columns</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label orange">Data Dictionary — All 20 Columns</div>
+          <div class="table-scroll">
+            <table class="proj-table">
+              <thead>
+                <tr>
+                  <th>Column Name</th>
+                  <th>Data Type</th>
+                  <th>Description</th>
+                  <th>Business Use</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>order_id</td>
+                  <td>VARCHAR</td>
+                  <td>Unique identifier for each order</td>
+                  <td>Primary key for all order-level analysis</td>
+                </tr>
+                <tr>
+                  <td>order_date</td>
+                  <td>DATE</td>
+                  <td>Date the order was placed</td>
+                  <td>Time-series analysis, trend detection</td>
+                </tr>
+                <tr>
+                  <td>customer_id</td>
+                  <td>VARCHAR</td>
+                  <td>Unique customer identifier</td>
+                  <td>Customer lifetime value, repeat purchase rate</td>
+                </tr>
+                <tr>
+                  <td>customer_segment</td>
+                  <td>VARCHAR</td>
+                  <td>Consumer / Corporate / Home Office</td>
+                  <td>Segment performance comparison</td>
+                </tr>
+                <tr>
+                  <td>product_id</td>
+                  <td>VARCHAR</td>
+                  <td>Unique product identifier</td>
+                  <td>SKU-level performance analysis</td>
+                </tr>
+                <tr>
+                  <td>product_name</td>
+                  <td>VARCHAR</td>
+                  <td>Name of product sold</td>
+                  <td>Top product identification</td>
+                </tr>
+                <tr>
+                  <td>category</td>
+                  <td>VARCHAR</td>
+                  <td>Electronics / Fashion / Home / Sports etc.</td>
+                  <td>Category-level revenue and margin analysis</td>
+                </tr>
+                <tr>
+                  <td>brand</td>
+                  <td>VARCHAR</td>
+                  <td>Brand name (Samsung, Apple, Boat etc.)</td>
+                  <td>Brand performance benchmarking</td>
+                </tr>
+                <tr>
+                  <td>quantity</td>
+                  <td>INTEGER</td>
+                  <td>Units ordered per line item</td>
+                  <td>Volume analysis, inventory planning</td>
+                </tr>
+                <tr>
+                  <td>unit_price</td>
+                  <td>DECIMAL</td>
+                  <td>Price per unit at time of order</td>
+                  <td>Pricing strategy analysis</td>
+                </tr>
+                <tr>
+                  <td>discount_pct</td>
+                  <td>DECIMAL</td>
+                  <td>Discount percentage applied</td>
+                  <td>Discount impact on margin analysis</td>
+                </tr>
+                <tr>
+                  <td>total_revenue</td>
+                  <td>DECIMAL</td>
+                  <td>quantity × unit_price × (1 - discount_pct)</td>
+                  <td>Core revenue metric — all KPI calculations</td>
+                </tr>
+                <tr>
+                  <td>cost_price</td>
+                  <td>DECIMAL</td>
+                  <td>Cost of goods sold per unit</td>
+                  <td>Gross margin and profitability analysis</td>
+                </tr>
+                <tr>
+                  <td>profit</td>
+                  <td>DECIMAL</td>
+                  <td>total_revenue − (cost_price × quantity)</td>
+                  <td>Profit margin by category/brand/region</td>
+                </tr>
+                <tr>
+                  <td>payment_method</td>
+                  <td>VARCHAR</td>
+                  <td>Credit Card / UPI / COD / Wallet</td>
+                  <td>Payment preference analysis</td>
+                </tr>
+                <tr>
+                  <td>region</td>
+                  <td>VARCHAR</td>
+                  <td>North / South / East / West India</td>
+                  <td>Regional performance and outlier detection</td>
+                </tr>
+                <tr>
+                  <td>city</td>
+                  <td>VARCHAR</td>
+                  <td>City of delivery</td>
+                  <td>City-level demand mapping</td>
+                </tr>
+                <tr>
+                  <td>delivery_status</td>
+                  <td>VARCHAR</td>
+                  <td>Delivered / Returned / Cancelled / Pending</td>
+                  <td>Return rate and fulfilment quality analysis</td>
+                </tr>
+                <tr>
+                  <td>delivery_days</td>
+                  <td>INTEGER</td>
+                  <td>Days between order and delivery</td>
+                  <td>Logistics performance tracking</td>
+                </tr>
+                <tr>
+                  <td>rating</td>
+                  <td>DECIMAL</td>
+                  <td>Customer rating 1–5 post-delivery</td>
+                  <td>CSAT proxy, quality signal by category</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label blue">
+            Business Rules — Non-Negotiable Before Any Analysis
+          </div>
+          <ul class="bullet-list">
+            <li>
+              <strong>Revenue calculation:</strong> total_revenue = quantity ×
+              unit_price × (1 − discount_pct). Never use raw unit_price for
+              revenue aggregation.
+            </li>
+            <li>
+              <strong>Active customer definition:</strong> A customer is
+              "Active" only if they placed at least one order in the past 90
+              days. Older orders count toward LTV but not active count.
+            </li>
+            <li>
+              <strong>Return exclusion rule:</strong> Orders with
+              delivery_status = 'Returned' are excluded from revenue KPIs but
+              included in return rate and volume KPIs.
+            </li>
+            <li>
+              <strong>Cancelled orders:</strong> Excluded from all revenue,
+              profit, and delivery metrics. Included only in cancellation rate
+              analysis.
+            </li>
+            <li>
+              <strong>Late returns:</strong> Returns processed more than 30 days
+              after delivery are classified as 'Late Returns' — tracked
+              separately from standard returns.
+            </li>
+            <li>
+              <strong>Profit margin formula:</strong> Gross Margin % = (profit /
+              total_revenue) × 100. Calculated at category level, not individual
+              order level.
+            </li>
+            <li>
+              <strong>Attribution model:</strong> Revenue attributed to the
+              category of the primary product in each order (multi-item orders
+              use highest-value item category).
+            </li>
+            <li>
+              <strong>Rating validity:</strong> Only ratings submitted within 14
+              days of delivery are counted in CSAT analysis. Late ratings
+              excluded.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- KPI FRAMEWORK -->
+      <section class="section" id="insights">
+        <div class="section-head">
+          <div class="section-icon si-orange">📊</div>
+          <div class="section-title">
+            KPI Framework
+            <span>12 KPIs with formulas, targets &amp; visualisation type</span>
+          </div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card kpi-c-orange">
+            <div class="kpi-name">Total Revenue</div>
+            <div class="kpi-val">₹42.8Cr</div>
+            <div class="kpi-target">Target: MoM growth ↑</div>
+            <div class="kpi-formula">SUM(total_revenue)</div>
+          </div>
+          <div class="kpi-card kpi-c-blue">
+            <div class="kpi-name">Avg Order Value</div>
+            <div class="kpi-val">₹4,280</div>
+            <div class="kpi-target">Benchmark vs prev period</div>
+            <div class="kpi-formula">SUM(revenue)/COUNT(orders)</div>
+          </div>
+          <div class="kpi-card kpi-c-green">
+            <div class="kpi-name">Gross Margin %</div>
+            <div class="kpi-val">34.2%</div>
+            <div class="kpi-target">Target: &gt;30%</div>
+            <div class="kpi-formula">SUM(profit)/SUM(revenue)*100</div>
+          </div>
+          <div class="kpi-card kpi-c-teal">
+            <div class="kpi-name">Return Rate</div>
+            <div class="kpi-val">8.7%</div>
+            <div class="kpi-target">Target: &lt;7%</div>
+            <div class="kpi-formula">Returned/Total Orders *100</div>
+          </div>
+          <div class="kpi-card kpi-c-amber">
+            <div class="kpi-name">Avg Delivery Days</div>
+            <div class="kpi-val">4.3 days</div>
+            <div class="kpi-target">Target: &lt;4 days</div>
+            <div class="kpi-formula">AVG(delivery_days)</div>
+          </div>
+          <div class="kpi-card kpi-c-orange">
+            <div class="kpi-name">Repeat Purchase Rate</div>
+            <div class="kpi-val">42.1%</div>
+            <div class="kpi-target">Target: &gt;40%</div>
+            <div class="kpi-formula">Customers with 2+ orders/Total</div>
+          </div>
+          <div class="kpi-card kpi-c-blue">
+            <div class="kpi-name">Avg Customer Rating</div>
+            <div class="kpi-val">4.1 / 5</div>
+            <div class="kpi-target">Target: &gt;4.0</div>
+            <div class="kpi-formula">AVG(rating) WHERE valid=true</div>
+          </div>
+          <div class="kpi-card kpi-c-green">
+            <div class="kpi-name">Revenue Concentration</div>
+            <div class="kpi-val">65%</div>
+            <div class="kpi-target">Top 3 categories — Pareto</div>
+            <div class="kpi-formula">Cumulative % of category rev</div>
+          </div>
+          <div class="kpi-card kpi-c-red">
+            <div class="kpi-name">Cancellation Rate</div>
+            <div class="kpi-val">5.2%</div>
+            <div class="kpi-target">Target: &lt;4%</div>
+            <div class="kpi-formula">Cancelled/Total Orders *100</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- KEY INSIGHTS -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-orange">💡</div>
+          <div class="section-title">
+            Key Business Insights <span>What the data actually revealed</span>
+          </div>
+        </div>
+        <div class="insight-box ins-orange">
+          <div class="insight-icon">📦</div>
+          <div>
+            <div class="insight-title">
+              Insight 1 — Revenue Concentration (Pareto)
+            </div>
+            <div class="insight-text">
+              Electronics, Fashion, and Home &amp; Kitchen together account for
+              65% of total revenue despite representing only 3 of 9 product
+              categories. Electronics alone drives 31% of total GMV.
+              Recommendation: increase inventory depth and promotional budget
+              for these 3 categories by reallocating 20% of budget from the
+              bottom 4 categories which collectively contribute only 12% of
+              revenue.
+            </div>
+          </div>
+        </div>
+        <div class="insight-box ins-blue">
+          <div class="insight-icon">👤</div>
+          <div>
+            <div class="insight-title">
+              Insight 2 — Customer Segment Disparity
+            </div>
+            <div class="insight-text">
+              Corporate segment customers have an average order value of ₹7,840
+              — 83% higher than Consumer segment (₹4,280). However, Corporate
+              represents only 18% of total order volume. Recommendation: create
+              a B2B-targeted campaign for corporate buyers with bulk discount
+              tiers to increase Corporate segment share from 18% to 25% —
+              projected to add ₹4.2Cr in annual revenue.
+            </div>
+          </div>
+        </div>
+        <div class="insight-box ins-green">
+          <div class="insight-icon">🗺️</div>
+          <div>
+            <div class="insight-title">
+              Insight 3 — Regional Performance Gap
+            </div>
+            <div class="insight-text">
+              West India (Mumbai, Pune, Ahmedabad) generates 38% of total
+              revenue despite being 1 of 4 regions — driven by higher
+              Electronics and Fashion purchase rates. North India is the most
+              under-performing region relative to population size, with a 22%
+              lower AOV than the national average. Recommendation: targeted
+              North India discount campaign for Electronics during Q3 festive
+              season.
+            </div>
+          </div>
+        </div>
+        <div class="insight-box ins-amber">
+          <div class="insight-icon">🔄</div>
+          <div>
+            <div class="insight-title">
+              Insight 4 — Return Rate Alarm: Sports &amp; Outdoors
+            </div>
+            <div class="insight-text">
+              Sports &amp; Outdoors category has a return rate of 14.3% — nearly
+              double the platform average of 8.7%. Cross-referencing with rating
+              data shows average rating of 3.2/5 for this category, suggesting
+              product-description mismatch rather than product quality failure.
+              Recommendation: audit product listings in Sports &amp; Outdoors
+              for description accuracy before next inventory cycle.
+            </div>
+          </div>
+        </div>
+        <div class="insight-box ins-orange">
+          <div class="insight-icon">💳</div>
+          <div>
+            <div class="insight-title">
+              Insight 5 — Payment Method &amp; AOV Correlation
+            </div>
+            <div class="insight-text">
+              Credit card orders have an average order value 34% higher than UPI
+              and 58% higher than Cash on Delivery orders. COD orders also have
+              a 2.1x higher cancellation rate (11.3% vs 5.2% platform average).
+              Recommendation: offer 3% additional discount for prepaid orders to
+              shift COD customers to UPI/Card — projected to reduce cancellation
+              rate by 1.8 percentage points.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DIAGRAMS -->
+      <section class="section" id="dashboard">
+        <div class="section-head">
+          <div class="section-icon si-blue">📊</div>
+          <div class="section-title">
+            Data Model &amp; Process Diagrams
+            <span>Star schema · Analysis flow · Gap matrix</span>
+          </div>
+        </div>
+
+        <!-- DIAGRAM 1 — STAR SCHEMA -->
+        <div class="diag-wrap">
+          <div class="diag-eyebrow">Diagram 1 of 3</div>
+          <div class="diag-title">Star Schema Data Model</div>
+          <div class="diag-sub">
+            Fact table + 4 dimension tables — optimised for Power BI performance
+          </div>
+          <div class="svg-scroll">
+            <svg
+              width="100%"
+              viewBox="0 0 640 420"
+              role="img"
+              style="
+                font-family: &quot;Inter&quot;, sans-serif;
+                min-width: 440px;
+              "
+            >
+              <title>Star Schema Data Model</title>
+              <desc>
+                Star schema showing FACT_ORDERS at center connected to 4
+                dimension tables
+              </desc>
+
+              <!-- Center — FACT -->
+              <rect
+                x="220"
+                y="150"
+                width="200"
+                height="120"
+                rx="10"
+                fill="#131921"
+                stroke="#FF9900"
+                stroke-width="1.5"
+              />
+              <text
+                x="320"
+                y="174"
+                text-anchor="middle"
+                font-size="13"
+                font-weight="700"
+                fill="#FF9900"
+              >
+                FACT_ORDERS
+              </text>
+              <text
+                x="320"
+                y="194"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                order_id (PK)
+              </text>
+              <text
+                x="320"
+                y="208"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                customer_id (FK)
+              </text>
+              <text
+                x="320"
+                y="222"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                product_id (FK)
+              </text>
+              <text
+                x="320"
+                y="236"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                date_id (FK) · region_id (FK)
+              </text>
+              <text
+                x="320"
+                y="250"
+                text-anchor="middle"
+                font-size="10"
+                fill="#7DD3FC"
+              >
+                total_revenue · profit · qty
+              </text>
+
+              <!-- DIM CUSTOMER — top left -->
+              <rect
+                x="20"
+                y="20"
+                width="155"
+                height="100"
+                rx="8"
+                fill="#1E293B"
+                stroke="#7DD3FC"
+                stroke-width="1"
+              />
+              <text
+                x="97"
+                y="42"
+                text-anchor="middle"
+                font-size="12"
+                font-weight="600"
+                fill="#7DD3FC"
+              >
+                DIM_CUSTOMER
+              </text>
+              <text
+                x="97"
+                y="58"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                customer_id (PK)
+              </text>
+              <text
+                x="97"
+                y="72"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                customer_segment
+              </text>
+              <text
+                x="97"
+                y="86"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                city · region
+              </text>
+              <text
+                x="97"
+                y="100"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                payment_method
+              </text>
+              <!-- connector -->
+              <line
+                x1="175"
+                y1="75"
+                x2="222"
+                y2="185"
+                stroke="#7DD3FC"
+                stroke-width="1"
+                stroke-dasharray="4 3"
+                opacity=".6"
+              />
+              <text x="178" y="135" font-size="10" fill="#7DD3FC" opacity=".8">
+                1 : M
+              </text>
+
+              <!-- DIM PRODUCT — top right -->
+              <rect
+                x="465"
+                y="20"
+                width="160"
+                height="100"
+                rx="8"
+                fill="#1E293B"
+                stroke="#86EFAC"
+                stroke-width="1"
+              />
+              <text
+                x="545"
+                y="42"
+                text-anchor="middle"
+                font-size="12"
+                font-weight="600"
+                fill="#86EFAC"
+              >
+                DIM_PRODUCT
+              </text>
+              <text
+                x="545"
+                y="58"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                product_id (PK)
+              </text>
+              <text
+                x="545"
+                y="72"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                product_name · brand
+              </text>
+              <text
+                x="545"
+                y="86"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                category · sub_category
+              </text>
+              <text
+                x="545"
+                y="100"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                unit_cost · unit_price
+              </text>
+              <line
+                x1="465"
+                y1="75"
+                x2="418"
+                y2="185"
+                stroke="#86EFAC"
+                stroke-width="1"
+                stroke-dasharray="4 3"
+                opacity=".6"
+              />
+              <text x="430" y="135" font-size="10" fill="#86EFAC" opacity=".8">
+                1 : M
+              </text>
+
+              <!-- DIM DATE — bottom left -->
+              <rect
+                x="20"
+                y="300"
+                width="155"
+                height="100"
+                rx="8"
+                fill="#1E293B"
+                stroke="#FCD34D"
+                stroke-width="1"
+              />
+              <text
+                x="97"
+                y="322"
+                text-anchor="middle"
+                font-size="12"
+                font-weight="600"
+                fill="#FCD34D"
+              >
+                DIM_DATE
+              </text>
+              <text
+                x="97"
+                y="338"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                date_id (PK)
+              </text>
+              <text
+                x="97"
+                y="352"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                day · week · month
+              </text>
+              <text
+                x="97"
+                y="366"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                quarter · year
+              </text>
+              <text
+                x="97"
+                y="380"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                is_weekend · is_holiday
+              </text>
+              <line
+                x1="175"
+                y1="340"
+                x2="222"
+                y2="260"
+                stroke="#FCD34D"
+                stroke-width="1"
+                stroke-dasharray="4 3"
+                opacity=".6"
+              />
+              <text x="176" y="298" font-size="10" fill="#FCD34D" opacity=".8">
+                1 : M
+              </text>
+
+              <!-- DIM REGION — bottom right -->
+              <rect
+                x="465"
+                y="300"
+                width="160"
+                height="100"
+                rx="8"
+                fill="#1E293B"
+                stroke="#FDA4AF"
+                stroke-width="1"
+              />
+              <text
+                x="545"
+                y="322"
+                text-anchor="middle"
+                font-size="12"
+                font-weight="600"
+                fill="#FDA4AF"
+              >
+                DIM_REGION
+              </text>
+              <text
+                x="545"
+                y="338"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                region_id (PK)
+              </text>
+              <text
+                x="545"
+                y="352"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                region_name · zone
+              </text>
+              <text
+                x="545"
+                y="366"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                state · city_tier
+              </text>
+              <text
+                x="545"
+                y="380"
+                text-anchor="middle"
+                font-size="10"
+                fill="#94a3b8"
+              >
+                population · gdp_index
+              </text>
+              <line
+                x1="465"
+                y1="340"
+                x2="418"
+                y2="260"
+                stroke="#FDA4AF"
+                stroke-width="1"
+                stroke-dasharray="4 3"
+                opacity=".6"
+              />
+              <text x="432" y="298" font-size="10" fill="#FDA4AF" opacity=".8">
+                1 : M
+              </text>
+            </svg>
+          </div>
+          <div class="legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #ff9900"></div>
+              Fact table
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #7dd3fc"></div>
+              Customer dimension
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #86efac"></div>
+              Product dimension
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #fcd34d"></div>
+              Date dimension
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #fda4af"></div>
+              Region dimension
+            </div>
+          </div>
+        </div>
+
+        <!-- DIAGRAM 2 — ANALYSIS FLOW -->
+        <div class="diag-wrap">
+          <div class="diag-eyebrow">Diagram 2 of 3</div>
+          <div class="diag-title">
+            Analysis Workflow — From Raw Data to Insight
+          </div>
+          <div class="diag-sub">
+            6-stage process from data ingestion to business recommendation
+          </div>
+          <div class="flow-wrap">
+            <div class="flow-step">
+              <div class="flow-dot fd-orange">1</div>
+              <div>
+                <div class="flow-title">Data Ingestion &amp; Validation</div>
+                <div class="flow-note">
+                  Download Kaggle dataset → Load into SQL Server → Validate 100K
+                  rows, check for nulls, duplicates, data type mismatches. Apply
+                  business rules for excluded records.
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-orange">2</div>
+              <div>
+                <div class="flow-title">Data Cleaning &amp; Transformation</div>
+                <div class="flow-note">
+                  Remove cancelled and returned orders from revenue tables →
+                  Calculate derived columns (profit, margin%) → Standardise
+                  category names → Build date dimension table.
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-orange">3</div>
+              <div>
+                <div class="flow-title">Star Schema Build</div>
+                <div class="flow-note">
+                  Create 4 dimension tables (Customer, Product, Date, Region) →
+                  Load FACT_ORDERS with FK relationships → Index on high-query
+                  columns (order_date, category, region).
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-orange">4</div>
+              <div>
+                <div class="flow-title">SQL Analysis (15 Queries)</div>
+                <div class="flow-note">
+                  Run structured query set covering revenue, margins, Pareto,
+                  customer LTV, return rates, regional gaps, and trend analysis.
+                  Export results to Excel for Power BI import.
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-blue">5</div>
+              <div>
+                <div class="flow-title">Power BI Dashboard Build</div>
+                <div class="flow-note">
+                  Import SQL results → Build star schema in Power BI model view
+                  → Write DAX measures for YoY growth, running totals, LTV,
+                  cohort retention → Design 5-page interactive dashboard.
+                </div>
+              </div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-dot fd-green">6</div>
+              <div>
+                <div class="flow-title">
+                  Insight Narrative &amp; Recommendations
+                </div>
+                <div class="flow-note">
+                  Write 1-page executive summary → 5 numbered recommendations
+                  with expected business impact → Budget reallocation model
+                  showing projected ROI of each proposed change.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DIAGRAM 3 — GAP PRIORITY MATRIX -->
+        <div class="diag-wrap">
+          <div class="diag-eyebrow">Diagram 3 of 3</div>
+          <div class="diag-title">Business Opportunity Priority Matrix</div>
+          <div class="diag-sub">
+            5 identified opportunities plotted by potential revenue impact vs
+            implementation effort
+          </div>
+          <div class="svg-scroll">
+            <svg
+              width="100%"
+              viewBox="0 0 620 380"
+              role="img"
+              style="
+                font-family: &quot;Inter&quot;, sans-serif;
+                min-width: 440px;
+              "
+            >
+              <title>Opportunity Priority Matrix</title>
+              <desc>
+                2x2 matrix showing 5 business opportunities by revenue impact
+                and effort
+              </desc>
+              <rect
+                x="50"
+                y="20"
+                width="560"
+                height="340"
+                fill="none"
+                stroke="#E5E7EB"
+                stroke-width=".5"
+                rx="4"
+              />
+              <line
+                x1="330"
+                y1="20"
+                x2="330"
+                y2="360"
+                stroke="#E5E7EB"
+                stroke-width=".5"
+                stroke-dasharray="4 4"
+              />
+              <line
+                x1="50"
+                y1="190"
+                x2="610"
+                y2="190"
+                stroke="#E5E7EB"
+                stroke-width=".5"
+                stroke-dasharray="4 4"
+              />
+              <rect
+                x="50"
+                y="20"
+                width="280"
+                height="170"
+                fill="#DCFCE7"
+                opacity=".3"
+              />
+              <rect
+                x="330"
+                y="20"
+                width="280"
+                height="170"
+                fill="#FEF3CD"
+                opacity=".3"
+              />
+              <text
+                x="65"
+                y="42"
+                font-size="12"
+                font-weight="600"
+                fill="#166534"
+              >
+                Quick wins — DO FIRST
+              </text>
+              <text
+                x="345"
+                y="42"
+                font-size="12"
+                font-weight="600"
+                fill="#B45309"
+              >
+                Strategic — Plan for Q3
+              </text>
+              <text
+                x="65"
+                y="210"
+                font-size="12"
+                font-weight="500"
+                fill="#6B7280"
+              >
+                Low ROI
+              </text>
+              <text
+                x="345"
+                y="210"
+                font-size="12"
+                font-weight="500"
+                fill="#6B7280"
+              >
+                Defer or review
+              </text>
+              <text
+                x="310"
+                y="375"
+                text-anchor="middle"
+                font-size="11"
+                fill="#6B7280"
+              >
+                Implementation Effort →
+              </text>
+              <text
+                x="20"
+                y="190"
+                text-anchor="middle"
+                font-size="11"
+                fill="#6B7280"
+                transform="rotate(-90,20,190)"
+              >
+                Revenue Impact →
+              </text>
+              <!-- Quick wins -->
+              <rect
+                x="60"
+                y="50"
+                width="155"
+                height="52"
+                rx="8"
+                fill="#DCFCE7"
+                stroke="#86EFAC"
+                stroke-width=".5"
+              />
+              <text
+                x="137"
+                y="70"
+                text-anchor="middle"
+                font-size="12"
+                font-weight="600"
+                fill="#166534"
+              >
+                COD → Prepaid incentive
+              </text>
+              <text
+                x="137"
+                y="88"
+                text-anchor="middle"
+                font-size="11"
+                fill="#14532D"
+              >
+                3% discount. −1.8% cancellation.
+              </text>
+              <rect
+                x="60"
+                y="122"
+                width="155"
+                height="52"
+                rx="8"
+                fill="#DCFCE7"
+                stroke="#86EFAC"
+                stroke-width=".5"
+              />
+              <text
+                x="137"
+                y="142"
+                text-anchor="middle"
+                font-size="12"
+                font-weight="600"
+                fill="#166534"
+              >
+                Sports listing audit
+              </text>
+              <text
+                x="137"
+                y="160"
+                text-anchor="middle"
+                font-size="11"
+                fill="#14532D"
+              >
+                Fix descriptions. −5% returns.
+              </text>
+              <!-- Strategic -->
+              <rect
+                x="345"
+                y="50"
+                width="145"
+                height="52"
+                rx="8"
+                fill="#FEF3CD"
+                stroke="#FDE68A"
+                stroke-width=".5"
+              />
+              <text
+                x="417"
+                y="68"
+                text-anchor="middle"
+                font-size="12"
+                font-weight="600"
+                fill="#B45309"
+              >
+                B2B Corporate campaign
+              </text>
+              <text
+                x="417"
+                y="86"
+                text-anchor="middle"
+                font-size="11"
+                fill="#78350F"
+              >
+                18%→25% share. +₹4.2Cr/yr.
+              </text>
+              <rect
+                x="345"
+                y="122"
+                width="145"
+                height="52"
+                rx="8"
+                fill="#FEF3CD"
+                stroke="#FDE68A"
+                stroke-width=".5"
+              />
+              <text
+                x="417"
+                y="140"
+                text-anchor="middle"
+                font-size="12"
+                font-weight="600"
+                fill="#B45309"
+              >
+                North India festive push
+              </text>
+              <text
+                x="417"
+                y="158"
+                text-anchor="middle"
+                font-size="11"
+                fill="#78350F"
+              >
+                Electronics Q3 campaign.
+              </text>
+              <!-- Defer -->
+              <rect
+                x="345"
+                y="240"
+                width="145"
+                height="52"
+                rx="8"
+                fill="#FEF2F2"
+                stroke="#FCA5A5"
+                stroke-width=".5"
+              />
+              <text
+                x="417"
+                y="258"
+                text-anchor="middle"
+                font-size="12"
+                font-weight="600"
+                fill="#B91C1C"
+              >
+                New category expansion
+              </text>
+              <text
+                x="417"
+                y="276"
+                text-anchor="middle"
+                font-size="11"
+                fill="#7F1D1D"
+              >
+                High effort. Low proven data.
+              </text>
+            </svg>
+          </div>
+          <p
+            style="
+              font-size: 13px;
+              color: var(--muted);
+              margin-top: 12px;
+              padding: 12px 14px;
+              background: var(--surface);
+              border-radius: 8px;
+              line-height: 1.6;
+            "
+          >
+            <strong style="color: var(--ink)">Key finding:</strong> The
+            COD-to-prepaid conversion incentive and Sports category listing
+            audit are the two highest-return, lowest-effort interventions
+            available — both actionable within 30 days with no major system
+            changes required.
+          </p>
+        </div>
+      </section>
+
+      <!-- SQL QUERIES -->
+      <section class="section" id="sql">
+        <div class="section-head">
+          <div class="section-icon si-orange">🗄️</div>
+          <div class="section-title">
+            SQL Query Library
+            <span>15 production-grade queries with business context</span>
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-num">Q01</div>
+          <div class="sql-title">Total Revenue by Month — MoM Trend</div>
+          <div class="sql-code">
+            <span class="sql-kw">SELECT</span>
+            <span class="sql-fn">FORMAT</span>(order_date,
+            <span style="color: #86efac">'yyyy-MM'</span>)
+            <span class="sql-kw">AS</span> order_month,
+            <span class="sql-fn">COUNT</span>(order_id)
+            <span class="sql-kw">AS</span> total_orders,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span
+            >(total_revenue), 2) <span class="sql-kw">AS</span> monthly_revenue,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span
+            >(profit), 2) <span class="sql-kw">AS</span> monthly_profit,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span
+            >(profit)/<span class="sql-fn">SUM</span>(total_revenue)*100, 1)
+            <span class="sql-kw">AS</span> margin_pct
+            <span class="sql-kw">FROM</span> FACT_ORDERS
+            <span class="sql-kw">WHERE</span> delivery_status
+            <span class="sql-kw">NOT IN</span> (<span style="color: #86efac"
+              >'Returned'</span
+            >, <span style="color: #86efac">'Cancelled'</span>)
+            <span class="sql-kw">GROUP BY</span>
+            <span class="sql-fn">FORMAT</span>(order_date,
+            <span style="color: #86efac">'yyyy-MM'</span>)
+            <span class="sql-kw">ORDER BY</span> order_month;
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-num">Q02</div>
+          <div class="sql-title">Revenue by Category — Pareto Analysis</div>
+          <div class="sql-code">
+            <span class="sql-kw">WITH</span> category_rev
+            <span class="sql-kw">AS</span> (
+            <span class="sql-kw">SELECT</span> category,
+            <span class="sql-fn">SUM</span>(total_revenue)
+            <span class="sql-kw">AS</span> revenue,
+            <span class="sql-fn">SUM</span>(profit)
+            <span class="sql-kw">AS</span> profit
+            <span class="sql-kw">FROM</span> FACT_ORDERS f
+            <span class="sql-kw">JOIN</span> DIM_PRODUCT p
+            <span class="sql-kw">ON</span> f.product_id = p.product_id
+            <span class="sql-kw">WHERE</span> delivery_status
+            <span class="sql-kw">NOT IN</span> (<span style="color: #86efac"
+              >'Returned'</span
+            >,<span style="color: #86efac">'Cancelled'</span>)
+            <span class="sql-kw">GROUP BY</span> category )
+            <span class="sql-kw">SELECT</span> category, revenue,
+            <span class="sql-fn">ROUND</span>(revenue /
+            <span class="sql-fn">SUM</span>(revenue)
+            <span class="sql-kw">OVER</span>() * 100, 1)
+            <span class="sql-kw">AS</span> revenue_pct,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span
+            >(revenue) <span class="sql-kw">OVER</span> (<span class="sql-kw"
+              >ORDER BY</span
+            >
+            revenue <span class="sql-kw">DESC</span>
+            <span class="sql-kw">ROWS UNBOUNDED PRECEDING</span>) /
+            <span class="sql-fn">SUM</span>(revenue)
+            <span class="sql-kw">OVER</span>() * 100, 1)
+            <span class="sql-kw">AS</span> cumulative_pct
+            <span class="sql-kw">FROM</span> category_rev
+            <span class="sql-kw">ORDER BY</span> revenue
+            <span class="sql-kw">DESC</span>;
+            <span class="sql-cm">-- Identifies Pareto 80/20 categories</span>
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-num">Q03</div>
+          <div class="sql-title">
+            Customer Lifetime Value — Top 20% Driving 80% of Revenue
+          </div>
+          <div class="sql-code">
+            <span class="sql-kw">WITH</span> customer_ltv
+            <span class="sql-kw">AS</span> (
+            <span class="sql-kw">SELECT</span> c.customer_id,
+            c.customer_segment, <span class="sql-fn">COUNT</span>(DISTINCT
+            f.order_id) <span class="sql-kw">AS</span> total_orders,
+            <span class="sql-fn">SUM</span>(f.total_revenue)
+            <span class="sql-kw">AS</span> lifetime_value,
+            <span class="sql-fn">AVG</span>(f.total_revenue)
+            <span class="sql-kw">AS</span> avg_order_value,
+            <span class="sql-fn">MAX</span>(f.order_date)
+            <span class="sql-kw">AS</span> last_order_date
+            <span class="sql-kw">FROM</span> FACT_ORDERS f
+            <span class="sql-kw">JOIN</span> DIM_CUSTOMER c
+            <span class="sql-kw">ON</span> f.customer_id = c.customer_id
+            <span class="sql-kw">GROUP BY</span> c.customer_id,
+            c.customer_segment ) <span class="sql-kw">SELECT TOP</span> 20
+            <span class="sql-kw">PERCENT</span> *,
+            <span class="sql-fn">NTILE</span>(5)
+            <span class="sql-kw">OVER</span> (<span class="sql-kw"
+              >ORDER BY</span
+            >
+            lifetime_value <span class="sql-kw">DESC</span>)
+            <span class="sql-kw">AS</span> ltv_quintile
+            <span class="sql-kw">FROM</span> customer_ltv
+            <span class="sql-kw">ORDER BY</span> lifetime_value
+            <span class="sql-kw">DESC</span>;
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-num">Q04</div>
+          <div class="sql-title">
+            Return Rate by Category — Identifying Problem Categories
+          </div>
+          <div class="sql-code">
+            <span class="sql-kw">SELECT</span>
+            p.category,
+            <span class="sql-fn">COUNT</span>(f.order_id)
+            <span class="sql-kw">AS</span> total_orders,
+            <span class="sql-fn">SUM</span>(<span class="sql-kw"
+              >CASE WHEN</span
+            >
+            f.delivery_status = <span style="color: #86efac">'Returned'</span>
+            <span class="sql-kw">THEN</span> 1
+            <span class="sql-kw">ELSE</span> 0 <span class="sql-kw">END</span>)
+            <span class="sql-kw">AS</span> returned_orders,
+            <span class="sql-fn">ROUND</span>(
+            <span class="sql-fn">SUM</span>(<span class="sql-kw"
+              >CASE WHEN</span
+            >
+            f.delivery_status = <span style="color: #86efac">'Returned'</span>
+            <span class="sql-kw">THEN</span> 1
+            <span class="sql-kw">ELSE</span> 0 <span class="sql-kw">END</span>)
+            * 100.0 / <span class="sql-fn">COUNT</span>(f.order_id), 1 )
+            <span class="sql-kw">AS</span> return_rate_pct,
+            <span class="sql-fn">AVG</span>(f.rating)
+            <span class="sql-kw">AS</span> avg_rating
+            <span class="sql-kw">FROM</span> FACT_ORDERS f
+            <span class="sql-kw">JOIN</span> DIM_PRODUCT p
+            <span class="sql-kw">ON</span> f.product_id = p.product_id
+            <span class="sql-kw">GROUP BY</span> p.category
+            <span class="sql-kw">ORDER BY</span> return_rate_pct
+            <span class="sql-kw">DESC</span>;
+            <span class="sql-cm"
+              >-- Sports & Outdoors = 14.3% → action needed</span
+            >
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-num">Q05</div>
+          <div class="sql-title">
+            Week-over-Week Revenue Growth — LAG Window Function
+          </div>
+          <div class="sql-code">
+            <span class="sql-kw">WITH</span> weekly_rev
+            <span class="sql-kw">AS</span> (
+            <span class="sql-kw">SELECT</span>
+            <span class="sql-fn">DATEPART</span>(WEEK, order_date)
+            <span class="sql-kw">AS</span> week_num,
+            <span class="sql-fn">YEAR</span>(order_date)
+            <span class="sql-kw">AS</span> yr,
+            <span class="sql-fn">SUM</span>(total_revenue)
+            <span class="sql-kw">AS</span> weekly_revenue
+            <span class="sql-kw">FROM</span> FACT_ORDERS
+            <span class="sql-kw">WHERE</span> delivery_status
+            <span class="sql-kw">NOT IN</span> (<span style="color: #86efac"
+              >'Returned'</span
+            >,<span style="color: #86efac">'Cancelled'</span>)
+            <span class="sql-kw">GROUP BY</span>
+            <span class="sql-fn">DATEPART</span>(WEEK, order_date),
+            <span class="sql-fn">YEAR</span>(order_date) )
+            <span class="sql-kw">SELECT</span> yr, week_num, weekly_revenue,
+            <span class="sql-fn">LAG</span>(weekly_revenue)
+            <span class="sql-kw">OVER</span> (<span class="sql-kw"
+              >ORDER BY</span
+            >
+            yr, week_num) <span class="sql-kw">AS</span> prev_week_revenue,
+            <span class="sql-fn">ROUND</span>( (weekly_revenue -
+            <span class="sql-fn">LAG</span>(weekly_revenue)
+            <span class="sql-kw">OVER</span>(<span class="sql-kw"
+              >ORDER BY</span
+            >
+            yr, week_num)) / <span class="sql-fn">LAG</span>(weekly_revenue)
+            <span class="sql-kw">OVER</span>(<span class="sql-kw"
+              >ORDER BY</span
+            >
+            yr, week_num) * 100, 1 )
+            <span class="sql-kw">AS</span> wow_growth_pct
+            <span class="sql-kw">FROM</span> weekly_rev;
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-num">Q06</div>
+          <div class="sql-title">
+            Regional Performance — Revenue, Margin &amp; AOV by Region
+          </div>
+          <div class="sql-code">
+            <span class="sql-kw">SELECT</span>
+            r.region_name,
+            <span class="sql-fn">COUNT</span>(f.order_id)
+            <span class="sql-kw">AS</span> total_orders,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span
+            >(f.total_revenue), 0) <span class="sql-kw">AS</span> total_revenue,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">AVG</span
+            >(f.total_revenue), 0)
+            <span class="sql-kw">AS</span> avg_order_value,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span
+            >(f.profit)/<span class="sql-fn">SUM</span>(f.total_revenue)*100,1)
+            <span class="sql-kw">AS</span> margin_pct,
+            <span class="sql-fn">RANK</span>()
+            <span class="sql-kw">OVER</span> (<span class="sql-kw"
+              >ORDER BY</span
+            >
+            <span class="sql-fn">SUM</span>(f.total_revenue)
+            <span class="sql-kw">DESC</span>)
+            <span class="sql-kw">AS</span> revenue_rank
+            <span class="sql-kw">FROM</span> FACT_ORDERS f
+            <span class="sql-kw">JOIN</span> DIM_REGION r
+            <span class="sql-kw">ON</span> f.region_id = r.region_id
+            <span class="sql-kw">WHERE</span> f.delivery_status
+            <span class="sql-kw">NOT IN</span> (<span style="color: #86efac"
+              >'Returned'</span
+            >,<span style="color: #86efac">'Cancelled'</span>)
+            <span class="sql-kw">GROUP BY</span> r.region_name
+            <span class="sql-kw">ORDER BY</span> revenue_rank;
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-num">Q07</div>
+          <div class="sql-title">
+            Payment Method — AOV &amp; Cancellation Rate Correlation
+          </div>
+          <div class="sql-code">
+            <span class="sql-kw">SELECT</span>
+            payment_method,
+            <span class="sql-fn">COUNT</span>(order_id)
+            <span class="sql-kw">AS</span> total_orders,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">AVG</span
+            >(total_revenue), 0) <span class="sql-kw">AS</span> avg_order_value,
+            <span class="sql-fn">SUM</span>(<span class="sql-kw"
+              >CASE WHEN</span
+            >
+            delivery_status=<span style="color: #86efac">'Cancelled'</span>
+            <span class="sql-kw">THEN</span> 1
+            <span class="sql-kw">ELSE</span> 0
+            <span class="sql-kw">END</span>)*100.0 /
+            <span class="sql-fn">COUNT</span>(order_id)
+            <span class="sql-kw">AS</span> cancellation_rate_pct
+            <span class="sql-kw">FROM</span> FACT_ORDERS
+            <span class="sql-kw">GROUP BY</span> payment_method
+            <span class="sql-kw">ORDER BY</span> avg_order_value
+            <span class="sql-kw">DESC</span>;
+            <span class="sql-cm"
+              >-- COD = highest cancellation, lowest AOV</span
+            >
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-num">Q08</div>
+          <div class="sql-title">
+            3-Month Rolling Average Revenue — Trend Smoothing
+          </div>
+          <div class="sql-code">
+            <span class="sql-kw">WITH</span> monthly
+            <span class="sql-kw">AS</span> ( <span class="sql-kw">SELECT</span>
+            <span class="sql-fn">FORMAT</span>(order_date,<span
+              style="color: #86efac"
+              >'yyyy-MM'</span
+            >) <span class="sql-kw">AS</span> mo,
+            <span class="sql-fn">SUM</span>(total_revenue)
+            <span class="sql-kw">AS</span> rev
+            <span class="sql-kw">FROM</span> FACT_ORDERS
+            <span class="sql-kw">WHERE</span> delivery_status
+            <span class="sql-kw">NOT IN</span>(<span style="color: #86efac"
+              >'Returned'</span
+            >,<span style="color: #86efac">'Cancelled'</span>)
+            <span class="sql-kw">GROUP BY</span>
+            <span class="sql-fn">FORMAT</span>(order_date,<span
+              style="color: #86efac"
+              >'yyyy-MM'</span
+            >) ) <span class="sql-kw">SELECT</span> mo, rev,
+            <span class="sql-fn">AVG</span>(rev)
+            <span class="sql-kw">OVER</span> (
+            <span class="sql-kw">ORDER BY</span> mo
+            <span class="sql-kw">ROWS BETWEEN</span> 2
+            <span class="sql-kw">PRECEDING AND CURRENT ROW</span> )
+            <span class="sql-kw">AS</span> rolling_3m_avg
+            <span class="sql-kw">FROM</span> monthly
+            <span class="sql-kw">ORDER BY</span> mo;
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-num">Q09</div>
+          <div class="sql-title">
+            Brand Performance Ranking — Revenue + Margin + Rating
+          </div>
+          <div class="sql-code">
+            <span class="sql-kw">SELECT</span>
+            p.brand,
+            <span class="sql-fn">COUNT</span>(f.order_id)
+            <span class="sql-kw">AS</span> orders,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span
+            >(f.total_revenue),0) <span class="sql-kw">AS</span> revenue,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span
+            >(f.profit)/<span class="sql-fn">SUM</span>(f.total_revenue)*100,1)
+            <span class="sql-kw">AS</span> margin_pct,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">AVG</span
+            >(f.rating),2) <span class="sql-kw">AS</span> avg_rating,
+            <span class="sql-fn">DENSE_RANK</span>()
+            <span class="sql-kw">OVER</span>(<span class="sql-kw"
+              >ORDER BY</span
+            >
+            <span class="sql-fn">SUM</span>(f.total_revenue)
+            <span class="sql-kw">DESC</span>)
+            <span class="sql-kw">AS</span> revenue_rank
+            <span class="sql-kw">FROM</span> FACT_ORDERS f
+            <span class="sql-kw">JOIN</span> DIM_PRODUCT p
+            <span class="sql-kw">ON</span> f.product_id = p.product_id
+            <span class="sql-kw">WHERE</span> f.delivery_status
+            <span class="sql-kw">NOT IN</span>(<span style="color: #86efac"
+              >'Returned'</span
+            >,<span style="color: #86efac">'Cancelled'</span>)
+            <span class="sql-kw">GROUP BY</span> p.brand
+            <span class="sql-kw">ORDER BY</span> revenue
+            <span class="sql-kw">DESC</span>;
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-num">Q10</div>
+          <div class="sql-title">
+            Delivery Performance — Late Delivery Rate by Region
+          </div>
+          <div class="sql-code">
+            <span class="sql-kw">SELECT</span>
+            r.region_name,
+            <span class="sql-fn">AVG</span>(f.delivery_days)
+            <span class="sql-kw">AS</span> avg_delivery_days,
+            <span class="sql-fn">SUM</span>(<span class="sql-kw"
+              >CASE WHEN</span
+            >
+            f.delivery_days > 5 <span class="sql-kw">THEN</span> 1
+            <span class="sql-kw">ELSE</span> 0
+            <span class="sql-kw">END</span>)*100.0 /
+            <span class="sql-fn">COUNT</span>(f.order_id)
+            <span class="sql-kw">AS</span> late_delivery_pct,
+            <span class="sql-fn">RANK</span>()
+            <span class="sql-kw">OVER</span>(<span class="sql-kw"
+              >ORDER BY</span
+            >
+            <span class="sql-fn">AVG</span>(f.delivery_days)
+            <span class="sql-kw">DESC</span>)
+            <span class="sql-kw">AS</span> slowest_rank
+            <span class="sql-kw">FROM</span> FACT_ORDERS f
+            <span class="sql-kw">JOIN</span> DIM_REGION r
+            <span class="sql-kw">ON</span> f.region_id = r.region_id
+            <span class="sql-kw">WHERE</span> f.delivery_status =
+            <span style="color: #86efac">'Delivered'</span>
+            <span class="sql-kw">GROUP BY</span> r.region_name
+            <span class="sql-kw">ORDER BY</span> avg_delivery_days
+            <span class="sql-kw">DESC</span>;
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-num">Q11</div>
+          <div class="sql-title">
+            Discount Impact on Margin — Is Discounting Hurting Profitability?
+          </div>
+          <div class="sql-code">
+            <span class="sql-kw">SELECT</span>
+            <span class="sql-kw">CASE</span>
+            <span class="sql-kw">WHEN</span> discount_pct = 0
+            <span class="sql-kw">THEN</span>
+            <span style="color: #86efac">'No Discount'</span>
+            <span class="sql-kw">WHEN</span> discount_pct <= 0.10
+            <span class="sql-kw">THEN</span>
+            <span style="color: #86efac">'0-10%'</span>
+            <span class="sql-kw">WHEN</span> discount_pct <= 0.20
+            <span class="sql-kw">THEN</span>
+            <span style="color: #86efac">'10-20%'</span>
+            <span class="sql-kw">ELSE</span>
+            <span style="color: #86efac">'20%+'</span>
+            <span class="sql-kw">END</span>
+            <span class="sql-kw">AS</span> discount_band,
+            <span class="sql-fn">COUNT</span>(*)
+            <span class="sql-kw">AS</span> order_count,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">AVG</span
+            >(total_revenue),0) <span class="sql-kw">AS</span> avg_order_value,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">AVG</span
+            >(profit/total_revenue)*100,1)
+            <span class="sql-kw">AS</span> avg_margin_pct
+            <span class="sql-kw">FROM</span> FACT_ORDERS
+            <span class="sql-kw">WHERE</span> delivery_status
+            <span class="sql-kw">NOT IN</span>(<span style="color: #86efac"
+              >'Returned'</span
+            >,<span style="color: #86efac">'Cancelled'</span>)
+            <span class="sql-kw">GROUP BY</span>
+            <span class="sql-kw">CASE WHEN</span> discount_pct=0
+            <span class="sql-kw">THEN</span>
+            <span style="color: #86efac">'No Discount'</span>
+            <span class="sql-kw">WHEN</span> discount_pct<=0.10
+            <span class="sql-kw">THEN</span>
+            <span style="color: #86efac">'0-10%'</span>
+            <span class="sql-kw">WHEN</span> discount_pct<=0.20
+            <span class="sql-kw">THEN</span>
+            <span style="color: #86efac">'10-20%'</span>
+            <span class="sql-kw">ELSE</span>
+            <span style="color: #86efac">'20%+'</span>
+            <span class="sql-kw">END</span>
+            <span class="sql-kw">ORDER BY</span> avg_margin_pct
+            <span class="sql-kw">DESC</span>;
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-num">Q12</div>
+          <div class="sql-title">
+            Repeat Purchase Rate — Cohort Retention Signal
+          </div>
+          <div class="sql-code">
+            <span class="sql-kw">WITH</span> order_counts
+            <span class="sql-kw">AS</span> (
+            <span class="sql-kw">SELECT</span> customer_id,
+            <span class="sql-fn">COUNT</span>(order_id)
+            <span class="sql-kw">AS</span> total_orders
+            <span class="sql-kw">FROM</span> FACT_ORDERS
+            <span class="sql-kw">GROUP BY</span> customer_id )
+            <span class="sql-kw">SELECT</span>
+            <span class="sql-fn">SUM</span>(<span class="sql-kw"
+              >CASE WHEN</span
+            >
+            total_orders >= 2 <span class="sql-kw">THEN</span> 1
+            <span class="sql-kw">ELSE</span> 0 <span class="sql-kw">END</span>)
+            <span class="sql-kw">AS</span> repeat_customers,
+            <span class="sql-fn">COUNT</span>(*)
+            <span class="sql-kw">AS</span> total_customers,
+            <span class="sql-fn">ROUND</span>(
+            <span class="sql-fn">SUM</span>(<span class="sql-kw"
+              >CASE WHEN</span
+            >
+            total_orders >= 2 <span class="sql-kw">THEN</span> 1
+            <span class="sql-kw">ELSE</span> 0 <span class="sql-kw">END</span>)
+            * 100.0 / <span class="sql-fn">COUNT</span>(*), 1 )
+            <span class="sql-kw">AS</span> repeat_purchase_rate_pct
+            <span class="sql-kw">FROM</span> order_counts;
+            <span class="sql-cm">-- Result: 42.1% repeat rate</span>
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-num">Q13</div>
+          <div class="sql-title">
+            Top 10 Cities by Revenue — Demand Concentration Map
+          </div>
+          <div class="sql-code">
+            <span class="sql-kw">SELECT TOP</span> 10 r.city, r.region_name,
+            <span class="sql-fn">COUNT</span>(f.order_id)
+            <span class="sql-kw">AS</span> orders,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span
+            >(f.total_revenue),0) <span class="sql-kw">AS</span> revenue,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">AVG</span
+            >(f.total_revenue),0) <span class="sql-kw">AS</span> aov,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">AVG</span
+            >(f.rating),2) <span class="sql-kw">AS</span> avg_rating
+            <span class="sql-kw">FROM</span> FACT_ORDERS f
+            <span class="sql-kw">JOIN</span> DIM_REGION r
+            <span class="sql-kw">ON</span> f.region_id = r.region_id
+            <span class="sql-kw">WHERE</span> f.delivery_status =
+            <span style="color: #86efac">'Delivered'</span>
+            <span class="sql-kw">GROUP BY</span> r.city, r.region_name
+            <span class="sql-kw">ORDER BY</span> revenue
+            <span class="sql-kw">DESC</span>;
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-num">Q14</div>
+          <div class="sql-title">
+            Customer Segment Revenue Comparison — Consumer vs Corporate vs Home
+            Office
+          </div>
+          <div class="sql-code">
+            <span class="sql-kw">SELECT</span>
+            c.customer_segment,
+            <span class="sql-fn">COUNT</span>(DISTINCT f.customer_id)
+            <span class="sql-kw">AS</span> unique_customers,
+            <span class="sql-fn">COUNT</span>(f.order_id)
+            <span class="sql-kw">AS</span> total_orders,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span
+            >(f.total_revenue),0) <span class="sql-kw">AS</span> total_revenue,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">AVG</span
+            >(f.total_revenue),0)
+            <span class="sql-kw">AS</span> avg_order_value,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span
+            >(f.profit)/<span class="sql-fn">SUM</span>(f.total_revenue)*100,1)
+            <span class="sql-kw">AS</span> margin_pct,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span
+            >(f.total_revenue)/<span class="sql-fn">SUM</span>(<span
+              class="sql-fn"
+              >SUM</span
+            >(f.total_revenue)) <span class="sql-kw">OVER</span>() * 100,1)
+            <span class="sql-kw">AS</span> revenue_share_pct
+            <span class="sql-kw">FROM</span> FACT_ORDERS f
+            <span class="sql-kw">JOIN</span> DIM_CUSTOMER c
+            <span class="sql-kw">ON</span> f.customer_id = c.customer_id
+            <span class="sql-kw">WHERE</span> f.delivery_status
+            <span class="sql-kw">NOT IN</span>(<span style="color: #86efac"
+              >'Returned'</span
+            >,<span style="color: #86efac">'Cancelled'</span>)
+            <span class="sql-kw">GROUP BY</span> c.customer_segment;
+          </div>
+        </div>
+
+        <div class="sql-block">
+          <div class="sql-num">Q15</div>
+          <div class="sql-title">
+            Executive Summary KPI — Single Query Dashboard Row
+          </div>
+          <div class="sql-code">
+            <span class="sql-kw">SELECT</span>
+            <span class="sql-fn">COUNT</span>(DISTINCT order_id)
+            <span class="sql-kw">AS</span> total_orders,
+            <span class="sql-fn">COUNT</span>(DISTINCT customer_id)
+            <span class="sql-kw">AS</span> unique_customers,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span
+            >(total_revenue),0) <span class="sql-kw">AS</span> total_revenue,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">AVG</span
+            >(total_revenue),0) <span class="sql-kw">AS</span> avg_order_value,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">SUM</span
+            >(profit)/<span class="sql-fn">SUM</span>(total_revenue)*100,1)
+            <span class="sql-kw">AS</span> overall_margin_pct,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">AVG</span
+            >(CAST(delivery_days <span class="sql-kw">AS</span> FLOAT)),1)
+            <span class="sql-kw">AS</span> avg_delivery_days,
+            <span class="sql-fn">ROUND</span>(<span class="sql-fn">AVG</span
+            >(rating),2) <span class="sql-kw">AS</span> avg_rating,
+            <span class="sql-fn">SUM</span>(<span class="sql-kw"
+              >CASE WHEN</span
+            >
+            delivery_status=<span style="color: #86efac">'Returned'</span>
+            <span class="sql-kw">THEN</span> 1
+            <span class="sql-kw">ELSE</span> 0
+            <span class="sql-kw">END</span>)*100.0/<span class="sql-fn"
+              >COUNT</span
+            >(*) <span class="sql-kw">AS</span> return_rate,
+            <span class="sql-fn">SUM</span>(<span class="sql-kw"
+              >CASE WHEN</span
+            >
+            delivery_status=<span style="color: #86efac">'Cancelled'</span>
+            <span class="sql-kw">THEN</span> 1
+            <span class="sql-kw">ELSE</span> 0
+            <span class="sql-kw">END</span>)*100.0/<span class="sql-fn"
+              >COUNT</span
+            >(*) <span class="sql-kw">AS</span> cancel_rate
+            <span class="sql-kw">FROM</span> FACT_ORDERS;
+            <span class="sql-cm"
+              >-- Single-row exec summary used in Power BI KPI cards</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- REQUIREMENTS -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-blue">📋</div>
+          <div class="section-title">
+            Dashboard Requirements Document
+            <span>Who asked for each KPI and why</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label orange">
+            Dashboard Requirements — Stakeholder-Driven KPI Justification
+          </div>
+          <div class="table-scroll">
+            <table class="proj-table">
+              <thead>
+                <tr>
+                  <th>KPI</th>
+                  <th>Business Question It Answers</th>
+                  <th>Requested By</th>
+                  <th>Action When Threshold Breached</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Total Revenue MoM</td>
+                  <td>Are we growing or declining vs last month?</td>
+                  <td>CEO / Sales Director</td>
+                  <td>Revenue review call if MoM decline &gt;5%</td>
+                </tr>
+                <tr>
+                  <td>Revenue by Category</td>
+                  <td>Which categories drive most GMV?</td>
+                  <td>Category Manager</td>
+                  <td>Reallocate inventory budget if top category shifts</td>
+                </tr>
+                <tr>
+                  <td>Gross Margin %</td>
+                  <td>Are we profitable at category level?</td>
+                  <td>Finance Director</td>
+                  <td>Pricing review if margin drops below 28%</td>
+                </tr>
+                <tr>
+                  <td>Return Rate</td>
+                  <td>Which categories have product-description mismatch?</td>
+                  <td>Operations Manager</td>
+                  <td>Listing audit triggered if category return &gt;10%</td>
+                </tr>
+                <tr>
+                  <td>Avg Order Value</td>
+                  <td>Is our basket size growing?</td>
+                  <td>Marketing Manager</td>
+                  <td>Bundle promotion if AOV declines 2 weeks in a row</td>
+                </tr>
+                <tr>
+                  <td>Repeat Purchase Rate</td>
+                  <td>Are customers coming back?</td>
+                  <td>CRM / Retention Team</td>
+                  <td>Loyalty campaign if rate drops below 38%</td>
+                </tr>
+                <tr>
+                  <td>Regional Revenue</td>
+                  <td>Which regions are over or underperforming?</td>
+                  <td>Regional Managers</td>
+                  <td>Region-specific campaign for underperforming zones</td>
+                </tr>
+                <tr>
+                  <td>Delivery Days Avg</td>
+                  <td>Is our logistics meeting customer expectations?</td>
+                  <td>Supply Chain Head</td>
+                  <td>Logistics review if avg delivery exceeds 5 days</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- INSIGHT NARRATIVE -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-green">✍️</div>
+          <div class="section-title">
+            Executive Insight Narrative
+            <span>The 1-page summary a CEO would actually read</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label orange">
+            Executive Summary — Amazon E-Commerce Sales Analysis (100K
+            Transactions)
+          </div>
+          <p
+            style="
+              font-size: 14px;
+              color: var(--body);
+              line-height: 1.8;
+              margin-bottom: 14px;
+            "
+          >
+            Analysis of 100,000 Amazon-style e-commerce transactions reveals
+            five high-priority findings that together could unlock an estimated
+            <strong>₹6–8 Crore in incremental annual revenue</strong> and reduce
+            operational costs through targeted interventions.
+          </p>
+          <p
+            style="
+              font-size: 14px;
+              color: var(--body);
+              line-height: 1.8;
+              margin-bottom: 14px;
+            "
+          >
+            <strong>Finding 1 — Revenue is dangerously concentrated:</strong>
+            Three categories (Electronics, Fashion, Home &amp; Kitchen) generate
+            65% of total GMV. This creates fragility — a supply disruption in
+            Electronics alone could impact 31% of revenue. Recommendation:
+            diversify by growing the Home Appliances and Personal Care
+            categories with targeted inventory and promotional investment.
+          </p>
+          <p
+            style="
+              font-size: 14px;
+              color: var(--body);
+              line-height: 1.8;
+              margin-bottom: 14px;
+            "
+          >
+            <strong>Finding 2 — Corporate segment is underserved:</strong>
+            Corporate buyers spend 83% more per order than Consumer buyers but
+            represent only 18% of order volume. A B2B-focused campaign with bulk
+            discount tiers could grow Corporate share from 18% to 25%, adding an
+            estimated ₹4.2 Crore in annual revenue without acquiring new
+            customers.
+          </p>
+          <p
+            style="
+              font-size: 14px;
+              color: var(--body);
+              line-height: 1.8;
+              margin-bottom: 14px;
+            "
+          >
+            <strong>Finding 3 — COD is a hidden cost centre:</strong> Cash on
+            Delivery orders cancel at 11.3% vs the platform average of 5.2%.
+            Offering a 3% prepaid discount would cost approximately ₹28 per
+            converted order but save ₹180 in cancellation-related operational
+            costs. ROI: 6.4x per converted order.
+          </p>
+          <p
+            style="
+              font-size: 14px;
+              color: var(--body);
+              line-height: 1.8;
+              margin-bottom: 14px;
+            "
+          >
+            <strong
+              >Finding 4 — Sports &amp; Outdoors is a return rate
+              emergency:</strong
+            >
+            14.3% return rate vs 8.7% platform average, combined with an average
+            rating of 3.2/5, indicates product listing inaccuracy rather than
+            product quality failure. A 72-hour listing audit could reduce
+            returns by 4–5 percentage points — saving approximately ₹1.1 Crore
+            annually in reverse logistics costs.
+          </p>
+          <p style="font-size: 14px; color: var(--body); line-height: 1.8">
+            <strong>Finding 5 — West India is doing the heavy lifting:</strong>
+            West India generates 38% of revenue with only 25% of the customer
+            base — driven by higher Electronics and Fashion affinity. North
+            India is the largest untapped opportunity: 30% of customers but only
+            19% of revenue. A targeted festive season campaign in Q3 for
+            Electronics could close this gap by ₹2–3 Crore.
+          </p>
+        </div>
+      </section>
+
+      <!-- DELIVERABLES -->
+      <section class="section" id="deliverables">
+        <div class="section-head">
+          <div class="section-icon si-blue">📁</div>
+          <div class="section-title">BA Deliverables Produced</div>
+        </div>
+        <div class="del-grid">
+          <div class="del-card">
+            <div class="del-icon">📦</div>
+            <div class="del-num">01</div>
+            <div class="del-name">Data Dictionary — All 20 Columns</div>
+            <div class="del-tool">
+              Data type, formula, business rule per field
+            </div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">📋</div>
+            <div class="del-num">02</div>
+            <div class="del-name">Business Rules Document</div>
+            <div class="del-tool">8 rules governing all KPI calculations</div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">🗄️</div>
+            <div class="del-num">03</div>
+            <div class="del-name">15 SQL Queries</div>
+            <div class="del-tool">
+              CTEs, window functions, Pareto, LAG, RANK
+            </div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">⭐</div>
+            <div class="del-num">04</div>
+            <div class="del-name">Star Schema Data Model</div>
+            <div class="del-tool">4 dim tables — optimised for Power BI</div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">📊</div>
+            <div class="del-num">05</div>
+            <div class="del-name">KPI Framework — 12 KPIs</div>
+            <div class="del-tool">Formula, target, owner, action per KPI</div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">📋</div>
+            <div class="del-num">06</div>
+            <div class="del-name">Dashboard Requirements Doc</div>
+            <div class="del-tool">Who asked for each KPI and why</div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">💡</div>
+            <div class="del-num">07</div>
+            <div class="del-name">5 Key Business Insights</div>
+            <div class="del-tool">With quantified business impact</div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">✍️</div>
+            <div class="del-num">08</div>
+            <div class="del-name">Executive Insight Narrative</div>
+            <div class="del-tool">1-page C-suite summary with ₹impact</div>
+          </div>
+          <div class="del-card">
+            <div class="del-icon">🎯</div>
+            <div class="del-num">09</div>
+            <div class="del-name">Opportunity Priority Matrix</div>
+            <div class="del-tool">5 opportunities by impact vs effort</div>
+          </div>
+        </div>
+      </section>
+
+     
+
+      <!-- AI TOOLS -->
+      <section class="section">
+        <div class="section-head">
+          <div class="section-icon si-blue">🤖</div>
+          <div class="section-title">AI Tools Used in This Project</div>
+        </div>
+        <div class="card">
+          <div class="ai-grid">
+            <div class="ai-card">
+              <div class="ai-stage">SQL Query Review</div>
+              <div class="ai-tool">Claude (Anthropic)</div>
+              <div class="ai-desc">
+                Used to review SQL queries for logical correctness and suggest
+                window function optimisations — all queries validated against
+                real dataset structure
+              </div>
+            </div>
+            <div class="ai-card">
+              <div class="ai-stage">KPI Framework</div>
+              <div class="ai-tool">ChatGPT (OpenAI)</div>
+              <div class="ai-desc">
+                Used to suggest industry-standard e-commerce KPIs — validated
+                against Amazon India public benchmarks and refined for this
+                dataset's specific columns
+              </div>
+            </div>
+            <div class="ai-card">
+              <div class="ai-stage">Insight Generation</div>
+              <div class="ai-tool">Claude (Anthropic)</div>
+              <div class="ai-desc">
+                Used to cross-check insight logic — verified that COD
+                cancellation finding and Sports return rate finding were
+                directionally consistent with industry data
+              </div>
+            </div>
+            <div class="ai-card">
+              <div class="ai-stage">Business Rules</div>
+              <div class="ai-tool">Gemini (Google)</div>
+              <div class="ai-desc">
+                Used to research standard e-commerce data governance rules —
+                revenue exclusion logic, attribution models, and active customer
+                definitions validated against industry norms
+              </div>
+            </div>
+            <div class="ai-card">
+              <div class="ai-stage">Executive Narrative</div>
+              <div class="ai-tool">Claude (Anthropic)</div>
+              <div class="ai-desc">
+                Used to structure the executive summary format — ₹ impact
+                estimates calculated manually from query outputs, then narrative
+                written and refined for C-suite readability
+              </div>
+            </div>
+            <div class="ai-card">
+              <div class="ai-stage">DAX Measures</div>
+              <div class="ai-tool">Microsoft Copilot</div>
+              <div class="ai-desc">
+                Used to generate initial DAX syntax for YoY growth and running
+                total measures in Power BI — all measures tested against
+                expected output before dashboard finalisation
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <strong>Deepender Choudhary</strong> — Business Analyst Portfolio
+      &nbsp;·&nbsp; Project 3 of 5 &nbsp;·&nbsp; Gurugram, India<br />
+      <span style="margin-top: 6px; display: inline-block; font-size: 11px"
+        >Dataset: Amazon-Style E-Commerce Sales · 100,000 transactions · Kaggle
+        · Public Domain</span
+      >
+    </footer>
+  </body>
+</html>
