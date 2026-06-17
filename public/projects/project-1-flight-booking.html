@@ -1,0 +1,865 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project 1 — Flight Booking Process Improvement | Deepender Choudhary</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0B1F3A;--blue:#1352A2;--blue-lt:#E8F0FC;--teal:#0D7A6E;--teal-lt:#E3F5F3;
+  --amber:#B45309;--amber-lt:#FEF3CD;--red:#B91C1C;--red-lt:#FEF2F2;
+  --ink:#111827;--body:#374151;--muted:#6B7280;--border:#E5E7EB;
+  --surface:#F9FAFB;--white:#FFFFFF;--green:#166534;--green-lt:#DCFCE7;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:#F3F4F6;color:var(--ink);line-height:1.6;min-height:100vh}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--border);padding:0 40px;display:flex;align-items:center;
+  justify-content:space-between;height:56px}
+.nav-brand{font-size:15px;font-weight:600;color:var(--navy);text-decoration:none}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:var(--blue)}
+.nav-badge{font-size:12px;font-weight:500;background:var(--blue-lt);color:var(--blue);padding:5px 14px;border-radius:20px}
+
+.page-wrap{max-width:960px;margin:0 auto;padding:0 24px 80px}
+
+.hero{padding:56px 0 40px;border-bottom:1px solid var(--border);margin-bottom:40px}
+.eyebrow{font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);
+  margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.eyebrow::before{content:'';display:block;width:24px;height:2px;background:var(--blue)}
+.hero h1{font-size:38px;font-weight:600;color:var(--navy);line-height:1.15;letter-spacing:-.8px;
+  margin-bottom:16px;max-width:640px}
+.hero-sub{font-size:16px;color:var(--body);line-height:1.7;max-width:620px;margin-bottom:28px}
+.tag-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:36px}
+.tag{font-size:12px;font-weight:500;padding:5px 12px;border-radius:6px;border:1px solid var(--border);
+  color:var(--body);background:var(--white)}
+.tag.blue{background:var(--blue-lt);color:var(--blue);border-color:#BFDBFE}
+.tag.teal{background:var(--teal-lt);color:var(--teal);border-color:#99E6DE}
+.tag.amber{background:var(--amber-lt);color:var(--amber);border-color:#FDE68A}
+
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:40px}
+.metric{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px 16px;text-align:center}
+.metric-val{font-size:28px;font-weight:600;color:var(--navy);display:block;letter-spacing:-.5px;
+  line-height:1;margin-bottom:6px}
+.metric-label{font-size:12px;color:var(--muted);line-height:1.4}
+.metric.highlight{border-color:#BFDBFE;background:var(--blue-lt)}
+.metric.highlight .metric-val{color:var(--blue)}
+
+.section{margin-bottom:48px}
+.section-head{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.section-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;font-size:16px;flex-shrink:0}
+.si-blue{background:var(--blue-lt);color:var(--blue)}
+.si-teal{background:var(--teal-lt);color:var(--teal)}
+.si-amber{background:var(--amber-lt);color:var(--amber)}
+.si-green{background:var(--green-lt);color:var(--green)}
+.si-red{background:var(--red-lt);color:var(--red)}
+.section-title{font-size:18px;font-weight:600;color:var(--navy);letter-spacing:-.3px}
+.section-title span{font-size:13px;font-weight:400;color:var(--muted);margin-left:6px;letter-spacing:0}
+
+.card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px}
+.card-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.card-label.blue{color:var(--blue)}.card-label.teal{color:var(--teal)}
+.card-label.amber{color:var(--amber)}.card-label.red{color:var(--red)}.card-label.green{color:var(--green)}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+
+.problem-box{background:var(--blue-lt);border:1px solid #BFDBFE;border-left:4px solid var(--blue);
+  border-radius:8px;padding:20px 24px;font-size:15px;color:var(--navy);line-height:1.7;margin-bottom:16px}
+
+.bullet-list{list-style:none}
+.bullet-list li{display:flex;align-items:flex-start;gap:10px;padding:7px 0;font-size:14px;
+  color:var(--body);line-height:1.5;border-bottom:1px solid var(--surface)}
+.bullet-list li:last-child{border-bottom:none}
+.bullet-list li::before{content:'→';color:var(--blue);font-weight:600;flex-shrink:0;margin-top:1px}
+
+.proj-table{width:100%;border-collapse:collapse;font-size:13px}
+.proj-table th{background:var(--navy);color:var(--white);padding:10px 14px;text-align:left;
+  font-weight:500;font-size:12px;letter-spacing:.04em}
+.proj-table th:first-child{border-radius:8px 0 0 0}.proj-table th:last-child{border-radius:0 8px 0 0}
+.proj-table td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--body);
+  vertical-align:top;line-height:1.5}
+.proj-table tr:last-child td{border-bottom:none}
+.proj-table tr:nth-child(even) td{background:var(--surface)}
+.proj-table td:first-child{font-weight:500;color:var(--navy)}
+.code-pill{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--navy);color:#7DD3FC;
+  padding:2px 7px;border-radius:4px;display:inline-block}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px;display:inline-block}
+.badge-blue{background:var(--blue-lt);color:var(--blue)}.badge-teal{background:var(--teal-lt);color:var(--teal)}
+.badge-amber{background:var(--amber-lt);color:var(--amber)}.badge-red{background:var(--red-lt);color:var(--red)}
+.badge-green{background:var(--green-lt);color:var(--green)}
+
+.story-card{background:var(--white);border:1px solid var(--border);border-radius:10px;
+  padding:18px 20px;margin-bottom:12px}
+.story-id{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;color:var(--blue);margin-bottom:6px}
+.story-text{font-size:14px;color:var(--navy);font-weight:500;margin-bottom:10px;line-height:1.5}
+.story-ac{font-size:13px;color:var(--body);background:var(--surface);border-radius:6px;
+  padding:10px 12px;line-height:1.6}
+.story-ac strong{color:var(--teal)}
+
+.rating-row{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--surface)}
+.rating-row:last-child{border-bottom:none}
+.rating-label{font-size:13px;color:var(--body);width:200px;flex-shrink:0}
+.rating-track{flex:1;height:6px;background:var(--border);border-radius:10px;overflow:hidden}
+.rating-fill{height:100%;border-radius:10px}
+.rating-score{font-size:13px;font-weight:600;width:40px;text-align:right}
+
+.rtm-table{width:100%;border-collapse:collapse;font-size:12px}
+.rtm-table th{background:var(--navy);color:#fff;padding:9px 12px;text-align:left;font-size:11px;letter-spacing:.04em}
+.rtm-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--body);vertical-align:middle}
+.rtm-table tr:nth-child(even) td{background:var(--surface)}
+
+.gap-row{display:grid;grid-template-columns:1.4fr 1.6fr 1.6fr .8fr;gap:1px;
+  background:var(--border);margin-bottom:1px;border-radius:6px;overflow:hidden}
+.gap-row.header{background:var(--navy);border-radius:8px 8px 0 0}
+.gap-cell{padding:10px 14px;font-size:12.5px;color:var(--body);background:var(--white);line-height:1.4}
+.gap-row.header .gap-cell{background:var(--navy);color:var(--white);font-size:11px;
+  font-weight:500;letter-spacing:.04em}
+
+.del-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.del-card{background:var(--white);border:1px solid var(--border);border-radius:10px;
+  padding:16px;transition:border-color .2s,transform .2s}
+.del-card:hover{border-color:var(--blue);transform:translateY(-2px)}
+.del-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:6px}
+.del-name{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;line-height:1.3}
+.del-tool{font-size:11px;color:var(--muted)}
+.del-icon{font-size:20px;margin-bottom:8px}
+
+.ai-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ai-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
+.ai-stage{font-size:11px;font-weight:600;color:var(--blue);margin-bottom:6px;
+  text-transform:uppercase;letter-spacing:.06em}
+.ai-tool{font-size:13px;font-weight:500;color:var(--navy);margin-bottom:4px}
+.ai-desc{font-size:12px;color:var(--muted);line-height:1.5}
+
+.callout{border-radius:10px;padding:16px 20px;margin-bottom:12px;display:flex;gap:14px;align-items:flex-start}
+.callout-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.callout-title{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.callout-text{font-size:13px;line-height:1.6}
+.callout.recruiter{background:var(--red-lt);border:1px solid #FCA5A5}
+.callout.recruiter .callout-title{color:var(--red)}.callout.recruiter .callout-text{color:#7F1D1D}
+.callout.hm{background:var(--amber-lt);border:1px solid #FDE68A}
+.callout.hm .callout-title{color:var(--amber)}.callout.hm .callout-text{color:#78350F}
+.callout.senior{background:var(--green-lt);border:1px solid #86EFAC}
+.callout.senior .callout-title{color:var(--green)}.callout.senior .callout-text{color:#14532D}
+.callout.diff{background:var(--blue-lt);border:1px solid #BFDBFE}
+.callout.diff .callout-title{color:var(--blue)}.callout.diff .callout-text{color:#1e3a8a}
+
+.divider{border:none;border-top:1px solid var(--border);margin:40px 0}
+
+/* DIAGRAM SECTION */
+.diag-wrap{background:var(--white);border:1px solid var(--border);border-radius:12px;
+  padding:24px;margin-bottom:16px}
+.diag-eyebrow{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:6px}
+.diag-title{font-size:16px;font-weight:600;color:var(--navy);margin-bottom:4px}
+.diag-sub{font-size:13px;color:var(--muted);margin-bottom:16px}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:12px;font-size:12px;color:var(--muted)}
+.legend-item{display:flex;align-items:center;gap:6px}
+.legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+/* SVG shared classes — scoped via inline style on SVG */
+.arr-line{stroke:var(--navy);stroke-width:.5;fill:none;opacity:.5}
+.pain-lbl rect{fill:#FEF2F2;stroke:#FCA5A5;stroke-width:.5}
+.pain-lbl text{fill:#A32D2D;font-size:11px;font-weight:500}
+.fix-lbl rect{fill:#DCFCE7;stroke:#86EFAC;stroke-width:.5}
+.fix-lbl text{fill:#166534;font-size:11px;font-weight:500}
+
+footer{background:var(--navy);color:rgba(255,255,255,.6);text-align:center;
+  padding:32px 24px;font-size:13px;margin-top:60px}
+footer strong{color:var(--white)}
+
+@media(max-width:680px){
+  .metrics-grid{grid-template-columns:repeat(2,1fr)}
+  .two-col,.three-col,.del-grid,.ai-grid{grid-template-columns:1fr}
+  .hero h1{font-size:26px}
+  .gap-row{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="#">DC</a>
+  <ul class="nav-links">
+    <li><a href="#">About</a></li>
+    <li><a href="#diagrams">Diagrams</a></li>
+    <li><a href="#requirements">Requirements</a></li>
+    <li><a href="#stories">User Stories</a></li>
+  </ul>
+  <span class="nav-badge">✈ Project 1 of 9</span>
+</nav>
+
+<div class="page-wrap">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="eyebrow">Business Analyst Portfolio — Aviation Domain</div>
+  <h1>Flight Booking Process<br>Improvement Analysis</h1>
+  <p class="hero-sub">A complete BA case study on airline disruption rebooking workflows — from stakeholder analysis and BPMN process mapping to gap analysis, requirements documentation, and business recommendations. Based on real operational experience managing KLM airline workflows at IGT Solutions, Gurugram.</p>
+  <div class="tag-row">
+    <span class="tag blue">Aviation / Airline Ops</span>
+    <span class="tag blue">BPMN 2.0</span>
+    <span class="tag teal">Requirements Engineering</span>
+    <span class="tag teal">Stakeholder Analysis</span>
+    <span class="tag teal">Gap Analysis</span>
+    <span class="tag amber">KPI Reporting</span>
+    <span class="tag amber">Root Cause Analysis</span>
+    <span class="tag">Draw.io</span>
+    <span class="tag">Google Docs</span>
+    <span class="tag">Excel</span>
+  </div>
+</section>
+
+<!-- METRICS -->
+<section class="section">
+  <div class="metrics-grid">
+    <div class="metric"><span class="metric-val">4</span><span class="metric-label">Lines of Business covered</span></div>
+    <div class="metric highlight"><span class="metric-val">~20%</span><span class="metric-label">SLA compliance improvement</span></div>
+    <div class="metric"><span class="metric-val">6</span><span class="metric-label">Critical workflow gaps identified</span></div>
+    <div class="metric highlight"><span class="metric-val">10/10</span><span class="metric-label">Interview defensibility score</span></div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-red">⚡</div>
+    <div class="section-title">Business Problem &amp; Objective</div>
+  </div>
+  <div class="problem-box">
+    During peak flight disruption events, airline operations teams experienced a <strong>35–45% spike in average case handling time</strong> and a <strong>20–30% rise in passenger escalation volume</strong>. Rebooking, compensation, and seat reallocation workflows were fragmented — no automated handoffs between systems, no documented escalation criteria, and no real-time SLA visibility for team leads.
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-label blue">Project Objective</div>
+      <p style="font-size:14px;color:var(--body);line-height:1.6;">Analyse the end-to-end flight booking and disruption rebooking process, identify workflow inefficiencies and requirement gaps, and propose a structured to-be process improvement with measurable business outcomes.</p>
+    </div>
+    <div class="card">
+      <div class="card-label teal">Scope</div>
+      <p style="font-size:13px;color:var(--muted);font-weight:500;margin-bottom:6px;">In Scope</p>
+      <ul class="bullet-list" style="margin-bottom:10px;">
+        <li>Disruption detection → case closure workflow</li>
+        <li>Rebooking, reprotection, and compensation process</li>
+        <li>SLA monitoring and escalation criteria</li>
+      </ul>
+      <p style="font-size:13px;color:var(--muted);font-weight:500;margin-bottom:6px;">Out of Scope</p>
+      <ul class="bullet-list">
+        <li>GDS system configuration or infrastructure changes</li>
+        <li>Revenue management and fare pricing decisions</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- STAKEHOLDERS -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-blue">👥</div>
+    <div class="section-title">Stakeholder Analysis</div>
+  </div>
+  <div class="card">
+    <table class="proj-table">
+      <thead><tr><th>Stakeholder</th><th>Role</th><th>Interest</th><th>Influence</th><th>Engagement</th></tr></thead>
+      <tbody>
+        <tr><td>Airline Operations Manager</td><td>Process owner</td><td><span class="badge badge-red">High</span></td><td><span class="badge badge-red">High</span></td><td>Lead sponsor</td></tr>
+        <tr><td>Frontline Operations Agent</td><td>Primary process executor</td><td><span class="badge badge-red">High</span></td><td><span class="badge badge-amber">Medium</span></td><td>Key informant</td></tr>
+        <tr><td>GDS System Administrator</td><td>Technical system owner</td><td><span class="badge badge-amber">Medium</span></td><td><span class="badge badge-red">High</span></td><td>Consulted</td></tr>
+        <tr><td>Passenger (End User)</td><td>Process recipient</td><td><span class="badge badge-red">High</span></td><td><span class="badge badge-teal">Low</span></td><td>CSAT surveys</td></tr>
+        <tr><td>CRM Platform Owner</td><td>Data &amp; dashboard owner</td><td><span class="badge badge-amber">Medium</span></td><td><span class="badge badge-red">High</span></td><td>Consulted</td></tr>
+        <tr><td>Customer Service Manager</td><td>Escalation owner</td><td><span class="badge badge-red">High</span></td><td><span class="badge badge-amber">Medium</span></td><td>Reviewed</td></tr>
+        <tr><td>Compliance / Audit Team</td><td>Regulatory oversight</td><td><span class="badge badge-teal">Low</span></td><td><span class="badge badge-amber">Medium</span></td><td>Informed</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     ALL 5 DIAGRAMS
+══════════════════════════════════ -->
+<section class="section" id="diagrams">
+  <div class="section-head">
+    <div class="section-icon si-amber">📊</div>
+    <div class="section-title">Process Diagrams <span>5 diagrams — As-Is · To-Be · Swimlane · Stakeholder Map · Gap Matrix</span></div>
+  </div>
+
+  <!-- DIAGRAM 1 — AS-IS -->
+  <div class="diag-wrap">
+    <div class="diag-eyebrow">Diagram 1 of 5</div>
+    <div class="diag-title">As-Is Process Flow — Current broken state</div>
+    <div class="diag-sub">How flight disruption rebooking works today — 6 critical pain points identified</div>
+    <svg width="100%" viewBox="0 0 680 730" role="img" style="font-family:'Inter',sans-serif;">
+      <title>As-Is Process Flow</title>
+      <desc>Current state showing 6 manual pain points in the disruption rebooking workflow</desc>
+      <defs><marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+
+      <!-- START -->
+      <rect x="240" y="20" width="200" height="44" rx="22" fill="#F1EFE8" stroke="#B4B2A9" stroke-width=".5"/>
+      <text x="340" y="42" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#2C2C2A">Disruption declared</text>
+      <line x1="340" y1="64" x2="340" y2="94" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a1)"/>
+
+      <!-- Step 1 pain -->
+      <rect x="190" y="94" width="300" height="56" rx="8" fill="#FCEBEB" stroke="#F7C1C1" stroke-width=".5"/>
+      <text x="340" y="116" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#791F1F">Agent manually searches GDS</text>
+      <text x="340" y="136" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#A32D2D">3–5 min wasted per case. No API integration.</text>
+      <rect x="500" y="106" width="80" height="22" rx="4" fill="#FCEBEB" stroke="#F7C1C1" stroke-width=".5"/>
+      <text x="540" y="121" text-anchor="middle" font-size="11" font-weight="500" fill="#A32D2D">⚠ Pain point</text>
+      <line x1="340" y1="150" x2="340" y2="180" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a1)"/>
+
+      <!-- Step 2 pain -->
+      <rect x="190" y="180" width="300" height="56" rx="8" fill="#FCEBEB" stroke="#F7C1C1" stroke-width=".5"/>
+      <text x="340" y="202" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#791F1F">Agent manually finds reprotection</text>
+      <text x="340" y="222" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#A32D2D">No pre-population. Manual GDS browsing.</text>
+      <rect x="500" y="192" width="80" height="22" rx="4" fill="#FCEBEB" stroke="#F7C1C1" stroke-width=".5"/>
+      <text x="540" y="207" text-anchor="middle" font-size="11" font-weight="500" fill="#A32D2D">⚠ Pain point</text>
+      <line x1="340" y1="236" x2="340" y2="268" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a1)"/>
+
+      <!-- Decision -->
+      <polygon points="340,268 424,308 340,348 256,308" fill="none" stroke="#5F5E5A" stroke-width=".5"/>
+      <text x="340" y="304" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#2C2C2A">Reprotection</text>
+      <text x="340" y="320" text-anchor="middle" dominant-baseline="central" font-size="13" fill="#2C2C2A">available?</text>
+
+      <!-- YES -->
+      <line x1="424" y1="308" x2="496" y2="308" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a1)"/>
+      <text x="458" y="302" text-anchor="middle" font-size="12" fill="#3B6D11" font-weight="500">YES</text>
+      <rect x="496" y="280" width="152" height="56" rx="8" fill="#E1F5EE" stroke="#9FE1CB" stroke-width=".5"/>
+      <text x="572" y="302" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#085041">Agent offers flight</text>
+      <text x="572" y="322" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#0F6E56">Passenger accepts / declines</text>
+
+      <!-- NO -->
+      <line x1="256" y1="308" x2="168" y2="308" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a1)"/>
+      <text x="210" y="302" text-anchor="middle" font-size="12" fill="#A32D2D" font-weight="500">NO</text>
+      <rect x="30" y="280" width="138" height="56" rx="8" fill="#FCEBEB" stroke="#F7C1C1" stroke-width=".5"/>
+      <text x="99" y="300" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#791F1F">Manual hotel</text>
+      <text x="99" y="320" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#A32D2D">+ next flight</text>
+      <rect x="30" y="348" width="80" height="22" rx="4" fill="#FCEBEB" stroke="#F7C1C1" stroke-width=".5"/>
+      <text x="70" y="363" text-anchor="middle" font-size="11" font-weight="500" fill="#A32D2D">⚠ Pain point</text>
+
+      <!-- Merge -->
+      <line x1="99" y1="336" x2="99" y2="452" stroke="#5F5E5A" stroke-width=".5" fill="none"/>
+      <line x1="99" y1="452" x2="295" y2="452" stroke="#5F5E5A" stroke-width=".5" fill="none"/>
+      <line x1="572" y1="336" x2="572" y2="452" stroke="#5F5E5A" stroke-width=".5" fill="none"/>
+      <line x1="572" y1="452" x2="387" y2="452" stroke="#5F5E5A" stroke-width=".5" fill="none"/>
+      <line x1="340" y1="452" x2="340" y2="472" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a1)"/>
+      <circle cx="340" cy="452" r="3" fill="#5F5E5A" opacity=".5"/>
+
+      <!-- Escalation decision -->
+      <polygon points="340,472 420,510 340,548 260,510" fill="none" stroke="#5F5E5A" stroke-width=".5"/>
+      <text x="340" y="506" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#2C2C2A">Escalate?</text>
+      <text x="340" y="522" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#888780">No criteria documented</text>
+      <rect x="430" y="498" width="116" height="22" rx="4" fill="#FCEBEB" stroke="#F7C1C1" stroke-width=".5"/>
+      <text x="488" y="513" text-anchor="middle" font-size="11" font-weight="500" fill="#A32D2D">⚠ No criteria</text>
+
+      <line x1="420" y1="510" x2="548" y2="510" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a1)"/>
+      <text x="482" y="504" text-anchor="middle" font-size="12" fill="#3B6D11" font-weight="500">YES</text>
+      <rect x="548" y="488" width="96" height="44" rx="8" fill="#FAEEDA" stroke="#FAC775" stroke-width=".5"/>
+      <text x="596" y="510" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#633806">Supervisor</text>
+
+      <line x1="340" y1="548" x2="340" y2="578" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a1)"/>
+      <text x="356" y="566" font-size="12" fill="#A32D2D" font-weight="500">NO</text>
+
+      <!-- Manual CRM -->
+      <rect x="190" y="578" width="300" height="56" rx="8" fill="#FCEBEB" stroke="#F7C1C1" stroke-width=".5"/>
+      <text x="340" y="600" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#791F1F">Agent manually logs in CRM</text>
+      <text x="340" y="620" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#A32D2D">No auto-log. Data quality varies by agent.</text>
+      <rect x="500" y="590" width="80" height="22" rx="4" fill="#FCEBEB" stroke="#F7C1C1" stroke-width=".5"/>
+      <text x="540" y="605" text-anchor="middle" font-size="11" font-weight="500" fill="#A32D2D">⚠ Pain point</text>
+      <line x1="340" y1="634" x2="340" y2="664" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a1)"/>
+
+      <!-- END -->
+      <rect x="230" y="664" width="220" height="44" rx="22" fill="#F1EFE8" stroke="#B4B2A9" stroke-width=".5"/>
+      <text x="340" y="686" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#2C2C2A">Case closed (no SLA track)</text>
+    </svg>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#E24B4A"></div>Pain point — manual / broken</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#1D9E75"></div>Working step</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#BA7517"></div>Escalation</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#888780"></div>Start / End</div>
+    </div>
+  </div>
+
+  <!-- DIAGRAM 2 — TO-BE -->
+  <div class="diag-wrap">
+    <div class="diag-eyebrow">Diagram 2 of 5</div>
+    <div class="diag-title">To-Be Process Flow — Improved future state</div>
+    <div class="diag-sub">4 manual steps eliminated. Estimated 4–6 minutes saved per disruption case.</div>
+    <svg width="100%" viewBox="0 0 680 660" role="img" style="font-family:'Inter',sans-serif;">
+      <title>To-Be Process Flow</title>
+      <desc>Future state showing automated steps replacing manual pain points</desc>
+      <defs><marker id="a2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+
+      <rect x="240" y="20" width="200" height="44" rx="22" fill="#F1EFE8" stroke="#B4B2A9" stroke-width=".5"/>
+      <text x="340" y="42" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#2C2C2A">Disruption declared</text>
+      <line x1="340" y1="64" x2="340" y2="94" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a2)"/>
+
+      <!-- Auto step 1 -->
+      <rect x="170" y="94" width="320" height="56" rx="8" fill="#E1F5EE" stroke="#9FE1CB" stroke-width=".5"/>
+      <text x="330" y="116" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#04342C">System auto-populates affected PNRs</text>
+      <text x="330" y="136" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#0F6E56">Single screen. Sorted by SLA urgency. Colour-coded.</text>
+      <rect x="500" y="106" width="96" height="22" rx="4" fill="#EAF3DE" stroke="#C0DD97" stroke-width=".5"/>
+      <text x="548" y="121" text-anchor="middle" font-size="11" font-weight="500" fill="#3B6D11">✓ Automated</text>
+      <line x1="340" y1="150" x2="340" y2="180" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a2)"/>
+
+      <!-- Auto step 2 -->
+      <rect x="170" y="180" width="320" height="56" rx="8" fill="#E1F5EE" stroke="#9FE1CB" stroke-width=".5"/>
+      <text x="330" y="200" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#04342C">GDS API pre-fetches reprotection options</text>
+      <text x="330" y="220" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#0F6E56">3 options displayed instantly. Filtered by class &amp; availability.</text>
+      <rect x="500" y="192" width="96" height="22" rx="4" fill="#EAF3DE" stroke="#C0DD97" stroke-width=".5"/>
+      <text x="548" y="207" text-anchor="middle" font-size="11" font-weight="500" fill="#3B6D11">✓ Automated</text>
+      <line x1="340" y1="236" x2="340" y2="266" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a2)"/>
+
+      <!-- Agent reviews -->
+      <rect x="170" y="266" width="320" height="56" rx="8" fill="#E6F1FB" stroke="#B5D4F4" stroke-width=".5"/>
+      <text x="330" y="286" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#042C53">Agent reviews and confirms rebooking</text>
+      <text x="330" y="306" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#185FA5">One-click confirmation. Passenger tier &amp; class shown.</text>
+      <line x1="340" y1="322" x2="340" y2="352" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a2)"/>
+
+      <!-- Auto compensation -->
+      <rect x="170" y="352" width="320" height="56" rx="8" fill="#E1F5EE" stroke="#9FE1CB" stroke-width=".5"/>
+      <text x="330" y="372" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#04342C">Compensation auto-calculated</text>
+      <text x="330" y="392" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#0F6E56">EU261/IATA rules applied. Agent reviews and approves.</text>
+      <rect x="500" y="364" width="96" height="22" rx="4" fill="#EAF3DE" stroke="#C0DD97" stroke-width=".5"/>
+      <text x="548" y="379" text-anchor="middle" font-size="11" font-weight="500" fill="#3B6D11">✓ Automated</text>
+      <line x1="340" y1="408" x2="340" y2="438" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a2)"/>
+
+      <!-- Auto CRM + notification -->
+      <rect x="170" y="438" width="320" height="56" rx="8" fill="#E1F5EE" stroke="#9FE1CB" stroke-width=".5"/>
+      <text x="330" y="458" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#04342C">CRM auto-logs + passenger notified</text>
+      <text x="330" y="478" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#0F6E56">12 mandatory fields. SMS/email within 30 min.</text>
+      <rect x="500" y="450" width="96" height="22" rx="4" fill="#EAF3DE" stroke="#C0DD97" stroke-width=".5"/>
+      <text x="548" y="465" text-anchor="middle" font-size="11" font-weight="500" fill="#3B6D11">✓ Automated</text>
+      <line x1="340" y1="494" x2="340" y2="524" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a2)"/>
+
+      <!-- SLA tracking -->
+      <rect x="170" y="524" width="320" height="56" rx="8" fill="#E6F1FB" stroke="#B5D4F4" stroke-width=".5"/>
+      <text x="330" y="544" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#042C53">Real-time SLA tracking active</text>
+      <text x="330" y="564" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#185FA5">Alert at 80% SLA. Dashboard refreshes every 5 min.</text>
+      <line x1="340" y1="580" x2="340" y2="610" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a2)"/>
+
+      <rect x="220" y="610" width="240" height="44" rx="22" fill="#F1EFE8" stroke="#B4B2A9" stroke-width=".5"/>
+      <text x="340" y="632" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#2C2C2A">Case closed with full audit trail</text>
+    </svg>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#1D9E75"></div>Automated step</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div>Agent action</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#888780"></div>Start / End</div>
+    </div>
+  </div>
+
+  <!-- DIAGRAM 3 — SWIMLANE -->
+  <div class="diag-wrap">
+    <div class="diag-eyebrow">Diagram 3 of 5</div>
+    <div class="diag-title">Swimlane Diagram — Who does what</div>
+    <div class="diag-sub">4 lanes: Passenger · Ops Agent · System/GDS · Team Lead</div>
+    <svg width="100%" viewBox="0 0 680 560" role="img" style="font-family:'Inter',sans-serif;">
+      <title>Swimlane Diagram</title>
+      <desc>Responsibilities across 4 lanes for flight disruption handling</desc>
+      <defs><marker id="a3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+
+      <!-- Lane backgrounds -->
+      <rect x="0"   y="36" width="170" height="524" fill="#E1F5EE" opacity=".25"/>
+      <rect x="170" y="36" width="170" height="524" fill="#E6F1FB" opacity=".25"/>
+      <rect x="340" y="36" width="170" height="524" fill="#FAEEDA" opacity=".25"/>
+      <rect x="510" y="36" width="170" height="524" fill="#FCEBEB" opacity=".25"/>
+
+      <!-- Lane headers -->
+      <rect x="0"   y="0" width="170" height="36" fill="#E1F5EE"/>
+      <text x="85"  y="22" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#085041">Passenger</text>
+      <rect x="170" y="0" width="170" height="36" fill="#E6F1FB"/>
+      <text x="255" y="22" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#0C447C">Ops Agent</text>
+      <rect x="340" y="0" width="170" height="36" fill="#FAEEDA"/>
+      <text x="425" y="22" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#633806">System / GDS</text>
+      <rect x="510" y="0" width="170" height="36" fill="#FCEBEB"/>
+      <text x="595" y="22" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#791F1F">Team Lead</text>
+
+      <!-- Lane dividers -->
+      <line x1="0"   y1="0" x2="0"   y2="560" stroke="#E5E7EB" stroke-width=".5"/>
+      <line x1="170" y1="0" x2="170" y2="560" stroke="#E5E7EB" stroke-width=".5"/>
+      <line x1="340" y1="0" x2="340" y2="560" stroke="#E5E7EB" stroke-width=".5"/>
+      <line x1="510" y1="0" x2="510" y2="560" stroke="#E5E7EB" stroke-width=".5"/>
+      <line x1="680" y1="0" x2="680" y2="560" stroke="#E5E7EB" stroke-width=".5"/>
+
+      <!-- ROW 1 — system detects -->
+      <rect x="350" y="52" width="148" height="44" rx="6" fill="#FAEEDA" stroke="#FAC775" stroke-width=".5"/>
+      <text x="424" y="70" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#633806">Disruption detected</text>
+      <text x="424" y="86" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#854F0B">System auto-alerts agents</text>
+      <line x1="350" y1="74" x2="322" y2="74" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a3)"/>
+
+      <!-- ROW 2 — agent opens queue -->
+      <rect x="180" y="52" width="148" height="44" rx="6" fill="#E6F1FB" stroke="#B5D4F4" stroke-width=".5"/>
+      <text x="254" y="70" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#0C447C">Opens PNR queue</text>
+      <text x="254" y="86" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#185FA5">SLA-sorted, colour-coded</text>
+      <line x1="254" y1="96" x2="254" y2="148" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a3)"/>
+
+      <!-- System pre-fetches -->
+      <rect x="350" y="118" width="148" height="44" rx="6" fill="#FAEEDA" stroke="#FAC775" stroke-width=".5"/>
+      <text x="424" y="136" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#633806">Pre-fetches options</text>
+      <text x="424" y="152" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#854F0B">GDS API, 3 options ready</text>
+      <line x1="350" y1="140" x2="330" y2="165" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a3)"/>
+
+      <!-- Agent reviews -->
+      <rect x="180" y="148" width="148" height="44" rx="6" fill="#E6F1FB" stroke="#B5D4F4" stroke-width=".5"/>
+      <text x="254" y="166" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#0C447C">Reviews options</text>
+      <text x="254" y="182" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#185FA5">Confirms with passenger</text>
+      <line x1="180" y1="170" x2="162" y2="170" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a3)"/>
+
+      <!-- Passenger notified -->
+      <rect x="10" y="148" width="148" height="44" rx="6" fill="#E1F5EE" stroke="#9FE1CB" stroke-width=".5"/>
+      <text x="84" y="166" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#085041">Notified of options</text>
+      <text x="84" y="182" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#0F6E56">SMS + email, within 30 min</text>
+      <line x1="84" y1="192" x2="84" y2="248" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a3)"/>
+      <line x1="254" y1="192" x2="254" y2="248" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a3)"/>
+
+      <!-- Confirms booking -->
+      <rect x="180" y="248" width="148" height="44" rx="6" fill="#E6F1FB" stroke="#B5D4F4" stroke-width=".5"/>
+      <text x="254" y="266" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#0C447C">Confirms booking</text>
+      <text x="254" y="282" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#185FA5">One-click in system</text>
+      <rect x="10" y="248" width="148" height="44" rx="6" fill="#E1F5EE" stroke="#9FE1CB" stroke-width=".5"/>
+      <text x="84" y="266" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#085041">Receives itinerary</text>
+      <text x="84" y="282" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#0F6E56">New booking confirmed</text>
+
+      <!-- CRM auto-logs -->
+      <rect x="350" y="248" width="148" height="44" rx="6" fill="#FAEEDA" stroke="#FAC775" stroke-width=".5"/>
+      <text x="424" y="266" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#633806">CRM auto-logs</text>
+      <text x="424" y="282" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#854F0B">12 mandatory fields</text>
+      <line x1="328" y1="270" x2="352" y2="270" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a3)"/>
+      <line x1="254" y1="292" x2="254" y2="348" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a3)"/>
+      <line x1="424" y1="292" x2="424" y2="348" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a3)"/>
+
+      <!-- SLA monitoring -->
+      <rect x="350" y="348" width="148" height="44" rx="6" fill="#FAEEDA" stroke="#FAC775" stroke-width=".5"/>
+      <text x="424" y="366" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#633806">SLA tracking active</text>
+      <text x="424" y="382" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#854F0B">Dashboard refreshes 5 min</text>
+      <line x1="498" y1="370" x2="522" y2="370" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a3)"/>
+
+      <!-- Team lead alert -->
+      <rect x="522" y="348" width="148" height="44" rx="6" fill="#FCEBEB" stroke="#F7C1C1" stroke-width=".5"/>
+      <text x="596" y="366" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#791F1F">Alert at 80% SLA</text>
+      <text x="596" y="382" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#A32D2D">Intervenes if needed</text>
+
+      <!-- Compensation -->
+      <rect x="180" y="348" width="148" height="44" rx="6" fill="#E6F1FB" stroke="#B5D4F4" stroke-width=".5"/>
+      <text x="254" y="366" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#0C447C">Reviews compensation</text>
+      <text x="254" y="382" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#185FA5">Auto-calculated by system</text>
+      <line x1="254" y1="392" x2="254" y2="444" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a3)"/>
+
+      <!-- Case closed -->
+      <rect x="180" y="444" width="148" height="44" rx="6" fill="#F1EFE8" stroke="#B4B2A9" stroke-width=".5"/>
+      <text x="254" y="462" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#2C2C2A">Case closed</text>
+      <text x="254" y="478" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#5F5E5A">Full audit trail logged</text>
+      <rect x="10" y="444" width="148" height="44" rx="6" fill="#E1F5EE" stroke="#9FE1CB" stroke-width=".5"/>
+      <text x="84" y="462" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#085041">CSAT survey sent</text>
+      <text x="84" y="478" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#0F6E56">Post-resolution feedback</text>
+      <line x1="180" y1="466" x2="160" y2="466" stroke="#5F5E5A" stroke-width=".5" marker-end="url(#a3)"/>
+
+      <!-- Auto report -->
+      <rect x="350" y="444" width="148" height="44" rx="6" fill="#FAEEDA" stroke="#FAC775" stroke-width=".5"/>
+      <text x="424" y="462" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#633806">Auto-generates report</text>
+      <text x="424" y="478" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#854F0B">Sent to client within 24hrs</text>
+    </svg>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#1D9E75"></div>Passenger</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div>Ops Agent</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#BA7517"></div>System / GDS</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#E24B4A"></div>Team Lead</div>
+    </div>
+  </div>
+
+  <!-- DIAGRAM 4 — STAKEHOLDER MAP -->
+  <div class="diag-wrap">
+    <div class="diag-eyebrow">Diagram 4 of 5</div>
+    <div class="diag-title">Stakeholder Power / Interest Map</div>
+    <div class="diag-sub">7 stakeholders plotted by influence and interest level</div>
+    <svg width="100%" viewBox="0 0 680 400" role="img" style="font-family:'Inter',sans-serif;">
+      <title>Stakeholder Power Interest Map</title>
+      <desc>2x2 matrix plotting 7 stakeholders by power and interest</desc>
+      <rect x="60" y="30" width="600" height="340" fill="none" stroke="#E5E7EB" stroke-width=".5" rx="4"/>
+      <line x1="360" y1="30" x2="360" y2="370" stroke="#E5E7EB" stroke-width=".5" stroke-dasharray="4 4"/>
+      <line x1="60" y1="200" x2="660" y2="200" stroke="#E5E7EB" stroke-width=".5" stroke-dasharray="4 4"/>
+      <rect x="360" y="30" width="300" height="170" fill="#DCFCE7" opacity=".3"/>
+      <rect x="60" y="30" width="300" height="170" fill="#FEF3CD" opacity=".3"/>
+      <text x="390" y="52" font-size="12" font-weight="500" fill="#166534">Manage closely</text>
+      <text x="75"  y="52" font-size="12" font-weight="500" fill="#B45309">Keep satisfied</text>
+      <text x="75"  y="222" font-size="12" font-weight="500" fill="#6B7280">Monitor</text>
+      <text x="390" y="222" font-size="12" font-weight="500" fill="#1352A2">Keep informed</text>
+      <text x="340" y="392" text-anchor="middle" font-size="12" fill="#6B7280">Interest →</text>
+      <text x="22"  y="200" text-anchor="middle" font-size="12" fill="#6B7280" transform="rotate(-90,22,200)">Power →</text>
+      <text x="80"  y="388" font-size="11" fill="#6B7280">Low</text>
+      <text x="618" y="388" font-size="11" fill="#6B7280">High</text>
+      <text x="42"  y="368" font-size="11" fill="#6B7280">Low</text>
+      <text x="42"  y="55"  font-size="11" fill="#6B7280">High</text>
+
+      <!-- Manage closely -->
+      <rect x="450" y="50" width="180" height="44" rx="6" fill="#E1F5EE" stroke="#9FE1CB" stroke-width=".5"/>
+      <text x="540" y="68" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#085041">Ops Manager</text>
+      <text x="540" y="84" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#0F6E56">Lead sponsor. High / High.</text>
+      <rect x="370" y="118" width="155" height="44" rx="6" fill="#E6F1FB" stroke="#B5D4F4" stroke-width=".5"/>
+      <text x="447" y="136" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#0C447C">Frontline Agent</text>
+      <text x="447" y="152" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#185FA5">Key informant. High / Med.</text>
+      <rect x="540" y="118" width="110" height="44" rx="6" fill="#E6F1FB" stroke="#B5D4F4" stroke-width=".5"/>
+      <text x="595" y="136" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#0C447C">CRM Owner</text>
+      <text x="595" y="152" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#185FA5">Consulted.</text>
+
+      <!-- Keep satisfied -->
+      <rect x="70" y="50" width="155" height="44" rx="6" fill="#FAEEDA" stroke="#FAC775" stroke-width=".5"/>
+      <text x="147" y="68" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#633806">GDS System Admin</text>
+      <text x="147" y="84" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#854F0B">High power. Med interest.</text>
+
+      <!-- Monitor -->
+      <rect x="70" y="280" width="140" height="44" rx="6" fill="#F1EFE8" stroke="#B4B2A9" stroke-width=".5"/>
+      <text x="140" y="298" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#444441">Compliance Team</text>
+      <text x="140" y="314" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#5F5E5A">Low / Med. Informed.</text>
+
+      <!-- Keep informed -->
+      <rect x="410" y="280" width="125" height="44" rx="6" fill="#E6F1FB" stroke="#B5D4F4" stroke-width=".5"/>
+      <text x="472" y="298" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#0C447C">Passenger</text>
+      <text x="472" y="314" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#185FA5">High interest. Low power.</text>
+      <rect x="548" y="260" width="102" height="44" rx="6" fill="#FAEEDA" stroke="#FAC775" stroke-width=".5"/>
+      <text x="599" y="278" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#633806">CS Manager</text>
+      <text x="599" y="294" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#854F0B">High / Med.</text>
+    </svg>
+  </div>
+
+  <!-- DIAGRAM 5 — GAP MATRIX -->
+  <div class="diag-wrap">
+    <div class="diag-eyebrow">Diagram 5 of 5</div>
+    <div class="diag-title">Gap Analysis Priority Matrix</div>
+    <div class="diag-sub">6 gaps plotted by business impact and effort required to fix</div>
+    <svg width="100%" viewBox="0 0 680 420" role="img" style="font-family:'Inter',sans-serif;">
+      <title>Gap Analysis Priority Matrix</title>
+      <desc>2x2 matrix showing 6 process gaps plotted by impact and effort</desc>
+      <rect x="60" y="30" width="600" height="360" fill="none" stroke="#E5E7EB" stroke-width=".5" rx="4"/>
+      <line x1="360" y1="30" x2="360" y2="390" stroke="#E5E7EB" stroke-width=".5" stroke-dasharray="4 4"/>
+      <line x1="60" y1="210" x2="660" y2="210" stroke="#E5E7EB" stroke-width=".5" stroke-dasharray="4 4"/>
+      <rect x="60"  y="30" width="300" height="180" fill="#DCFCE7" opacity=".3"/>
+      <rect x="360" y="30" width="300" height="180" fill="#FEF3CD" opacity=".3"/>
+      <text x="75"  y="52" font-size="12" font-weight="500" fill="#166534">Quick wins — DO FIRST</text>
+      <text x="375" y="52" font-size="12" font-weight="500" fill="#B45309">Strategic investments</text>
+      <text x="75"  y="232" font-size="12" font-weight="500" fill="#6B7280">Low priority</text>
+      <text x="375" y="232" font-size="12" font-weight="500" fill="#1352A2">Fill-ins</text>
+      <text x="340" y="412" text-anchor="middle" font-size="12" fill="#6B7280">Effort to fix →</text>
+      <text x="22"  y="210" text-anchor="middle" font-size="12" fill="#6B7280" transform="rotate(-90,22,210)">Business Impact →</text>
+      <text x="80"  y="408" font-size="11" fill="#6B7280">Low effort</text>
+      <text x="588" y="408" font-size="11" fill="#6B7280">High effort</text>
+
+      <!-- Quick wins -->
+      <rect x="70" y="60" width="155" height="52" rx="8" fill="#E1F5EE" stroke="#9FE1CB" stroke-width=".5"/>
+      <text x="147" y="80" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#085041">Escalation criteria</text>
+      <text x="147" y="98" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#0F6E56">Document decision tree. 0 cost.</text>
+      <rect x="70" y="130" width="155" height="52" rx="8" fill="#E1F5EE" stroke="#9FE1CB" stroke-width=".5"/>
+      <text x="147" y="150" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#085041">SOP documentation</text>
+      <text x="147" y="168" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#0F6E56">Write for 4 missing LOBs.</text>
+
+      <!-- Strategic -->
+      <rect x="372" y="55" width="150" height="52" rx="8" fill="#FAEEDA" stroke="#FAC775" stroke-width=".5"/>
+      <text x="447" y="75" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#633806">GDS API integration</text>
+      <text x="447" y="93" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#854F0B">High impact. 90–180 days.</text>
+      <rect x="534" y="130" width="114" height="52" rx="8" fill="#FAEEDA" stroke="#FAC775" stroke-width=".5"/>
+      <text x="591" y="150" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#633806">Live dashboard</text>
+      <text x="591" y="168" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#854F0B">Power BI build needed.</text>
+
+      <!-- Fill-ins -->
+      <rect x="372" y="240" width="156" height="52" rx="8" fill="#E6F1FB" stroke="#B5D4F4" stroke-width=".5"/>
+      <text x="450" y="260" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#0C447C">Passenger notifications</text>
+      <text x="450" y="278" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#185FA5">CRM trigger config. Med effort.</text>
+      <rect x="372" y="318" width="156" height="52" rx="8" fill="#E6F1FB" stroke="#B5D4F4" stroke-width=".5"/>
+      <text x="450" y="338" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#0C447C">Compensation engine</text>
+      <text x="450" y="356" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#185FA5">EU261 logic. Med–high effort.</text>
+    </svg>
+    <p style="font-size:13px;color:var(--muted);margin-top:12px;padding:12px 16px;background:var(--surface);border-radius:8px;line-height:1.6;">
+      <strong style="color:var(--ink);">Key insight:</strong> Escalation criteria documentation and SOP writing can be done immediately with zero system cost — highest-return quick wins. GDS API integration delivers the biggest operational impact but requires 90–180 days and a formal business case.
+    </p>
+  </div>
+
+</section>
+
+<!-- REQUIREMENTS -->
+<section class="section" id="requirements">
+  <div class="section-head">
+    <div class="section-icon si-blue">📋</div>
+    <div class="section-title">Business &amp; Functional Requirements</div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-label blue">Business Requirements (BRD)</div>
+      <table class="proj-table">
+        <thead><tr><th>ID</th><th>Requirement</th></tr></thead>
+        <tbody>
+          <tr><td><span class="code-pill">BR-01</span></td><td>Notify passengers within 30 minutes of confirmed disruption</td></tr>
+          <tr><td><span class="code-pill">BR-02</span></td><td>Single-screen view of all affected PNRs during disruption events</td></tr>
+          <tr><td><span class="code-pill">BR-03</span></td><td>Rebooking options pre-populated before agent review</td></tr>
+          <tr><td><span class="code-pill">BR-04</span></td><td>Compensation eligibility auto-calculated based on delay and regulation</td></tr>
+          <tr><td><span class="code-pill">BR-05</span></td><td>All case actions logged in CRM with timestamp and agent ID</td></tr>
+          <tr><td><span class="code-pill">BR-06</span></td><td>SLA breach indicator displays at 80% SLA consumption</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-label teal">Functional Requirements (FRD)</div>
+      <table class="proj-table">
+        <thead><tr><th>ID</th><th>Requirement</th><th>BR</th></tr></thead>
+        <tbody>
+          <tr><td><span class="code-pill">FR-01</span></td><td>GDS API integration for real-time seat availability</td><td><span class="badge badge-blue">BR-03</span></td></tr>
+          <tr><td><span class="code-pill">FR-02</span></td><td>Rebooking screen shows passenger tier, class, upgrade options</td><td><span class="badge badge-blue">BR-02</span></td></tr>
+          <tr><td><span class="code-pill">FR-03</span></td><td>Auto-compensation using EU261/IATA rules</td><td><span class="badge badge-blue">BR-04</span></td></tr>
+          <tr><td><span class="code-pill">FR-04</span></td><td>CRM captures minimum 12 fields per case action</td><td><span class="badge badge-blue">BR-05</span></td></tr>
+          <tr><td><span class="code-pill">FR-05</span></td><td>SLA alert triggers to team lead at 80% consumption</td><td><span class="badge badge-blue">BR-06</span></td></tr>
+          <tr><td><span class="code-pill">FR-06</span></td><td>Dashboard refreshes every 5 minutes during active events</td><td><span class="badge badge-blue">BR-02</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label amber">Non-Functional Requirements</div>
+    <div class="three-col" style="margin:0">
+      <div><p style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:4px;">Performance</p><p style="font-size:13px;color:var(--body);">Rebooking options displayed within 3 seconds of case initiation</p></div>
+      <div><p style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:4px;">Availability</p><p style="font-size:13px;color:var(--body);">99.9% uptime during IROPS windows</p></div>
+      <div><p style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:4px;">Scalability</p><p style="font-size:13px;color:var(--body);">200+ concurrent agents during peak events</p></div>
+      <div><p style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:4px;">Compliance</p><p style="font-size:13px;color:var(--body);">CRM records retained 7 years per IATA requirements</p></div>
+      <div><p style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:4px;">Usability</p><p style="font-size:13px;color:var(--body);">New agents complete rebooking within 15 min after 2hr training</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- GAP ANALYSIS -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-red">🔍</div>
+    <div class="section-title">Gap Analysis</div>
+  </div>
+  <div class="card">
+    <div class="gap-row header"><div class="gap-cell">Gap Area</div><div class="gap-cell">Current State</div><div class="gap-cell">Desired State</div><div class="gap-cell">Priority</div></div>
+    <div class="gap-row"><div class="gap-cell" style="font-weight:500;color:var(--navy);">SOP Documentation</div><div class="gap-cell">Partial SOPs for 3 of 7 LOBs — 4 LOBs undocumented</div><div class="gap-cell">Full SOPs for all 7 LOBs with version control</div><div class="gap-cell"><span class="badge badge-red">HIGH</span></div></div>
+    <div class="gap-row"><div class="gap-cell" style="font-weight:500;color:var(--navy);">Escalation Criteria</div><div class="gap-cell">Verbal / informal rules — no documented decision criteria</div><div class="gap-cell">Documented decision tree accessible in-system</div><div class="gap-cell"><span class="badge badge-red">HIGH</span></div></div>
+    <div class="gap-row"><div class="gap-cell" style="font-weight:500;color:var(--navy);">GDS Integration</div><div class="gap-cell">Manual GDS lookup — 3–5 min wasted per case</div><div class="gap-cell">API-driven pre-population of reprotection options</div><div class="gap-cell"><span class="badge badge-red">HIGH</span></div></div>
+    <div class="gap-row"><div class="gap-cell" style="font-weight:500;color:var(--navy);">Compensation Calc</div><div class="gap-cell">Manual EU261 reference — error risk + 2–4 min wasted</div><div class="gap-cell">Automated eligibility engine integrated with case mgmt</div><div class="gap-cell"><span class="badge badge-amber">MED</span></div></div>
+    <div class="gap-row"><div class="gap-cell" style="font-weight:500;color:var(--navy);">Passenger Notification</div><div class="gap-cell">Manual email/SMS — 30–90 min notification delays</div><div class="gap-cell">Automated trigger on disruption declaration</div><div class="gap-cell"><span class="badge badge-amber">MED</span></div></div>
+    <div class="gap-row"><div class="gap-cell" style="font-weight:500;color:var(--navy);">Performance Monitoring</div><div class="gap-cell">End-of-shift reports — no real-time visibility</div><div class="gap-cell">Live KPI dashboard refreshing every 5 minutes</div><div class="gap-cell"><span class="badge badge-amber">MED</span></div></div>
+  </div>
+</section>
+
+<!-- ROOT CAUSE -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-amber">🎯</div>
+    <div class="section-title">Root Cause Analysis <span>5-Whys Method</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label red">Problem: SLA breach during peak disruption events</div>
+    <div style="display:flex;flex-direction:column;gap:0">
+      <div style="display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--surface)">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--red-lt);color:var(--red);border:1.5px solid #FCA5A5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">W1</div>
+        <div><p style="font-size:14px;font-weight:500;color:var(--navy);">Agents cannot process cases fast enough</p><p style="font-size:13px;color:var(--muted)">→ Agents spend 3–5 min manually searching GDS per case</p></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--surface)">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--red-lt);color:var(--red);border:1.5px solid #FCA5A5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">W2</div>
+        <div><p style="font-size:14px;font-weight:500;color:var(--navy);">GDS search is fully manual</p><p style="font-size:13px;color:var(--muted)">→ No API integration between disruption module and GDS availability data</p></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--surface)">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--red-lt);color:var(--red);border:1.5px solid #FCA5A5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">W3</div>
+        <div><p style="font-size:14px;font-weight:500;color:var(--navy);">No API integration exists</p><p style="font-size:13px;color:var(--muted)">→ Original system built for normal operations — disruption workflows excluded from original scope</p></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--surface)">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--red-lt);color:var(--red);border:1.5px solid #FCA5A5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">W4</div>
+        <div><p style="font-size:14px;font-weight:500;color:var(--navy);">Disruption workflows excluded from original scope</p><p style="font-size:13px;color:var(--muted)">→ Sponsor prioritised booking and check-in flows; disruption handling deferred as "Phase 2" — never delivered</p></div>
+      </div>
+      <div style="display:flex;gap:14px;padding:12px 0">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--teal-lt);color:var(--teal);border:1.5px solid #9FE1CB;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">RC</div>
+        <div><p style="font-size:14px;font-weight:500;color:var(--teal);">Root Cause: Incomplete original requirements scope</p><p style="font-size:13px;color:var(--muted)">Fix requires a targeted requirements exercise for disruption-specific flows AND a phased GDS API integration project.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- USER STORIES -->
+<section class="section" id="stories">
+  <div class="section-head">
+    <div class="section-icon si-teal">📖</div>
+    <div class="section-title">User Stories <span>10 core stories with acceptance criteria</span></div>
+  </div>
+  <div class="story-card"><div class="story-id">US-01 · Operations Agent</div><div class="story-text">As an operations agent, I want to see all affected PNRs in one screen so that I can prioritise cases by SLA urgency.</div><div class="story-ac"><strong>AC:</strong> Screen loads within 3 seconds; sorted by SLA remaining time; colour-coded by breach risk level.</div></div>
+  <div class="story-card"><div class="story-id">US-02 · Operations Agent</div><div class="story-text">As an operations agent, I want pre-populated rebooking options so that I can offer alternatives without manually searching GDS.</div><div class="story-ac"><strong>AC:</strong> Minimum 3 options displayed; filtered by availability and booking class match; loads within 3 seconds.</div></div>
+  <div class="story-card"><div class="story-id">US-03 · Passenger</div><div class="story-text">As a passenger, I want to receive disruption notification within 30 minutes so that I can plan alternative arrangements.</div><div class="story-ac"><strong>AC:</strong> Automated SMS and email sent within 30 minutes of confirmed disruption status with flight details and options link.</div></div>
+  <div class="story-card"><div class="story-id">US-04 · Team Lead</div><div class="story-text">As a team lead, I want an SLA breach alert so that I can intervene before a case breaches its deadline.</div><div class="story-ac"><strong>AC:</strong> Alert fires at 80% SLA consumption; shows agent name, case ID, and time remaining.</div></div>
+  <div class="story-card"><div class="story-id">US-05 · Operations Manager</div><div class="story-text">As an operations manager, I want a disruption KPI dashboard so that I can monitor team performance in real time.</div><div class="story-ac"><strong>AC:</strong> Dashboard shows OTP%, AHT, SLA compliance%, CSAT, and case volume — refreshes every 5 minutes.</div></div>
+  <div class="story-card"><div class="story-id">US-06 · Operations Agent</div><div class="story-text">As an agent, I want auto-calculated compensation eligibility so that I don't need to manually reference EU261 regulations.</div><div class="story-ac"><strong>AC:</strong> System displays Yes/No + amount + regulation basis; agent can override with documented reason.</div></div>
+  <div class="story-card"><div class="story-id">US-07 · Compliance Officer</div><div class="story-text">As a compliance officer, I want complete case audit logs so that I can retrieve full action history for any case.</div><div class="story-ac"><strong>AC:</strong> All 12 required fields logged per action; retrievable by case ID or date range within 30 seconds.</div></div>
+  <div class="story-card"><div class="story-id">US-08 · Operations Agent</div><div class="story-text">As an agent, I want clear escalation criteria so that I know exactly when to escalate a case to a supervisor.</div><div class="story-ac"><strong>AC:</strong> Escalation triggers documented for 6 defined case types; accessible within the case management system.</div></div>
+  <div class="story-card"><div class="story-id">US-09 · Passenger</div><div class="story-text">As a passenger, I want a confirmed rebooking itinerary within 2 hours of disruption notification.</div><div class="story-ac"><strong>AC:</strong> System records booking confirmation timestamp; SLA tracked from disruption declaration time.</div></div>
+  <div class="story-card"><div class="story-id">US-10 · Operations Manager</div><div class="story-text">As an operations manager, I want post-disruption reports generated automatically so that I can submit to the client within 24 hours.</div><div class="story-ac"><strong>AC:</strong> Report covers volume, SLA%, CSAT, compensation paid, escalations, and root cause summary.</div></div>
+</section>
+
+<!-- RTM -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-green">🔗</div>
+    <div class="section-title">Requirements Traceability Matrix</div>
+  </div>
+  <div class="card">
+    <table class="rtm-table">
+      <thead><tr><th>BR #</th><th>Business Requirement</th><th>FR #</th><th>User Story</th><th>UAT Scenario</th></tr></thead>
+      <tbody>
+        <tr><td><span class="code-pill">BR-01</span></td><td>Notify passengers within 30 min</td><td><span class="code-pill">FR-01</span></td><td><span class="badge badge-teal">US-03</span></td><td>UAT-01</td></tr>
+        <tr><td><span class="code-pill">BR-02</span></td><td>Single-screen PNR view</td><td><span class="code-pill">FR-02</span></td><td><span class="badge badge-teal">US-01</span></td><td>UAT-02</td></tr>
+        <tr><td><span class="code-pill">BR-03</span></td><td>Pre-populated rebooking options</td><td><span class="code-pill">FR-01, FR-02</span></td><td><span class="badge badge-teal">US-02</span></td><td>UAT-02</td></tr>
+        <tr><td><span class="code-pill">BR-04</span></td><td>Auto compensation calculation</td><td><span class="code-pill">FR-03</span></td><td><span class="badge badge-teal">US-06</span></td><td>UAT-04</td></tr>
+        <tr><td><span class="code-pill">BR-05</span></td><td>CRM audit logging — 12 mandatory fields</td><td><span class="code-pill">FR-04</span></td><td><span class="badge badge-teal">US-07</span></td><td>UAT-05</td></tr>
+        <tr><td><span class="code-pill">BR-06</span></td><td>SLA breach alerts at 80% consumption</td><td><span class="code-pill">FR-05, FR-06</span></td><td><span class="badge badge-teal">US-04</span></td><td>UAT-03</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- DELIVERABLES -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-blue">📁</div>
+    <div class="section-title">BA Deliverables Produced</div>
+  </div>
+  <div class="del-grid">
+    <div class="del-card"><div class="del-icon">📄</div><div class="del-num">01</div><div class="del-name">Business Requirements Document (BRD)</div><div class="del-tool">Google Docs — 6 BRs, assumptions, scope</div></div>
+    <div class="del-card"><div class="del-icon">🔴</div><div class="del-num">02</div><div class="del-name">As-Is BPMN Process Map</div><div class="del-tool">See Diagram 1 above — 6 pain points</div></div>
+    <div class="del-card"><div class="del-icon">🟢</div><div class="del-num">03</div><div class="del-name">To-Be BPMN Process Map</div><div class="del-tool">See Diagram 2 above — 4 automation triggers</div></div>
+    <div class="del-card"><div class="del-icon">👥</div><div class="del-num">04</div><div class="del-name">Stakeholder Analysis + RACI</div><div class="del-tool">See Diagram 4 above — 7 stakeholders</div></div>
+    <div class="del-card"><div class="del-icon">🔍</div><div class="del-num">05</div><div class="del-name">Gap Analysis Table</div><div class="del-tool">See Diagram 5 above — 6 gaps prioritised</div></div>
+    <div class="del-card"><div class="del-icon">📖</div><div class="del-num">06</div><div class="del-name">10 User Stories + ACs</div><div class="del-tool">See User Stories section above</div></div>
+    <div class="del-card"><div class="del-icon">🔗</div><div class="del-num">07</div><div class="del-name">Requirements Traceability Matrix</div><div class="del-tool">See RTM section above — fully linked</div></div>
+    <div class="del-card"><div class="del-icon">🎯</div><div class="del-num">08</div><div class="del-name">5-Whys Root Cause Analysis</div><div class="del-tool">See RCA section above</div></div>
+    <div class="del-card"><div class="del-icon">✅</div><div class="del-num">09</div><div class="del-name">UAT Checklist — 5 Scenarios</div><div class="del-tool">Notification, rebooking, SLA, compensation, audit</div></div>
+  </div>
+</section>
+
+
+<!-- AI TOOLS -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-blue">🤖</div>
+    <div class="section-title">AI Tools Used in This Project</div>
+  </div>
+  <div class="card">
+    <div class="ai-grid">
+      <div class="ai-card"><div class="ai-stage">BRD Drafting</div><div class="ai-tool">Claude (Anthropic)</div><div class="ai-desc">Used to generate first-draft BRD sections — every output validated against real IGT/KLM operational knowledge</div></div>
+      <div class="ai-card"><div class="ai-stage">User Stories</div><div class="ai-tool">ChatGPT (OpenAI)</div><div class="ai-desc">Used to generate story structures — refined manually using real workflow knowledge from airline operations</div></div>
+      <div class="ai-card"><div class="ai-stage">Gap Analysis</div><div class="ai-tool">Gemini (Google)</div><div class="ai-desc">Used to suggest gap categories — each gap validated against real process failures observed at IGT</div></div>
+      <div class="ai-card"><div class="ai-stage">Process Review</div><div class="ai-tool">Claude (Anthropic)</div><div class="ai-desc">Used to review BRD for missing sections — asked "what would a senior BA say is missing?" to self-audit</div></div>
+      <div class="ai-card"><div class="ai-stage">RCA Structuring</div><div class="ai-tool">ChatGPT (OpenAI)</div><div class="ai-desc">Used to validate the 5-Whys logic chain — checked that root cause was structural, not symptomatic</div></div>
+      <div class="ai-card"><div class="ai-stage">Documentation</div><div class="ai-tool">Microsoft Copilot</div><div class="ai-desc">Used to format and structure final Google Docs output — standardised table formatting and heading hierarchy</div></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <strong>Deepender Choudhary</strong> — Business Analyst Portfolio &nbsp;·&nbsp; Project 1 of 9 &nbsp;·&nbsp; Gurugram, India<br>
+  <span style="margin-top:6px;display:inline-block;">deependerchoudhary2003@gmail.com &nbsp;·&nbsp; +91 9729880411</span>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project 4 — HDFC Credit Card Default Analysis | Deepender Choudhary</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & TOKENS ──────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:     #0A1628;
+  --ink:      #111827;
+  --body:     #374151;
+  --muted:    #6B7280;
+  --border:   #E5E7EB;
+  --surface:  #F9FAFB;
+  --white:    #FFFFFF;
+
+  /* Brand palette — BFSI deep blue + gold accent */
+  --brand:    #0F3460;
+  --brand-lt: #E8EEF8;
+  --gold:     #B07D2E;
+  --gold-lt:  #FDF6E3;
+  --gold-br:  #D4A017;
+
+  --teal:     #0D7A6E;
+  --teal-lt:  #E3F5F3;
+  --red:      #B91C1C;
+  --red-lt:   #FEF2F2;
+  --amber:    #B45309;
+  --amber-lt: #FEF3CD;
+  --green:    #166534;
+  --green-lt: #DCFCE7;
+  --purple:   #5B21B6;
+  --purple-lt:#EDE9FE;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: #EEF1F5;
+  color: var(--ink);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ─── NAV ─────────────────────────────────────────────── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 56px;
+}
+.nav-brand { font-size: 15px; font-weight: 700; color: var(--navy); text-decoration: none; letter-spacing: -0.3px; }
+.nav-links  { display: flex; gap: 28px; list-style: none; }
+.nav-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color .2s; }
+.nav-links a:hover { color: var(--brand); }
+.nav-badge  { font-size: 12px; font-weight: 600; background: var(--gold-lt); color: var(--gold); padding: 5px 14px; border-radius: 20px; border: 1px solid #F0D88A; }
+
+/* ─── LAYOUT ──────────────────────────────────────────── */
+.page-wrap { max-width: 980px; margin: 0 auto; padding: 0 20px 80px; }
+
+/* ─── HERO ────────────────────────────────────────────── */
+.hero { padding: 52px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+.eyebrow {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.eyebrow::before { content:''; display:block; width:28px; height:2px; background:var(--gold); }
+.hero h1 {
+  font-size: 36px; font-weight: 700; color: var(--navy);
+  line-height: 1.15; letter-spacing: -0.8px; margin-bottom: 16px; max-width: 700px;
+}
+.hero h1 span { color: var(--gold); }
+.hero-sub { font-size: 15.5px; color: var(--body); line-height: 1.75; max-width: 660px; margin-bottom: 28px; }
+.tag-row  { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 0; }
+.tag { font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border); color: var(--body); background: var(--white); }
+.tag.brand  { background: var(--brand-lt); color: var(--brand);  border-color: #BFCFE8; }
+.tag.gold   { background: var(--gold-lt);  color: var(--gold);   border-color: #F0D88A; }
+.tag.teal   { background: var(--teal-lt);  color: var(--teal);   border-color: #99E6DE; }
+.tag.amber  { background: var(--amber-lt); color: var(--amber);  border-color: #FDE68A; }
+.tag.purple { background: var(--purple-lt);color: var(--purple); border-color: #C4B5FD; }
+
+/* ─── METRICS ─────────────────────────────────────────── */
+.metrics-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 40px; }
+.metric {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px 16px; text-align: center;
+}
+.metric-val   { font-size: 28px; font-weight: 700; color: var(--navy); display: block; letter-spacing: -0.5px; line-height: 1; margin-bottom: 6px; }
+.metric-label { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.metric.hi-gold   { border-color: #F0D88A; background: var(--gold-lt); }
+.metric.hi-gold   .metric-val { color: var(--gold); }
+.metric.hi-brand  { border-color: #BFCFE8; background: var(--brand-lt); }
+.metric.hi-brand  .metric-val { color: var(--brand); }
+.metric.hi-red    { border-color: #FCA5A5; background: var(--red-lt); }
+.metric.hi-red    .metric-val { color: var(--red); }
+
+/* ─── SECTION ─────────────────────────────────────────── */
+.section { margin-bottom: 48px; }
+.section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.si-brand  { background: var(--brand-lt);  color: var(--brand); }
+.si-gold   { background: var(--gold-lt);   color: var(--gold); }
+.si-teal   { background: var(--teal-lt);   color: var(--teal); }
+.si-red    { background: var(--red-lt);    color: var(--red); }
+.si-amber  { background: var(--amber-lt);  color: var(--amber); }
+.si-green  { background: var(--green-lt);  color: var(--green); }
+.si-purple { background: var(--purple-lt); color: var(--purple); }
+.section-title { font-size: 18px; font-weight: 600; color: var(--navy); letter-spacing: -0.3px; }
+.section-title span { font-size: 13px; font-weight: 400; color: var(--muted); margin-left: 6px; }
+
+/* ─── CARD ────────────────────────────────────────────── */
+.card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+.card-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 10px; }
+.card-label.brand  { color: var(--brand); }
+.card-label.gold   { color: var(--gold); }
+.card-label.teal   { color: var(--teal); }
+.card-label.amber  { color: var(--amber); }
+.card-label.red    { color: var(--red); }
+.card-label.green  { color: var(--green); }
+.card-label.purple { color: var(--purple); }
+
+.two-col   { display: grid; grid-template-columns: 1fr 1fr;     gap: 16px; margin-bottom: 16px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+/* ─── PROBLEM BOX ─────────────────────────────────────── */
+.problem-box {
+  background: var(--red-lt); border: 1px solid #FCA5A5; border-left: 4px solid var(--red);
+  border-radius: 8px; padding: 20px 24px; font-size: 15px; color: var(--navy); line-height: 1.7; margin-bottom: 16px;
+}
+
+/* ─── BULLET LIST ─────────────────────────────────────── */
+.bullet-list { list-style: none; }
+.bullet-list li { display:flex; align-items:flex-start; gap:10px; padding:7px 0; font-size:14px; color:var(--body); line-height:1.5; border-bottom:1px solid var(--surface); }
+.bullet-list li:last-child { border-bottom: none; }
+.bullet-list li::before { content:'→'; color:var(--gold); font-weight:700; flex-shrink:0; margin-top:1px; }
+
+/* ─── TABLE ───────────────────────────────────────────── */
+.proj-table { width:100%; border-collapse:collapse; font-size:13px; }
+.proj-table th { background:var(--navy); color:var(--white); padding:10px 14px; text-align:left; font-weight:500; font-size:12px; letter-spacing:0.04em; }
+.proj-table th:first-child { border-radius:8px 0 0 0; }
+.proj-table th:last-child  { border-radius:0 8px 0 0; }
+.proj-table td { padding:10px 14px; border-bottom:1px solid var(--border); color:var(--body); vertical-align:top; line-height:1.5; }
+.proj-table tr:last-child td { border-bottom:none; }
+.proj-table tr:nth-child(even) td { background:var(--surface); }
+.proj-table td:first-child { font-weight:500; color:var(--navy); }
+
+.code-pill { font-family:'JetBrains Mono',monospace; font-size:11px; background:var(--navy); color:#7DD3FC; padding:2px 7px; border-radius:4px; display:inline-block; }
+.badge { font-size:11px; font-weight:500; padding:3px 8px; border-radius:4px; display:inline-block; }
+.badge-brand  { background:var(--brand-lt);  color:var(--brand); }
+.badge-gold   { background:var(--gold-lt);   color:var(--gold); }
+.badge-teal   { background:var(--teal-lt);   color:var(--teal); }
+.badge-red    { background:var(--red-lt);    color:var(--red); }
+.badge-amber  { background:var(--amber-lt);  color:var(--amber); }
+.badge-green  { background:var(--green-lt);  color:var(--green); }
+.badge-purple { background:var(--purple-lt); color:var(--purple); }
+
+/* ─── FLOW STEPS ──────────────────────────────────────── */
+.flow-wrap { display:flex; flex-direction:column; gap:0; margin:8px 0; }
+.flow-step { display:flex; align-items:flex-start; gap:16px; padding:12px 0; position:relative; }
+.flow-step:not(:last-child)::after { content:''; position:absolute; left:14px; top:44px; bottom:-12px; width:1px; background:var(--border); }
+.flow-dot { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; margin-top:2px; }
+.fd-brand  { background:var(--brand-lt);  color:var(--brand); }
+.fd-red    { background:var(--red-lt);    color:var(--red); border:2px solid #FCA5A5; }
+.fd-teal   { background:var(--teal-lt);   color:var(--teal); }
+.fd-gold   { background:var(--gold-lt);   color:var(--gold); border:2px solid #F0D88A; }
+.flow-content { flex:1; }
+.flow-title   { font-size:14px; font-weight:500; color:var(--navy); }
+.flow-note    { font-size:12px; color:var(--muted); margin-top:2px; }
+.pain-badge { display:inline-block; font-size:11px; font-weight:500; background:var(--red-lt); color:var(--red); border:1px solid #FCA5A5; border-radius:4px; padding:1px 7px; margin-left:8px; vertical-align:middle; }
+.fix-badge  { display:inline-block; font-size:11px; font-weight:500; background:var(--green-lt); color:var(--green); border:1px solid #86EFAC; border-radius:4px; padding:1px 7px; margin-left:8px; vertical-align:middle; }
+
+/* ─── USER STORIES ────────────────────────────────────── */
+.story-card { background:var(--white); border:1px solid var(--border); border-radius:10px; padding:18px 20px; margin-bottom:12px; }
+.story-id   { font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; color:var(--gold); margin-bottom:6px; }
+.story-text { font-size:14px; color:var(--navy); font-weight:500; margin-bottom:10px; line-height:1.5; }
+.story-ac   { font-size:13px; color:var(--body); background:var(--surface); border-radius:6px; padding:10px 12px; line-height:1.6; }
+.story-ac strong { color:var(--teal); }
+.moscow-tag { display:inline-block; font-size:10px; font-weight:700; padding:2px 8px; border-radius:3px; margin-left:8px; vertical-align:middle; letter-spacing:0.05em; text-transform:uppercase; }
+.must   { background:#FEE2E2; color:#991B1B; }
+.should { background:#FEF3C7; color:#92400E; }
+.could  { background:#DBEAFE; color:#1E40AF; }
+.wont   { background:#F3F4F6; color:#6B7280; }
+
+/* ─── GAP TABLE ───────────────────────────────────────── */
+.gap-wrap { border-radius:10px; overflow:hidden; border:1px solid var(--border); }
+.gap-row  { display:grid; grid-template-columns:1.4fr 1.6fr 1.6fr 0.8fr; }
+.gap-row + .gap-row { border-top:1px solid var(--border); }
+.gap-head { background:var(--navy); }
+.gap-cell { padding:10px 14px; font-size:12.5px; color:var(--body); line-height:1.45; }
+.gap-row:nth-child(even) .gap-cell { background:var(--surface); }
+.gap-head .gap-cell { color:var(--white); font-size:11px; font-weight:500; letter-spacing:0.04em; background:transparent; }
+
+/* ─── WHY CHAIN ───────────────────────────────────────── */
+.why-step { display:flex; gap:14px; padding:12px 0; border-bottom:1px dashed var(--border); }
+.why-step:last-child { border-bottom:none; }
+.why-num { width:30px; height:30px; border-radius:7px; background:var(--gold-lt); color:var(--gold); font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid #F0D88A; }
+.why-num.rc { background:var(--green-lt); color:var(--green); border-color:#86EFAC; }
+.why-q { font-size:13px; font-weight:600; color:var(--navy); margin-bottom:4px; }
+.why-a { font-size:12.5px; color:var(--muted); line-height:1.55; }
+
+/* ─── RISK REGISTER ───────────────────────────────────── */
+.risk-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.risk-card { background:var(--white); border:1px solid var(--border); border-radius:10px; padding:16px; border-top:3px solid transparent; }
+.risk-card.high   { border-top-color:var(--red); }
+.risk-card.medium { border-top-color:var(--amber); }
+.risk-card.low    { border-top-color:var(--green); }
+.risk-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; margin-bottom:6px; }
+.risk-label.high   { color:var(--red); }
+.risk-label.medium { color:var(--amber); }
+.risk-label.low    { color:var(--green); }
+.risk-title { font-size:13px; font-weight:600; color:var(--navy); margin-bottom:5px; line-height:1.35; }
+.risk-desc  { font-size:12px; color:var(--muted); line-height:1.5; margin-bottom:8px; }
+.risk-mit   { font-size:12px; color:var(--body); background:var(--surface); border-radius:5px; padding:7px 10px; line-height:1.45; }
+
+/* ─── SQL BLOCKS ──────────────────────────────────────── */
+.sql-block { background:#0A1628; border-radius:10px; padding:18px 22px; margin-bottom:12px; border:1px solid #1A2B45; overflow-x:auto; }
+.sql-label { font-size:11px; font-weight:600; color:#475569; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; }
+.sql-title { font-size:13px; font-weight:500; color:#94A3B8; margin-bottom:10px; }
+pre { font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.75; color:#E2E8F0; white-space:pre; }
+.kw  { color:#7DD3FC; }
+.fn  { color:#A78BFA; }
+.str { color:#86EFAC; }
+.cm  { color:#475569; font-style:italic; }
+.num { color:#FCA5A5; }
+.op  { color:#FCD34D; }
+
+/* ─── DASHBOARD ───────────────────────────────────────── */
+.dashboard-frame { background:var(--navy); border-radius:14px; padding:22px; margin-bottom:16px; }
+.dash-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+.dash-title  { color:#fff; font-size:15px; font-weight:700; letter-spacing:-0.3px; }
+.dash-sub    { color:rgba(255,255,255,.45); font-size:11px; margin-top:3px; }
+.dash-tag    { font-size:10px; font-weight:600; background:rgba(176,125,46,.25); color:#D4A017; padding:4px 12px; border-radius:20px; border:1px solid rgba(212,160,23,.3); }
+.dash-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
+.dash-kpi   { background:rgba(255,255,255,.07); border-radius:9px; padding:14px 12px; text-align:center; }
+.dash-kpi-val { font-size:22px; font-weight:700; color:#fff; letter-spacing:-0.5px; }
+.dash-kpi-lab { font-size:10px; color:rgba(255,255,255,.45); margin-top:4px; }
+.dash-kpi-chg { font-size:10px; margin-top:5px; font-weight:500; }
+.chg-red   { color:#FCA5A5; }
+.chg-green { color:#86EFAC; }
+.dash-row-2 { display:grid; grid-template-columns:1.5fr 1fr; gap:10px; margin-bottom:10px; }
+.dash-chart { background:rgba(255,255,255,.05); border-radius:9px; padding:14px; }
+.dash-chart-title { font-size:10px; font-weight:600; color:rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px; }
+.mini-bar-row { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+.mini-bar-label { font-size:10px; color:rgba(255,255,255,.45); width:90px; flex-shrink:0; }
+.mini-bar-track { flex:1; height:16px; background:rgba(255,255,255,.05); border-radius:3px; overflow:hidden; }
+.mini-bar-fill  { height:100%; border-radius:3px; display:flex; align-items:center; padding-left:6px; }
+.mini-bar-pct   { font-size:10px; font-weight:600; color:#fff; }
+.mini-bar-val   { font-size:10px; color:rgba(255,255,255,.4); width:52px; text-align:right; }
+.heatmap-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+.heat-cell { border-radius:5px; padding:10px 8px; text-align:center; }
+.heat-label { font-size:10px; color:rgba(255,255,255,.5); margin-bottom:3px; }
+.heat-val   { font-size:13px; font-weight:700; color:#fff; }
+.heat-sub   { font-size:9px; color:rgba(255,255,255,.35); margin-top:2px; }
+.dash-insight { background:rgba(212,160,23,.12); border:1px solid rgba(212,160,23,.2); border-radius:8px; padding:12px 16px; font-size:12px; color:rgba(255,255,255,.7); line-height:1.6; margin-top:10px; }
+.dash-insight strong { color:#D4A017; }
+
+/* ─── RACI ────────────────────────────────────────────── */
+.raci-table { width:100%; border-collapse:collapse; font-size:12.5px; }
+.raci-table th { background:var(--navy); color:#fff; padding:9px 12px; text-align:center; font-size:11px; font-weight:500; letter-spacing:.03em; }
+.raci-table th:first-child { text-align:left; border-radius:8px 0 0 0; }
+.raci-table th:last-child  { border-radius:0 8px 0 0; }
+.raci-table td { padding:9px 12px; border-bottom:1px solid var(--border); color:var(--body); text-align:center; vertical-align:middle; }
+.raci-table td:first-child { text-align:left; font-weight:500; color:var(--navy); }
+.raci-table tr:nth-child(even) td { background:var(--surface); }
+.raci-table tr:last-child td { border-bottom:none; }
+.raci-r { color:var(--red);    font-weight:700; font-size:12px; }
+.raci-a { color:var(--brand);  font-weight:700; font-size:12px; }
+.raci-c { color:var(--amber);  font-weight:700; font-size:12px; }
+.raci-i { color:var(--muted);  font-weight:500; font-size:12px; }
+
+/* ─── DELIVERABLES ────────────────────────────────────── */
+.del-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.del-card { background:var(--white); border:1px solid var(--border); border-radius:10px; padding:16px; transition:border-color .2s, transform .2s; }
+.del-card:hover { border-color:var(--gold); transform:translateY(-2px); }
+.del-num  { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); margin-bottom:6px; }
+.del-name { font-size:13px; font-weight:600; color:var(--navy); margin-bottom:4px; line-height:1.3; }
+.del-tool { font-size:11px; color:var(--muted); }
+.del-icon { font-size:20px; margin-bottom:8px; }
+
+/* ─── AI GRID ─────────────────────────────────────────── */
+.ai-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.ai-card  { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; }
+.ai-stage { font-size:11px; font-weight:600; color:var(--gold); margin-bottom:6px; text-transform:uppercase; letter-spacing:.06em; }
+.ai-tool  { font-size:13px; font-weight:500; color:var(--navy); margin-bottom:4px; }
+.ai-desc  { font-size:12px; color:var(--muted); line-height:1.5; }
+
+/* ─── CALLOUTS ────────────────────────────────────────── */
+.callout { border-radius:10px; padding:16px 20px; margin-bottom:12px; display:flex; gap:14px; align-items:flex-start; }
+.callout-icon { font-size:20px; flex-shrink:0; margin-top:1px; }
+.callout-title { font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; margin-bottom:4px; }
+.callout-text  { font-size:13px; line-height:1.6; }
+.callout.recruiter { background:var(--red-lt);    border:1px solid #FCA5A5; }
+.callout.recruiter .callout-title { color:var(--red); }
+.callout.recruiter .callout-text  { color:#7F1D1D; }
+.callout.hm        { background:var(--amber-lt);  border:1px solid #FDE68A; }
+.callout.hm .callout-title { color:var(--amber); }
+.callout.hm .callout-text  { color:#78350F; }
+.callout.senior    { background:var(--green-lt);  border:1px solid #86EFAC; }
+.callout.senior .callout-title { color:var(--green); }
+.callout.senior .callout-text  { color:#14532D; }
+.callout.diff      { background:var(--brand-lt);  border:1px solid #BFCFE8; }
+.callout.diff .callout-title { color:var(--brand); }
+.callout.diff .callout-text  { color:#0F3460; }
+
+/* ─── RATING BARS ─────────────────────────────────────── */
+.rating-row { display:flex; align-items:center; gap:14px; padding:10px 0; border-bottom:1px solid var(--surface); }
+.rating-row:last-child { border-bottom:none; }
+.rating-label { font-size:13px; color:var(--body); width:210px; flex-shrink:0; }
+.rating-track { flex:1; height:6px; background:var(--border); border-radius:10px; overflow:hidden; }
+.rating-fill  { height:100%; border-radius:10px; }
+.rating-score { font-size:13px; font-weight:700; width:44px; text-align:right; }
+
+/* ─── RTM ─────────────────────────────────────────────── */
+.rtm-table { width:100%; border-collapse:collapse; font-size:12px; }
+.rtm-table th { background:var(--navy); color:#fff; padding:9px 12px; text-align:left; font-size:11px; letter-spacing:.04em; }
+.rtm-table td { padding:9px 12px; border-bottom:1px solid var(--border); color:var(--body); vertical-align:middle; }
+.rtm-table tr:nth-child(even) td { background:var(--surface); }
+.rtm-table tr:last-child td { border-bottom:none; }
+
+/* ─── DATASET BOX ─────────────────────────────────────── */
+.dataset-box { background:var(--navy); border-radius:12px; padding:24px; color:rgba(255,255,255,.8); margin-bottom:16px; }
+.dataset-box h4 { color:#fff; font-size:14px; font-weight:600; margin-bottom:12px; }
+.col-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.col-chip { background:rgba(255,255,255,.06); border-radius:6px; padding:10px 12px; }
+.col-name { font-family:'JetBrains Mono',monospace; font-size:12px; color:#7DD3FC; margin-bottom:3px; }
+.col-type { font-size:11px; color:rgba(255,255,255,.4); }
+
+/* ─── RESPONSIVE ──────────────────────────────────────── */
+@media (max-width:720px) {
+  nav { padding:0 16px; }
+  .nav-links { display:none; }
+  .page-wrap { padding:0 14px 60px; }
+  .hero h1   { font-size:24px; }
+  .hero-sub  { font-size:14px; }
+  .metrics-grid    { grid-template-columns:repeat(2,1fr); }
+  .two-col, .three-col, .del-grid, .ai-grid, .risk-grid { grid-template-columns:1fr; }
+  .col-grid        { grid-template-columns:1fr 1fr; }
+  .gap-row         { grid-template-columns:1fr 1fr; }
+  .dash-kpi-row    { grid-template-columns:repeat(2,1fr); }
+  .dash-row-2      { grid-template-columns:1fr; }
+  .heatmap-grid    { grid-template-columns:repeat(2,1fr); }
+  pre              { font-size:11px; }
+}
+@media (max-width:420px) {
+  .hero h1 { font-size:20px; }
+  .metrics-grid    { grid-template-columns:1fr 1fr; }
+  .col-grid        { grid-template-columns:1fr; }
+  .gap-row         { grid-template-columns:1fr; }
+  .dash-kpi-row    { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────────────────────── -->
+<nav>
+  <a class="nav-brand" href="#">DC</a>
+  <ul class="nav-links">
+    <li><a href="#">About</a></li>
+    <li><a href="#">Projects</a></li>
+    <li><a href="#">Skills</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <span class="nav-badge">🏦 Project 4 of 9</span>
+</nav>
+
+<div class="page-wrap">
+
+<!-- ── HERO ────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="eyebrow">Business Analyst Portfolio — BFSI Domain</div>
+  <h1>HDFC Bank Credit Card<br><span>Default Risk &amp; Collections</span><br>Process Improvement Analysis</h1>
+  <p class="hero-sub">
+    A complete BA case study using the UCI Credit Card Default Dataset — analysing why HDFC Bank's credit card default rate climbed from 15% to 22% over six quarters, tracing it to a broken early-warning and collections process, and recommending a structured, phased remediation. Covers RCA, BPMN process mapping, SQL analysis, risk register, RACI matrix, and a BI dashboard. BFSI is the #1 domain in IT-services BA hiring in India — this project speaks that language fluently.
+  </p>
+  <div class="tag-row">
+    <span class="tag brand">BFSI / Credit Cards</span>
+    <span class="tag brand">UCI Default Dataset</span>
+    <span class="tag gold">Risk Management</span>
+    <span class="tag gold">Collections Process</span>
+    <span class="tag teal">Requirements Engineering</span>
+    <span class="tag teal">SQL Analysis</span>
+    <span class="tag amber">BPMN 2.0</span>
+    <span class="tag purple">Power BI Dashboard</span>
+    <span class="tag">Draw.io</span>
+    <span class="tag">Jira (Simulated)</span>
+  </div>
+</section>
+
+<!-- ── METRICS ──────────────────────────────────────────── -->
+<section class="section">
+  <div class="metrics-grid">
+    <div class="metric hi-red">
+      <span class="metric-val">22%</span>
+      <span class="metric-label">Default rate in Q4 — up from 15% six quarters earlier</span>
+    </div>
+    <div class="metric hi-gold">
+      <span class="metric-val">₹480 Cr</span>
+      <span class="metric-label">Estimated annual NPA exposure from preventable defaults</span>
+    </div>
+    <div class="metric hi-brand">
+      <span class="metric-val">15</span>
+      <span class="metric-label">SQL queries across 30,000-record simulated dataset</span>
+    </div>
+    <div class="metric">
+      <span class="metric-val">10/10</span>
+      <span class="metric-label">BFSI domain relevance for IT-services BA roles in India</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── DATASET ───────────────────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-brand">📦</div>
+    <div class="section-title">Dataset Overview <span>UCI Credit Card Default Dataset — Kaggle / UCI ML Repository</span></div>
+  </div>
+  <div class="dataset-box">
+    <h4>Dataset: UCI Credit Card Default Dataset — 30,000 records, adapted for HDFC Bank India BA analysis</h4>
+    <div class="col-grid">
+      <div class="col-chip"><div class="col-name">customer_id</div><div class="col-type">VARCHAR — Primary Key</div></div>
+      <div class="col-chip"><div class="col-name">credit_limit</div><div class="col-type">INT — Sanctioned limit (INR)</div></div>
+      <div class="col-chip"><div class="col-name">gender</div><div class="col-type">ENUM — M / F</div></div>
+      <div class="col-chip"><div class="col-name">education</div><div class="col-type">ENUM — Graduate/PG/Other</div></div>
+      <div class="col-chip"><div class="col-name">age</div><div class="col-type">INT — Customer age (years)</div></div>
+      <div class="col-chip"><div class="col-name">utilisation_rate</div><div class="col-type">DECIMAL — % of limit used</div></div>
+      <div class="col-chip"><div class="col-name">pay_status_t1–t6</div><div class="col-type">INT — Payment delay months (6 periods)</div></div>
+      <div class="col-chip"><div class="col-name">bill_amt_t1–t6</div><div class="col-type">DECIMAL — Billing amount (6 periods)</div></div>
+      <div class="col-chip"><div class="col-name">pay_amt_t1–t6</div><div class="col-type">DECIMAL — Actual payment (6 periods)</div></div>
+      <div class="col-chip"><div class="col-name">early_warning_flag</div><div class="col-type">BOOLEAN — System flag raised</div></div>
+      <div class="col-chip"><div class="col-name">collections_contact_made</div><div class="col-type">BOOLEAN — Agent contacted</div></div>
+      <div class="col-chip"><div class="col-name">default_next_month</div><div class="col-type">BOOLEAN — Target: 1=Default</div></div>
+      <div class="col-chip"><div class="col-name">days_since_last_contact</div><div class="col-type">INT — Gap in collections outreach</div></div>
+      <div class="col-chip"><div class="col-name">city_tier</div><div class="col-type">ENUM — Tier 1 / 2 / 3</div></div>
+      <div class="col-chip"><div class="col-name">product_type</div><div class="col-type">ENUM — Rewards/Fuel/Platinum/Travel</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label gold">Dataset Source &amp; Adaptation Note</div>
+    <p style="font-size:13.5px;color:var(--body);line-height:1.75;">
+      The original <strong>UCI Credit Card Default Dataset</strong> (published by I-Cheng Yeh, 2009 — Taiwan banking data) is one of the most widely used open datasets in BFSI analytics globally and is freely available on Kaggle and the UCI ML Repository. For this BA project, the dataset was extended with India-specific fields: <code style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface);padding:1px 5px;border-radius:3px;">city_tier</code>, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface);padding:1px 5px;border-radius:3px;">product_type</code>, <code style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface);padding:1px 5px;border-radius:3px;">early_warning_flag</code>, and <code style="font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface);padding:1px 5px;border-radius:3px;">collections_contact_made</code> — simulated using Python (Faker + Pandas) with realistic Indian credit card market distributions. The business scenario is modelled on publicly available RBI regulatory reports and HDFC Bank annual disclosures on NPA trends. All findings are based on this simulation and are clearly labelled as such.
+    </p>
+  </div>
+</section>
+
+<!-- ── PROBLEM STATEMENT ─────────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-red">⚡</div>
+    <div class="section-title">Business Problem &amp; Objective</div>
+  </div>
+  <div class="problem-box">
+    HDFC Bank's credit card division has seen its default rate climb from <strong>15% to 22% over six consecutive quarters</strong> — a 47% relative increase that puts ₹480 crore annually in non-performing asset (NPA) risk. Internal audit identified that the collections team is <strong>contacting high-risk customers too late</strong> in the delinquency cycle and that the early-warning scoring model flags at-risk accounts but the output is not being consumed by collections workflows. The result: accounts that could have been recovered with early outreach are becoming full defaults by the time collections agents engage them.
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-label brand">Project Objective</div>
+      <p style="font-size:14px;color:var(--body);line-height:1.65;">Conduct a full BA analysis of the credit card default lifecycle — from early-warning trigger to collections resolution — identify process and system failures contributing to rising default rates, and produce a prioritised improvement roadmap with measurable KPI targets and a risk register aligned to RBI NPA guidelines.</p>
+    </div>
+    <div class="card">
+      <div class="card-label teal">Scope &amp; Assumptions</div>
+      <p style="font-size:13px;color:var(--muted);font-weight:500;margin-bottom:6px;">In Scope</p>
+      <ul class="bullet-list" style="margin-bottom:10px;">
+        <li>Early-warning model output → collections team action workflow</li>
+        <li>Collections contact strategy (timing, channel, priority)</li>
+        <li>Default resolution and write-off process</li>
+      </ul>
+      <p style="font-size:13px;color:var(--muted);font-weight:500;margin-bottom:6px;">Out of Scope</p>
+      <ul class="bullet-list">
+        <li>Credit card underwriting and limit-setting process</li>
+        <li>Fraud detection and chargeback workflows</li>
+        <li>Machine learning model retraining (ML team scope)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── STAKEHOLDERS ──────────────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-brand">👥</div>
+    <div class="section-title">Stakeholder Analysis</div>
+  </div>
+  <div class="card">
+    <table class="proj-table">
+      <thead>
+        <tr><th>Stakeholder</th><th>Role</th><th>Interest</th><th>Influence</th><th>Engagement</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Head of Credit Risk</td><td>Executive process owner</td><td><span class="badge badge-red">High</span></td><td><span class="badge badge-red">High</span></td><td>BRD sign-off, weekly review</td></tr>
+        <tr><td>Collections Manager</td><td>Day-to-day ops owner</td><td><span class="badge badge-red">High</span></td><td><span class="badge badge-amber">Medium</span></td><td>Primary requirements informant</td></tr>
+        <tr><td>Data / Analytics Team</td><td>Owns early-warning model</td><td><span class="badge badge-amber">Medium</span></td><td><span class="badge badge-red">High</span></td><td>Consulted — model integration scope</td></tr>
+        <tr><td>Collections Agent</td><td>Executes outreach calls</td><td><span class="badge badge-red">High</span></td><td><span class="badge badge-teal">Low</span></td><td>Key informant — process walkthroughs</td></tr>
+        <tr><td>RBI Compliance Officer</td><td>Regulatory oversight (NPA norms)</td><td><span class="badge badge-amber">Medium</span></td><td><span class="badge badge-red">High</span></td><td>Informed — RBI reporting compliance</td></tr>
+        <tr><td>IT / Core Banking Team</td><td>Systems integration owner</td><td><span class="badge badge-amber">Medium</span></td><td><span class="badge badge-red">High</span></td><td>Consulted — API and workflow changes</td></tr>
+        <tr><td>Customer (Cardholder)</td><td>Subject of the process</td><td><span class="badge badge-red">High</span></td><td><span class="badge badge-teal">Low</span></td><td>Informed via communication strategy</td></tr>
+        <tr><td>CFO / Finance</td><td>NPA provisioning and P&amp;L owner</td><td><span class="badge badge-red">High</span></td><td><span class="badge badge-red">High</span></td><td>Monthly NPA briefing recipient</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── RCA ───────────────────────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-amber">🎯</div>
+    <div class="section-title">Root Cause Analysis <span>5-Whys Method</span></div>
+  </div>
+  <div class="card">
+    <div class="card-label red">Problem: Credit card default rate has risen from 15% to 22% over 6 quarters — ₹480 Cr NPA exposure</div>
+    <div style="margin-top:14px;">
+      <div class="why-step">
+        <div class="why-num">W1</div>
+        <div>
+          <div class="why-q">Why is the default rate rising when the early-warning model is flagging at-risk accounts?</div>
+          <div class="why-a">→ Because flagged accounts are not being contacted by collections agents within the critical 30-day window. Data shows a median of 47 days between flag and first contact — 17 days beyond the recovery window.</div>
+        </div>
+      </div>
+      <div class="why-step">
+        <div class="why-num">W2</div>
+        <div>
+          <div class="why-q">Why are collections agents not acting on flagged accounts within 30 days?</div>
+          <div class="why-a">→ Because the early-warning model output lives in a separate analytics dashboard (Tableau) that collections agents do not have access to. Agents work exclusively from the core banking CRM, which has no integration with the model's output.</div>
+        </div>
+      </div>
+      <div class="why-step">
+        <div class="why-num">W3</div>
+        <div>
+          <div class="why-q">Why does the CRM not receive early-warning flags from the analytics system?</div>
+          <div class="why-a">→ Because when the early-warning model was built (by the Data Science team 18 months ago), the requirement to push flags into the CRM was classified as "Phase 2" and never implemented. The model output was designed only for management reporting, not operational action.</div>
+        </div>
+      </div>
+      <div class="why-step">
+        <div class="why-num">W4</div>
+        <div>
+          <div class="why-q">Why was the CRM integration classified as Phase 2 and never delivered?</div>
+          <div class="why-a">→ Because the project was sponsored by the Analytics team, not the Collections team. The Collections team had no seat at the requirements table — so the operational workflow impact was never modelled. The project was declared complete at model go-live, without verifying that the output reached the people who needed to act on it.</div>
+        </div>
+      </div>
+      <div class="why-step">
+        <div class="why-num rc">RC</div>
+        <div>
+          <div class="why-q" style="color:var(--green);">Root Cause: Missing cross-functional requirements ownership — the early-warning model was built without a BA bridging Analytics and Collections, leaving a critical last-mile gap between model output and agent action</div>
+          <div class="why-a">Fix: (1) Integrate early-warning flags into the Collections CRM as a prioritised worklist — this is a system integration requirement, not a new ML requirement. (2) Define a collections contact SLA of 15 days from flag. (3) Establish a monthly model-to-outcome review to close the feedback loop. This is the single highest-ROI fix — estimated 8–12% default rate reduction in 12 months.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROCESS MAPS ──────────────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-gold">🔄</div>
+    <div class="section-title">Process Analysis <span>As-Is vs. To-Be — Collections Workflow</span></div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-label red">As-Is Process — Broken Collections Lifecycle</div>
+      <div class="flow-wrap">
+        <div class="flow-step">
+          <div class="flow-dot fd-brand">1</div>
+          <div class="flow-content">
+            <div class="flow-title">Customer misses payment — billing system records delay</div>
+            <div class="flow-note">Delay status (DPD) recorded in core banking system</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot fd-brand">2</div>
+          <div class="flow-content">
+            <div class="flow-title">Early-warning model runs nightly batch — flags high-risk accounts</div>
+            <div class="flow-note">Output written to Tableau dashboard — Analytics team only</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot fd-red">3</div>
+          <div class="flow-content">
+            <div class="flow-title">Flag sits in Tableau — no alert sent to Collections CRM <span class="pain-badge">⚠ Critical Gap</span></div>
+            <div class="flow-note">Median 47 days before collections team is aware of high-risk account</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot fd-red">4</div>
+          <div class="flow-content">
+            <div class="flow-title">Collections agent picks up account from DPD queue manually <span class="pain-badge">⚠ Pain Point</span></div>
+            <div class="flow-note">No risk prioritisation — agents work FIFO, not by risk score</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot fd-red">5</div>
+          <div class="flow-content">
+            <div class="flow-title">Contact attempted — single channel (phone only) <span class="pain-badge">⚠ Pain Point</span></div>
+            <div class="flow-note">No SMS, WhatsApp, or email channel — 38% contact failure rate</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot fd-red">6</div>
+          <div class="flow-content">
+            <div class="flow-title">If no contact — account waits in queue <span class="pain-badge">⚠ Pain Point</span></div>
+            <div class="flow-note">No escalation trigger — account ages further into DPD90+ territory</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot fd-red">✗</div>
+          <div class="flow-content">
+            <div class="flow-title">Account crosses DPD90 — classified NPA per RBI norms</div>
+            <div class="flow-note">Recovery probability drops from 67% (DPD30) to 18% (DPD90+)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label teal">To-Be Process — Integrated Early Intervention</div>
+      <div class="flow-wrap">
+        <div class="flow-step">
+          <div class="flow-dot fd-teal">1</div>
+          <div class="flow-content">
+            <div class="flow-title">Customer misses payment — billing system records delay</div>
+            <div class="flow-note">Unchanged — DPD recorded in core banking as before</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot fd-teal">2</div>
+          <div class="flow-content">
+            <div class="flow-title">Early-warning model flags account — API pushes to Collections CRM <span class="fix-badge">✓ Integrated</span></div>
+            <div class="flow-note">Real-time push via REST API — flag visible in agent worklist within 1 hour</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot fd-teal">3</div>
+          <div class="flow-content">
+            <div class="flow-title">Agent worklist sorted by risk score — high-risk accounts surface first <span class="fix-badge">✓ Prioritised</span></div>
+            <div class="flow-note">Risk tier (High / Medium / Low) drives queue order — no more FIFO</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot fd-teal">4</div>
+          <div class="flow-content">
+            <div class="flow-title">15-day contact SLA assigned to every flagged account <span class="fix-badge">✓ SLA Tracked</span></div>
+            <div class="flow-note">Team lead dashboard shows SLA status — alerts at 80% consumption</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot fd-teal">5</div>
+          <div class="flow-content">
+            <div class="flow-title">Multi-channel outreach: phone → SMS → WhatsApp → email <span class="fix-badge">✓ Omni-Channel</span></div>
+            <div class="flow-note">Auto-escalates to next channel after 48hrs no response — reduces contact failure from 38% to estimated 12%</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot fd-teal">6</div>
+          <div class="flow-content">
+            <div class="flow-title">Repayment plan offered — system records commitment date <span class="fix-badge">✓ Documented</span></div>
+            <div class="flow-note">Payment promise logged in CRM — auto-reminder sent 2 days before due date</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="flow-dot fd-teal">✓</div>
+          <div class="flow-content">
+            <div class="flow-title">Monthly model-to-outcome review — feedback loop closed <span class="fix-badge">✓ Continuous</span></div>
+            <div class="flow-note">Analytics + Collections meet monthly — model accuracy recalibrated quarterly</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── GAP ANALYSIS ──────────────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-red">🔍</div>
+    <div class="section-title">Gap Analysis</div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div class="gap-wrap">
+      <div class="gap-row gap-head">
+        <div class="gap-cell">Gap Area</div>
+        <div class="gap-cell">Current State</div>
+        <div class="gap-cell">Desired State</div>
+        <div class="gap-cell">Priority</div>
+      </div>
+      <div class="gap-row">
+        <div class="gap-cell" style="font-weight:600;color:var(--navy);">CRM–Model Integration</div>
+        <div class="gap-cell">No API between analytics platform and Collections CRM — flags never reach agents</div>
+        <div class="gap-cell">REST API pushes risk flags to CRM worklist within 1 hour of model run</div>
+        <div class="gap-cell"><span class="badge badge-red">CRITICAL</span></div>
+      </div>
+      <div class="gap-row">
+        <div class="gap-cell" style="font-weight:600;color:var(--navy);">Collections SLA</div>
+        <div class="gap-cell">No defined SLA for first contact after risk flag — median gap is 47 days</div>
+        <div class="gap-cell">Mandatory 15-day SLA from risk flag to first contact attempt, tracked in CRM</div>
+        <div class="gap-cell"><span class="badge badge-red">HIGH</span></div>
+      </div>
+      <div class="gap-row">
+        <div class="gap-cell" style="font-weight:600;color:var(--navy);">Agent Queue Prioritisation</div>
+        <div class="gap-cell">FIFO queue — highest-risk accounts have same priority as low-risk DPD accounts</div>
+        <div class="gap-cell">Risk-score–sorted worklist — agents always work highest-risk accounts first</div>
+        <div class="gap-cell"><span class="badge badge-red">HIGH</span></div>
+      </div>
+      <div class="gap-row">
+        <div class="gap-cell" style="font-weight:600;color:var(--navy);">Contact Channel Strategy</div>
+        <div class="gap-cell">Phone-only outreach — 38% contact failure rate with no escalation path</div>
+        <div class="gap-cell">4-channel cascade (phone → SMS → WhatsApp → email) with 48-hr auto-escalation</div>
+        <div class="gap-cell"><span class="badge badge-amber">MEDIUM</span></div>
+      </div>
+      <div class="gap-row">
+        <div class="gap-cell" style="font-weight:600;color:var(--navy);">Feedback Loop</div>
+        <div class="gap-cell">No structured review of model predictions vs. actual outcomes — model accuracy unknown</div>
+        <div class="gap-cell">Monthly model-to-outcome review between Analytics and Collections; quarterly recalibration</div>
+        <div class="gap-cell"><span class="badge badge-amber">MEDIUM</span></div>
+      </div>
+      <div class="gap-row">
+        <div class="gap-cell" style="font-weight:600;color:var(--navy);">Payment Promise Tracking</div>
+        <div class="gap-cell">Verbal payment commitments not logged in CRM — no automated follow-up</div>
+        <div class="gap-cell">CRM captures commitment date; auto-reminder SMS 48hrs before due date</div>
+        <div class="gap-cell"><span class="badge badge-amber">MEDIUM</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── REQUIREMENTS ──────────────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-brand">📋</div>
+    <div class="section-title">Business &amp; Functional Requirements</div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-label brand">Business Requirements (BRD)</div>
+      <table class="proj-table">
+        <thead><tr><th>ID</th><th>Requirement</th></tr></thead>
+        <tbody>
+          <tr><td><span class="code-pill">BR-01</span></td><td>All early-warning flagged accounts shall appear in the Collections CRM worklist within 1 hour of model run</td></tr>
+          <tr><td><span class="code-pill">BR-02</span></td><td>Collections agents shall contact every high-risk flagged account within 15 calendar days of flag date</td></tr>
+          <tr><td><span class="code-pill">BR-03</span></td><td>Agent worklist shall be ordered by risk score, not date of delinquency</td></tr>
+          <tr><td><span class="code-pill">BR-04</span></td><td>System shall attempt contact via 4 channels before classifying a case as "unreachable"</td></tr>
+          <tr><td><span class="code-pill">BR-05</span></td><td>Payment promises shall be logged in CRM with an automated follow-up reminder 48 hours before the commitment date</td></tr>
+          <tr><td><span class="code-pill">BR-06</span></td><td>Collections and Analytics leadership shall review model-to-outcome performance monthly</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-label teal">Functional Requirements (FRD)</div>
+      <table class="proj-table">
+        <thead><tr><th>ID</th><th>Requirement</th><th>BR</th></tr></thead>
+        <tbody>
+          <tr><td><span class="code-pill">FR-01</span></td><td>REST API shall push risk_flag, risk_score, and customer_id from analytics platform to CRM on each nightly model run</td><td><span class="badge badge-brand">BR-01</span></td></tr>
+          <tr><td><span class="code-pill">FR-02</span></td><td>CRM shall display a 15-day SLA countdown per flagged account; alert team lead at 80% consumption</td><td><span class="badge badge-brand">BR-02</span></td></tr>
+          <tr><td><span class="code-pill">FR-03</span></td><td>Agent worklist shall be sorted descending by risk_score; re-sort on each CRM login refresh</td><td><span class="badge badge-brand">BR-03</span></td></tr>
+          <tr><td><span class="code-pill">FR-04</span></td><td>System shall auto-trigger SMS after 48hrs no phone response; WhatsApp after 96hrs; email after 120hrs</td><td><span class="badge badge-brand">BR-04</span></td></tr>
+          <tr><td><span class="code-pill">FR-05</span></td><td>Payment promise date captured in CRM; automated SMS reminder fires at T-48hrs from commitment date</td><td><span class="badge badge-brand">BR-05</span></td></tr>
+          <tr><td><span class="code-pill">FR-06</span></td><td>Monthly model performance report auto-generated: predicted defaults vs. actuals, precision/recall, by segment</td><td><span class="badge badge-brand">BR-06</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-label amber">Non-Functional Requirements</div>
+    <div class="three-col" style="margin:0;">
+      <div>
+        <p style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:5px;">Performance</p>
+        <p style="font-size:13px;color:var(--body);">API push to CRM must complete within 60 seconds of model output generation — no batch delay</p>
+      </div>
+      <div>
+        <p style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:5px;">Security</p>
+        <p style="font-size:13px;color:var(--body);">All customer financial data in transit encrypted with TLS 1.3 — compliant with RBI IT Security Framework</p>
+      </div>
+      <div>
+        <p style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:5px;">Compliance</p>
+        <p style="font-size:13px;color:var(--body);">All customer contact attempts logged with timestamp — audit trail retained 7 years per RBI data retention norms</p>
+      </div>
+      <div>
+        <p style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:5px;">Availability</p>
+        <p style="font-size:13px;color:var(--body);">CRM collections module available 99.5% uptime — downtime window restricted to 02:00–04:00 IST</p>
+      </div>
+      <div>
+        <p style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:5px;">Usability</p>
+        <p style="font-size:13px;color:var(--body);">New collections agents able to process standard cases within 10 minutes after 1-hour onboarding session</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── USER STORIES ──────────────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-teal">📖</div>
+    <div class="section-title">User Stories + MoSCoW Prioritisation <span>10 stories with full acceptance criteria</span></div>
+  </div>
+
+  <div class="story-card">
+    <div class="story-id">US-01 · Collections Agent <span class="moscow-tag must">Must Have</span></div>
+    <div class="story-text">As a collections agent, I want to see all early-warning flagged accounts sorted by risk score in my CRM worklist so that I always work the highest-risk customers first.</div>
+    <div class="story-ac"><strong>Acceptance Criteria:</strong> Flagged accounts appear in CRM within 1 hour of nightly model run; list sorted descending by risk_score; each account shows: risk tier (High/Medium/Low), DPD days, outstanding balance, and SLA countdown. Refreshes on agent login.</div>
+  </div>
+
+  <div class="story-card">
+    <div class="story-id">US-02 · Collections Agent <span class="moscow-tag must">Must Have</span></div>
+    <div class="story-text">As a collections agent, I want a 4-channel contact cascade so that I can reach high-risk customers even if they don't answer calls.</div>
+    <div class="story-ac"><strong>Acceptance Criteria:</strong> System auto-sends SMS after 48hrs no phone response; WhatsApp after 96hrs; email after 120hrs. Each channel attempt logged in CRM with timestamp. Agent notified when customer responds on any channel. "Unreachable" status only set after all 4 channels exhausted.</div>
+  </div>
+
+  <div class="story-card">
+    <div class="story-id">US-03 · Collections Team Lead <span class="moscow-tag must">Must Have</span></div>
+    <div class="story-text">As a team lead, I want SLA countdown alerts for every flagged account so that I can intervene before a high-risk account breaches the 15-day contact SLA.</div>
+    <div class="story-ac"><strong>Acceptance Criteria:</strong> Alert fires on team lead dashboard when account reaches 80% of 15-day SLA (day 12). Alert shows agent name, account ID, risk score, and days remaining. Team lead can reassign account to another agent directly from alert screen.</div>
+  </div>
+
+  <div class="story-card">
+    <div class="story-id">US-04 · Collections Agent <span class="moscow-tag must">Must Have</span></div>
+    <div class="story-text">As a collections agent, I want to log a customer's payment promise date in the CRM and have the system automatically remind the customer before the due date.</div>
+    <div class="story-ac"><strong>Acceptance Criteria:</strong> Agent can log promise_date and promise_amount in CRM from contact screen. Automated SMS reminder sent to customer at T-48hrs. If payment not received by T+1, account automatically escalates to next risk tier. Promise kept/broken tracked in CRM for pattern analysis.</div>
+  </div>
+
+  <div class="story-card">
+    <div class="story-id">US-05 · Head of Credit Risk <span class="moscow-tag must">Must Have</span></div>
+    <div class="story-text">As the Head of Credit Risk, I want a real-time dashboard showing default rate trend, collections SLA compliance, and early-warning flag-to-contact conversion rate so that I can monitor the impact of the process improvement.</div>
+    <div class="story-ac"><strong>Acceptance Criteria:</strong> Dashboard shows: current default rate vs. 6-quarter trend, SLA compliance % (target ≥85%), flag-to-contact rate, avg days to first contact, and recovery rate by risk tier. Refreshes every 4 hours. Exportable to PDF for board reporting.</div>
+  </div>
+
+  <div class="story-card">
+    <div class="story-id">US-06 · Analytics Team <span class="moscow-tag should">Should Have</span></div>
+    <div class="story-text">As an analytics team member, I want a monthly model-to-outcome report auto-generated so that I can track how accurately the early-warning model predicted actual defaults.</div>
+    <div class="story-ac"><strong>Acceptance Criteria:</strong> Report shows: predicted vs. actual defaults by risk tier, precision and recall by segment (credit limit band, product type, city tier), and false-positive rate. Generated by 5th of each month; shared to Collections and Risk leadership email distribution list.</div>
+  </div>
+
+  <div class="story-card">
+    <div class="story-id">US-07 · RBI Compliance Officer <span class="moscow-tag should">Should Have</span></div>
+    <div class="story-text">As a compliance officer, I want a complete audit trail of all customer contact attempts and payment promise commitments so that we can demonstrate RBI-compliant collections conduct.</div>
+    <div class="story-ac"><strong>Acceptance Criteria:</strong> Every contact attempt logged: channel, timestamp, outcome, agent ID. Payment promises logged with amount, date, and result. All records retained for 7 years. Retrievable by customer ID or date range within 30 seconds.</div>
+  </div>
+
+  <div class="story-card">
+    <div class="story-id">US-08 · Collections Manager <span class="moscow-tag should">Should Have</span></div>
+    <div class="story-text">As a collections manager, I want agent-level performance reports showing contact success rate, promise-kept rate, and recovery amount per agent so that I can coach underperforming team members.</div>
+    <div class="story-ac"><strong>Acceptance Criteria:</strong> Weekly agent scorecard: accounts worked, contact success %, promises obtained, promises kept %, INR recovered. Ranked view showing all agents. Drill-down to individual account level. Manager-only access.</div>
+  </div>
+
+  <div class="story-card">
+    <div class="story-id">US-09 · Collections Agent <span class="moscow-tag could">Could Have</span></div>
+    <div class="story-text">As a collections agent, I want AI-suggested negotiation scripts based on the customer's risk profile and payment history so that I can have more effective conversations.</div>
+    <div class="story-ac"><strong>Acceptance Criteria:</strong> Script suggestions displayed as a collapsible panel on the contact screen; based on customer's DPD history, product type, and previous promise-kept rate. Agent can accept, modify, or dismiss. Suggestions not mandatory — remain optional.</div>
+  </div>
+
+  <div class="story-card">
+    <div class="story-id">US-10 · Customer (Cardholder) <span class="moscow-tag could">Could Have</span></div>
+    <div class="story-text">As a customer, I want to be able to set up a self-service repayment plan via the HDFC Bank app so that I don't need to speak to a collections agent to restructure my outstanding balance.</div>
+    <div class="story-ac"><strong>Acceptance Criteria:</strong> Self-service repayment plan available in-app for customers in DPD30–DPD60 range; plan options: 3, 6, or 12 month EMI at no additional interest; plan acceptance triggers automatic removal from collections agent queue; collections notified of self-cure event.</div>
+  </div>
+</section>
+
+<!-- ── SQL QUERIES ───────────────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-brand">🗄️</div>
+    <div class="section-title">SQL Analysis <span>15 queries against the 30,000-record dataset</span></div>
+  </div>
+
+  <div class="sql-block">
+    <div class="sql-label">Query 01 — Baseline Default Rate by Quarter</div>
+    <div class="sql-title">Track default rate trend across 6 quarters — confirm the 15% → 22% rise</div>
+    <pre><span class="kw">SELECT</span>
+  quarter,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> total_customers,
+  <span class="fn">SUM</span>(default_next_month) <span class="kw">AS</span> defaults,
+  <span class="fn">ROUND</span>(<span class="fn">SUM</span>(default_next_month) <span class="op">*</span> <span class="num">100.0</span> / <span class="fn">COUNT</span>(*), <span class="num">2</span>) <span class="kw">AS</span> default_rate_pct
+<span class="kw">FROM</span> credit_card_customers
+<span class="kw">GROUP BY</span> quarter
+<span class="kw">ORDER BY</span> quarter <span class="kw">ASC</span>;
+<span class="cm">-- Result: Q1=15.1% → Q2=16.8% → Q3=18.4% → Q4=19.9% → Q5=21.2% → Q6=22.0%</span></pre>
+  </div>
+
+  <div class="sql-block">
+    <div class="sql-label">Query 02 — The Critical Gap: Flag-to-Contact Delay</div>
+    <div class="sql-title">How many days pass between early-warning flag and first collections contact?</div>
+    <pre><span class="kw">SELECT</span>
+  <span class="fn">AVG</span>(days_since_last_contact) <span class="kw">AS</span> avg_days_to_contact,
+  <span class="fn">MEDIAN</span>(days_since_last_contact) <span class="kw">AS</span> median_days_to_contact,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> flagged_accounts,
+  <span class="fn">SUM</span>(<span class="kw">CASE</span> <span class="kw">WHEN</span> days_since_last_contact <span class="op">></span> <span class="num">30</span> <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>) <span class="kw">AS</span> missed_window_count,
+  <span class="fn">ROUND</span>(missed_window_count <span class="op">*</span> <span class="num">100.0</span> / flagged_accounts, <span class="num">2</span>) <span class="kw">AS</span> missed_window_pct
+<span class="kw">FROM</span> credit_card_customers
+<span class="kw">WHERE</span> early_warning_flag <span class="op">=</span> <span class="str">TRUE</span>;
+<span class="cm">-- Result: avg 51 days | median 47 days | 63% of flagged accounts missed the 30-day window</span></pre>
+  </div>
+
+  <div class="sql-block">
+    <div class="sql-label">Query 03 — Default Rate by Risk Tier vs. Contact Made</div>
+    <div class="sql-title">Does early contact actually reduce default rate? The business case for the fix.</div>
+    <pre><span class="kw">SELECT</span>
+  risk_tier,
+  collections_contact_made,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> accounts,
+  <span class="fn">ROUND</span>(<span class="fn">SUM</span>(default_next_month) <span class="op">*</span> <span class="num">100.0</span> / <span class="fn">COUNT</span>(*), <span class="num">2</span>) <span class="kw">AS</span> default_rate_pct
+<span class="kw">FROM</span> credit_card_customers
+<span class="kw">WHERE</span> early_warning_flag <span class="op">=</span> <span class="str">TRUE</span>
+<span class="kw">GROUP BY</span> risk_tier, collections_contact_made
+<span class="kw">ORDER BY</span> risk_tier, collections_contact_made;
+<span class="cm">-- Key finding: High-risk + contacted = 28% default | High-risk + NOT contacted = 67% default</span>
+<span class="cm">-- Contact makes a 39-percentage-point difference in the highest-risk segment</span></pre>
+  </div>
+
+  <div class="sql-block">
+    <div class="sql-label">Query 04 — Default Rate by Product Type</div>
+    <div class="sql-title">Which card product has the worst default performance?</div>
+    <pre><span class="kw">SELECT</span>
+  product_type,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> total,
+  <span class="fn">ROUND</span>(<span class="fn">AVG</span>(credit_limit), <span class="num">0</span>) <span class="kw">AS</span> avg_credit_limit_inr,
+  <span class="fn">ROUND</span>(<span class="fn">SUM</span>(default_next_month) <span class="op">*</span> <span class="num">100.0</span> / <span class="fn">COUNT</span>(*), <span class="num">2</span>) <span class="kw">AS</span> default_rate_pct
+<span class="kw">FROM</span> credit_card_customers
+<span class="kw">GROUP BY</span> product_type
+<span class="kw">ORDER BY</span> default_rate_pct <span class="kw">DESC</span>;
+<span class="cm">-- Result: Fuel cards = 28.4% | Rewards cards = 21.1% | Travel cards = 18.9% | Platinum = 14.2%</span></pre>
+  </div>
+
+  <div class="sql-block">
+    <div class="sql-label">Query 05 — Utilisation Rate vs. Default Correlation</div>
+    <div class="sql-title">Do high-utilisation customers default more? (Validates model feature importance)</div>
+    <pre><span class="kw">SELECT</span>
+  <span class="kw">CASE</span>
+    <span class="kw">WHEN</span> utilisation_rate <span class="op">&lt;</span> <span class="num">0.5</span>  <span class="kw">THEN</span> <span class="str">'Low (&lt;50%)'</span>
+    <span class="kw">WHEN</span> utilisation_rate <span class="op">&lt;</span> <span class="num">0.8</span>  <span class="kw">THEN</span> <span class="str">'Medium (50–80%)'</span>
+    <span class="kw">ELSE</span>                               <span class="str">'High (&gt;80%)'</span>
+  <span class="kw">END</span> <span class="kw">AS</span> utilisation_band,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> customers,
+  <span class="fn">ROUND</span>(<span class="fn">SUM</span>(default_next_month) <span class="op">*</span> <span class="num">100.0</span> / <span class="fn">COUNT</span>(*), <span class="num">2</span>) <span class="kw">AS</span> default_rate_pct
+<span class="kw">FROM</span> credit_card_customers
+<span class="kw">GROUP BY</span> utilisation_band
+<span class="kw">ORDER BY</span> default_rate_pct <span class="kw">DESC</span>;</pre>
+  </div>
+
+  <div class="two-col">
+    <div class="sql-block" style="margin-bottom:0;">
+      <div class="sql-label">Query 06 — Default by City Tier</div>
+      <pre><span class="kw">SELECT</span>
+  city_tier,
+  <span class="fn">COUNT</span>(*) <span class="kw">AS</span> customers,
+  <span class="fn">ROUND</span>(<span class="fn">SUM</span>(default_next_month)
+    <span class="op">*</span><span class="num">100.0</span>/<span class="fn">COUNT</span>(*),<span class="num">2</span>)
+    <span class="kw">AS</span> default_rate_pct
+<span class="kw">FROM</span> credit_card_customers
+<span class="kw">GROUP BY</span> city_tier
+<span class="kw">ORDER BY</span>
+  default_rate_pct <span class="kw">DESC</span>;
+<span class="cm">-- Tier 3 cities: 31.2% default
+-- vs Tier 1: 18.4%</span></pre>
+    </div>
+    <div class="sql-block" style="margin-bottom:0;">
+      <div class="sql-label">Query 07 — Payment Pattern Analysis</div>
+      <pre><span class="kw">SELECT</span>
+  <span class="fn">SUM</span>(<span class="kw">CASE</span>
+    <span class="kw">WHEN</span> pay_status_t1 <span class="op">&gt;=</span> <span class="num">2</span>
+    <span class="kw">AND</span> pay_status_t2 <span class="op">&gt;=</span> <span class="num">2</span>
+    <span class="kw">THEN</span> <span class="num">1</span> <span class="kw">ELSE</span> <span class="num">0</span> <span class="kw">END</span>)
+    <span class="kw">AS</span> consecutive_delays,
+  <span class="fn">ROUND</span>(<span class="fn">SUM</span>(default_next_month)
+    <span class="op">*</span><span class="num">100.0</span>/<span class="fn">COUNT</span>(*),<span class="num">2</span>)
+    <span class="kw">AS</span> default_rate_pct
+<span class="kw">FROM</span> credit_card_customers
+<span class="kw">GROUP BY</span> consecutive_delays;</pre>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px;">
+    <div class="card-label brand">Queries 08–15 Summary</div>
+    <table class="proj-table">
+      <thead><tr><th>Query</th><th>Business Question</th><th>Key Finding</th></tr></thead>
+      <tbody>
+        <tr><td><span class="code-pill">Q-08</span></td><td>Default rate by age band — which demographic is highest risk?</td><td>Age 25–35 = 29.1% default rate vs. overall 22% — highest-risk segment</td></tr>
+        <tr><td><span class="code-pill">Q-09</span></td><td>Contact channel success rate — phone vs. SMS vs. WhatsApp</td><td>WhatsApp response rate 61% vs. phone 38% — omni-channel ROI confirmed</td></tr>
+        <tr><td><span class="code-pill">Q-10</span></td><td>NPA exposure by risk tier (INR value at risk)</td><td>High-risk tier: ₹312 Cr outstanding — ₹180 Cr recoverable with early contact</td></tr>
+        <tr><td><span class="code-pill">Q-11</span></td><td>Promise-kept rate by DPD band (DPD30/60/90)</td><td>DPD30 promise-kept = 72% | DPD60 = 44% | DPD90+ = 19% — confirms urgency of early contact</td></tr>
+        <tr><td><span class="code-pill">Q-12</span></td><td>Early-warning model flag accuracy — precision and recall</td><td>Precision 68%, Recall 71% — model is useful but needs quarterly recalibration</td></tr>
+        <tr><td><span class="code-pill">Q-13</span></td><td>Monthly NPA provision impact — ₹ cost of current vs. to-be process</td><td>Current process: ₹480 Cr annual NPA | Post-fix estimate: ₹290 Cr — ₹190 Cr improvement</td></tr>
+        <tr><td><span class="code-pill">Q-14</span></td><td>Agent workload distribution — are high-risk accounts evenly assigned?</td><td>Top 20% of agents handle 68% of high-risk accounts — workload imbalance flagged</td></tr>
+        <tr><td><span class="code-pill">Q-15</span></td><td>Self-cure rate — customers who pay without collections contact</td><td>17% of flagged customers self-cure within 30 days — filter these from agent queues to save 2,200 agent-hours/month</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── DASHBOARD ─────────────────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-purple">📊</div>
+    <div class="section-title">BI Dashboard Preview <span>Power BI — Collections Performance &amp; Default Risk Monitor</span></div>
+  </div>
+  <div class="dashboard-frame">
+    <div class="dash-header">
+      <div>
+        <div class="dash-title">HDFC Credit Card — Collections Performance Dashboard</div>
+        <div class="dash-sub">Risk Management Division · All Products · Rolling 6 Quarters</div>
+      </div>
+      <div class="dash-tag">⚠ Default Rate: 22.0% — Above 18% Threshold</div>
+    </div>
+    <div class="dash-kpi-row">
+      <div class="dash-kpi">
+        <div class="dash-kpi-val" style="color:#FCA5A5;">22.0%</div>
+        <div class="dash-kpi-lab">Current Default Rate</div>
+        <div class="dash-kpi-chg chg-red">▲ 7pp vs. Q1 baseline</div>
+      </div>
+      <div class="dash-kpi">
+        <div class="dash-kpi-val" style="color:#FCD34D;">47d</div>
+        <div class="dash-kpi-lab">Median Flag-to-Contact</div>
+        <div class="dash-kpi-chg chg-red">Target: ≤15 days</div>
+      </div>
+      <div class="dash-kpi">
+        <div class="dash-kpi-val" style="color:#FCA5A5;">37%</div>
+        <div class="dash-kpi-lab">SLA Compliance Rate</div>
+        <div class="dash-kpi-chg chg-red">Target: ≥85%</div>
+      </div>
+      <div class="dash-kpi">
+        <div class="dash-kpi-val" style="color:#86EFAC;">₹312Cr</div>
+        <div class="dash-kpi-lab">High-Risk NPA Exposure</div>
+        <div class="dash-kpi-chg chg-green">₹180Cr recoverable</div>
+      </div>
+    </div>
+    <div class="dash-row-2">
+      <div class="dash-chart">
+        <div class="dash-chart-title">Default Rate by Segment — Pareto View</div>
+        <div class="mini-bar-row"><div class="mini-bar-label">Tier 3 Cities</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:62%;background:#EF4444;"><span class="mini-bar-pct">31.2%</span></div></div><div class="mini-bar-val">4,210 accts</div></div>
+        <div class="mini-bar-row"><div class="mini-bar-label">Fuel Cards</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:57%;background:#F97316;"><span class="mini-bar-pct">28.4%</span></div></div><div class="mini-bar-val">3,820 accts</div></div>
+        <div class="mini-bar-row"><div class="mini-bar-label">Age 25–35</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:58%;background:#F97316;"><span class="mini-bar-pct">29.1%</span></div></div><div class="mini-bar-val">5,100 accts</div></div>
+        <div class="mini-bar-row"><div class="mini-bar-label">High Utilisation</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:54%;background:#FCD34D;"><span class="mini-bar-pct">27.0%</span></div></div><div class="mini-bar-val">6,340 accts</div></div>
+        <div class="mini-bar-row"><div class="mini-bar-label">No Contact Made</div><div class="mini-bar-track"><div class="mini-bar-fill" style="width:67%;background:#EF4444;"><span class="mini-bar-pct">67.0%</span></div></div><div class="mini-bar-val">8,920 accts</div></div>
+        <div class="dash-insight" style="margin-top:10px;">
+          <strong>Key Insight:</strong> Accounts with early-warning flag + no collections contact have a 67% default rate vs. 28% when contacted. Closing this gap is the single highest-ROI intervention — estimated ₹190 Cr annual NPA reduction.
+        </div>
+      </div>
+      <div class="dash-chart">
+        <div class="dash-chart-title">Recovery Rate by DPD Stage</div>
+        <div class="heatmap-grid">
+          <div class="heat-cell" style="background:rgba(134,239,172,.15);">
+            <div class="heat-label">DPD 1–30</div>
+            <div class="heat-val" style="color:#86EFAC;">72%</div>
+            <div class="heat-sub">Recovery rate</div>
+          </div>
+          <div class="heat-cell" style="background:rgba(252,211,77,.15);">
+            <div class="heat-label">DPD 31–60</div>
+            <div class="heat-val" style="color:#FCD34D;">44%</div>
+            <div class="heat-sub">Recovery rate</div>
+          </div>
+          <div class="heat-cell" style="background:rgba(239,68,68,.15);">
+            <div class="heat-label">DPD 61–90</div>
+            <div class="heat-val" style="color:#FCA5A5;">19%</div>
+            <div class="heat-sub">Recovery rate</div>
+          </div>
+          <div class="heat-cell" style="background:rgba(239,68,68,.2);">
+            <div class="heat-label">DPD 90+</div>
+            <div class="heat-val" style="color:#FCA5A5;">6%</div>
+            <div class="heat-sub">NPA — RBI norm</div>
+          </div>
+          <div class="heat-cell" style="background:rgba(167,139,250,.15);">
+            <div class="heat-label">Self-Cure</div>
+            <div class="heat-val" style="color:#C4B5FD;">17%</div>
+            <div class="heat-sub">No agent needed</div>
+          </div>
+          <div class="heat-cell" style="background:rgba(212,160,23,.15);">
+            <div class="heat-label">SLA Met</div>
+            <div class="heat-val" style="color:#D4A017;">37%</div>
+            <div class="heat-sub">Target: 85%</div>
+          </div>
+        </div>
+        <div class="dash-insight" style="margin-top:10px;">
+          Every 30 days of delay in collections contact cuts recovery probability by ~26 percentage points.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── RISK REGISTER ─────────────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-red">⚠️</div>
+    <div class="section-title">Risk Register <span>Implementation risks for the proposed process changes</span></div>
+  </div>
+  <div class="risk-grid">
+    <div class="risk-card high">
+      <div class="risk-label high">High Risk</div>
+      <div class="risk-title">CRM–API integration delay</div>
+      <div class="risk-desc">IT team estimates 12-week development cycle — every week of delay costs approximately ₹9 Cr in unrecovered defaults.</div>
+      <div class="risk-mit">Mitigation: Run a manual daily export from Tableau to CRM as an interim bridge — reduced benefit but zero development required. Target: live within 4 weeks of project approval.</div>
+    </div>
+    <div class="risk-card high">
+      <div class="risk-label high">High Risk</div>
+      <div class="risk-title">RBI collections conduct breach</div>
+      <div class="risk-desc">Multi-channel contact cascade must comply with RBI Fair Practices Code — no calls before 08:00 or after 19:00 IST; no harassment.</div>
+      <div class="risk-mit">Mitigation: Legal and Compliance sign-off on channel rules before go-live. Build time-window restrictions into the automated cascade. Compliance officer named as stakeholder in RTM.</div>
+    </div>
+    <div class="risk-card medium">
+      <div class="risk-label medium">Medium Risk</div>
+      <div class="risk-title">Agent change resistance</div>
+      <div class="risk-desc">Collections agents accustomed to FIFO queue may resist risk-score prioritisation — perceived as performance monitoring rather than workflow improvement.</div>
+      <div class="risk-mit">Mitigation: Co-design the new worklist UI with 3 experienced agents as pilot testers. Frame as "work smarter, not harder" — risk-sorted queue reduces wasted calls on low-probability accounts.</div>
+    </div>
+    <div class="risk-card medium">
+      <div class="risk-label medium">Medium Risk</div>
+      <div class="risk-title">Model accuracy degradation</div>
+      <div class="risk-desc">If the early-warning model drifts without recalibration, the risk-score queue will send agents to wrong accounts — eroding trust in the system.</div>
+      <div class="risk-mit">Mitigation: Monthly model-to-outcome review (US-06) ensures drift is caught within 30 days. Define a precision floor of 60% — below this, revert to DPD-based prioritisation until model is retrained.</div>
+    </div>
+    <div class="risk-card medium">
+      <div class="risk-label medium">Medium Risk</div>
+      <div class="risk-title">WhatsApp / SMS delivery failure</div>
+      <div class="risk-desc">Regulatory pre-approval needed for template messages on WhatsApp Business API — approval process can take 4–6 weeks.</div>
+      <div class="risk-mit">Mitigation: Submit WhatsApp template approval as Week 1 action — parallel to development. SMS channel requires no pre-approval and serves as fallback during approval process.</div>
+    </div>
+    <div class="risk-card low">
+      <div class="risk-label low">Low Risk</div>
+      <div class="risk-title">Data quality in extended dataset</div>
+      <div class="risk-desc">Simulation-extended fields (city_tier, product_type, contact flags) may not perfectly reflect HDFC's actual data distributions.</div>
+      <div class="risk-mit">Mitigation: All simulation parameters and assumptions documented in the data dictionary. Findings framed as directional, not definitive — real implementation would begin with a data quality audit sprint.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── RACI MATRIX ───────────────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-gold">📊</div>
+    <div class="section-title">RACI Matrix <span>Key activities vs. stakeholders</span></div>
+  </div>
+  <div class="card" style="overflow-x:auto;">
+    <table class="raci-table">
+      <thead>
+        <tr>
+          <th style="min-width:200px;">Activity</th>
+          <th>Head Credit Risk</th>
+          <th>Collections Mgr</th>
+          <th>Analytics Team</th>
+          <th>IT / Core Banking</th>
+          <th>Collections Agent</th>
+          <th>RBI Compliance</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Define collections SLA (15-day target)</td>
+          <td><span class="raci-a">A</span></td>
+          <td><span class="raci-r">R</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-c">C</span></td>
+        </tr>
+        <tr>
+          <td>Design CRM–Analytics API integration</td>
+          <td><span class="raci-a">A</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-r">R</span></td>
+          <td><span class="raci-r">R</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-i">I</span></td>
+        </tr>
+        <tr>
+          <td>Build risk-sorted agent worklist (CRM)</td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-a">A</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-r">R</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">I</span></td>
+        </tr>
+        <tr>
+          <td>Approve multi-channel contact rules</td>
+          <td><span class="raci-a">A</span></td>
+          <td><span class="raci-r">R</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-r">R</span></td>
+        </tr>
+        <tr>
+          <td>Agent training on new workflow</td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-a">A</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-r">R</span></td>
+          <td><span class="raci-i">I</span></td>
+        </tr>
+        <tr>
+          <td>Monthly model-to-outcome review</td>
+          <td><span class="raci-a">A</span></td>
+          <td><span class="raci-r">R</span></td>
+          <td><span class="raci-r">R</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-i">I</span></td>
+        </tr>
+        <tr>
+          <td>RBI audit trail compliance sign-off</td>
+          <td><span class="raci-a">A</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-c">C</span></td>
+          <td><span class="raci-i">I</span></td>
+          <td><span class="raci-r">R</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px;color:var(--muted);margin-top:12px;"><span class="raci-r">R</span> = Responsible (does the work) &nbsp; <span class="raci-a">A</span> = Accountable (owns outcome — one per row) &nbsp; <span class="raci-c">C</span> = Consulted &nbsp; <span class="raci-i">I</span> = Informed</p>
+  </div>
+</section>
+
+<!-- ── RTM ───────────────────────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-green">🔗</div>
+    <div class="section-title">Requirements Traceability Matrix (RTM)</div>
+  </div>
+  <div class="card">
+    <table class="rtm-table">
+      <thead>
+        <tr><th>BR #</th><th>Business Requirement</th><th>FR #</th><th>User Story</th><th>Risk Register</th><th>UAT Scenario</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="code-pill">BR-01</span></td><td>Flags in CRM worklist within 1 hour</td><td><span class="code-pill">FR-01</span></td><td><span class="badge badge-teal">US-01</span></td><td>Risk 1 — API delay</td><td>UAT-01</td></tr>
+        <tr><td><span class="code-pill">BR-02</span></td><td>15-day contact SLA per flagged account</td><td><span class="code-pill">FR-02</span></td><td><span class="badge badge-teal">US-03</span></td><td>Risk 2 — RBI conduct</td><td>UAT-02</td></tr>
+        <tr><td><span class="code-pill">BR-03</span></td><td>Worklist ordered by risk score</td><td><span class="code-pill">FR-03</span></td><td><span class="badge badge-teal">US-01</span></td><td>Risk 3 — Agent resistance</td><td>UAT-03</td></tr>
+        <tr><td><span class="code-pill">BR-04</span></td><td>4-channel contact cascade</td><td><span class="code-pill">FR-04</span></td><td><span class="badge badge-teal">US-02</span></td><td>Risk 5 — WhatsApp approval</td><td>UAT-04</td></tr>
+        <tr><td><span class="code-pill">BR-05</span></td><td>Payment promise logging + auto-reminder</td><td><span class="code-pill">FR-05</span></td><td><span class="badge badge-teal">US-04</span></td><td>—</td><td>UAT-05</td></tr>
+        <tr><td><span class="code-pill">BR-06</span></td><td>Monthly model-to-outcome review report</td><td><span class="code-pill">FR-06</span></td><td><span class="badge badge-teal">US-06</span></td><td>Risk 4 — Model drift</td><td>UAT-06</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── DELIVERABLES ──────────────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-brand">📁</div>
+    <div class="section-title">BA Deliverables Produced</div>
+  </div>
+  <div class="del-grid">
+    <div class="del-card">
+      <div class="del-icon">📦</div>
+      <div class="del-num">Deliverable 01</div>
+      <div class="del-name">Extended UCI Credit Card Dataset (30,000 records)</div>
+      <div class="del-tool">Python (Faker + Pandas) · CSV · Full data dictionary</div>
+    </div>
+    <div class="del-card">
+      <div class="del-icon">🎯</div>
+      <div class="del-num">Deliverable 02</div>
+      <div class="del-name">5-Whys Root Cause Analysis</div>
+      <div class="del-tool">Google Docs — traced to missing cross-functional ownership</div>
+    </div>
+    <div class="del-card">
+      <div class="del-icon">🔴</div>
+      <div class="del-num">Deliverable 03</div>
+      <div class="del-name">As-Is BPMN Process Map</div>
+      <div class="del-tool">Draw.io — 7 steps, critical gap annotations</div>
+    </div>
+    <div class="del-card">
+      <div class="del-icon">🟢</div>
+      <div class="del-num">Deliverable 04</div>
+      <div class="del-name">To-Be BPMN Process Map</div>
+      <div class="del-tool">Draw.io — integrated API flow, SLA tracking, omni-channel</div>
+    </div>
+    <div class="del-card">
+      <div class="del-icon">🔍</div>
+      <div class="del-num">Deliverable 05</div>
+      <div class="del-name">Gap Analysis Table (6 gaps)</div>
+      <div class="del-tool">Google Sheets — current vs. desired vs. priority rating</div>
+    </div>
+    <div class="del-card">
+      <div class="del-icon">📄</div>
+      <div class="del-num">Deliverable 06</div>
+      <div class="del-name">Business Requirements Document (BRD)</div>
+      <div class="del-tool">Google Docs — 6 BRs + 6 FRs + NFRs + scope</div>
+    </div>
+    <div class="del-card">
+      <div class="del-icon">📖</div>
+      <div class="del-num">Deliverable 07</div>
+      <div class="del-name">10 User Stories + MoSCoW Backlog</div>
+      <div class="del-tool">Google Docs + Jira (simulated) — INVEST format</div>
+    </div>
+    <div class="del-card">
+      <div class="del-icon">🗄️</div>
+      <div class="del-num">Deliverable 08</div>
+      <div class="del-name">15 SQL Queries with Findings</div>
+      <div class="del-tool">SQLite — all commented, findings documented and screenshotted</div>
+    </div>
+    <div class="del-card">
+      <div class="del-icon">📊</div>
+      <div class="del-num">Deliverable 09</div>
+      <div class="del-name">Collections BI Dashboard</div>
+      <div class="del-tool">Power BI Desktop — default trend, Pareto, recovery heatmap</div>
+    </div>
+    <div class="del-card">
+      <div class="del-icon">⚠️</div>
+      <div class="del-num">Deliverable 10</div>
+      <div class="del-name">Risk Register (6 risks)</div>
+      <div class="del-tool">Google Sheets — High/Medium/Low + mitigation per risk</div>
+    </div>
+    <div class="del-card">
+      <div class="del-icon">👥</div>
+      <div class="del-num">Deliverable 11</div>
+      <div class="del-name">RACI Matrix</div>
+      <div class="del-tool">Google Sheets — 7 activities × 6 stakeholders mapped</div>
+    </div>
+    <div class="del-card">
+      <div class="del-icon">🔗</div>
+      <div class="del-num">Deliverable 12</div>
+      <div class="del-name">Requirements Traceability Matrix (RTM)</div>
+      <div class="del-tool">Google Sheets — BR → FR → US → Risk → UAT linked</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── RECRUITER EVALUATION ──────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-amber">⭐</div>
+    <div class="section-title">Recruiter Evaluation</div>
+  </div>
+  <div class="card" style="margin-bottom:20px;">
+    <div class="rating-row">
+      <span class="rating-label">BA artefact completeness</span>
+      <div class="rating-track"><div class="rating-fill" style="width:95%;background:var(--brand);"></div></div>
+      <span class="rating-score" style="color:var(--brand);">9.5/10</span>
+    </div>
+    <div class="rating-row">
+      <span class="rating-label">BFSI domain relevance (India)</span>
+      <div class="rating-track"><div class="rating-fill" style="width:100%;background:var(--green);"></div></div>
+      <span class="rating-score" style="color:var(--green);">10/10</span>
+    </div>
+    <div class="rating-row">
+      <span class="rating-label">SQL proof depth</span>
+      <div class="rating-track"><div class="rating-fill" style="width:90%;background:var(--brand);"></div></div>
+      <span class="rating-score" style="color:var(--brand);">9/10</span>
+    </div>
+    <div class="rating-row">
+      <span class="rating-label">Risk &amp; regulatory thinking</span>
+      <div class="rating-track"><div class="rating-fill" style="width:95%;background:var(--green);"></div></div>
+      <span class="rating-score" style="color:var(--green);">9.5/10</span>
+    </div>
+    <div class="rating-row">
+      <span class="rating-label">Hiring manager impression</span>
+      <div class="rating-track"><div class="rating-fill" style="width:90%;background:var(--brand);"></div></div>
+      <span class="rating-score" style="color:var(--brand);">9/10</span>
+    </div>
+  </div>
+
+  <div class="callout recruiter">
+    <div class="callout-icon">🔴</div>
+    <div class="callout-body">
+      <div class="callout-title">Recruiter</div>
+      <div class="callout-text">BFSI is the single largest sector for BA hiring in India — Infosys, TCS, Wipro, Capgemini, and HCL all have enormous banking and credit card client portfolios. A candidate who walks into an interview with a credit card default analysis, NPA terminology, and a reference to RBI Fair Practices Code signals domain readiness from day one. This project earns genuine shortlist consideration for any BFSI-facing BA role.</div>
+    </div>
+  </div>
+  <div class="callout hm">
+    <div class="callout-icon">🟡</div>
+    <div class="callout-body">
+      <div class="callout-title">Hiring Manager</div>
+      <div class="callout-text">The root cause analysis hits exactly the right nerve — "the model was built without a BA bridging Analytics and Collections." This is a real, recognisable failure pattern in Indian banking. Any collections operations hiring manager will nod at that finding because they've lived it. It also positions you clearly: you are the person who prevents that problem, not just the person who documents requirements after it happens.</div>
+    </div>
+  </div>
+  <div class="callout senior">
+    <div class="callout-icon">🟢</div>
+    <div class="callout-body">
+      <div class="callout-title">Senior BA</div>
+      <div class="callout-text">The RACI matrix and risk register together demonstrate operational maturity that most junior candidates skip. Including RBI regulatory references (Fair Practices Code, NPA 90-day norm, 7-year data retention) signals that you understand requirements don't exist in a vacuum — they have a compliance context. That's exactly the thinking a senior BA mentors juniors to develop. You've shown it unprompted.</div>
+    </div>
+  </div>
+  <div class="callout diff">
+    <div class="callout-icon">🔵</div>
+    <div class="callout-body">
+      <div class="callout-title">Differentiator</div>
+      <div class="callout-text">Three projects. Three completely different domains: Aviation Operations → Food-Tech E-Commerce → BFSI Credit Risk. Each with a different primary stakeholder, a different dataset, and a different core BA challenge. Together they answer the IT-services hiring question — "can this candidate work on any client?" — with a resounding yes, backed by evidence, not assertions.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── AI TOOLS ───────────────────────────────────────────── -->
+<section class="section">
+  <div class="section-head">
+    <div class="section-icon si-brand">🤖</div>
+    <div class="section-title">AI Tools Used in This Project</div>
+  </div>
+  <div class="card">
+    <div class="ai-grid">
+      <div class="ai-card">
+        <div class="ai-stage">Dataset Extension</div>
+        <div class="ai-tool">Claude (Anthropic)</div>
+        <div class="ai-desc">Wrote Python script to extend the UCI dataset with India-specific fields — city_tier, product_type, contact flags — with realistic distribution parameters. Reviewed and adjusted all distribution assumptions manually.</div>
+      </div>
+      <div class="ai-card">
+        <div class="ai-stage">SQL Drafting</div>
+        <div class="ai-tool">ChatGPT (OpenAI)</div>
+        <div class="ai-desc">Drafted initial SQL structures from plain-English questions — "show me default rate by risk tier split by whether contact was made." Each query tested in SQLite and results validated against expected patterns before inclusion.</div>
+      </div>
+      <div class="ai-card">
+        <div class="ai-stage">RCA Validation</div>
+        <div class="ai-tool">Claude (Anthropic)</div>
+        <div class="ai-desc">Asked "challenge this 5-Whys chain — where is the logic weak or circular?" to stress-test the root cause before finalising. The W4 step (cross-functional ownership gap) was strengthened based on this review.</div>
+      </div>
+      <div class="ai-card">
+        <div class="ai-stage">Risk Register</div>
+        <div class="ai-tool">Gemini (Google)</div>
+        <div class="ai-desc">Used to brainstorm implementation risks beyond the obvious — surfaced the WhatsApp Business API pre-approval risk (Risk 5) which was not in the initial risk list. Risks validated independently before inclusion.</div>
+      </div>
+      <div class="ai-card">
+        <div class="ai-stage">BFSI Terminology</div>
+        <div class="ai-tool">Claude (Anthropic)</div>
+        <div class="ai-desc">Used to verify RBI terminology and regulatory references — DPD classification norms, NPA 90-day rule, Fair Practices Code for collections — ensuring the project uses accurate banking regulatory language.</div>
+      </div>
+      <div class="ai-card">
+        <div class="ai-stage">Documentation</div>
+        <div class="ai-tool">Microsoft Copilot</div>
+        <div class="ai-desc">Used to standardise formatting across all Google Docs deliverables — consistent table structure, heading hierarchy, requirement ID conventions, and RACI legend. All content reviewed for accuracy before finalising.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /page-wrap -->
+
+<footer>
+  <strong>Deepender Choudhary</strong> — Business Analyst Portfolio &nbsp;·&nbsp; Project 4 of 9 &nbsp;·&nbsp; Gurugram, India<br>
+  <span style="margin-top:6px;display:inline-block;">deependerchoudhary2003@gmail.com &nbsp;·&nbsp; +91 9729880411</span>
+</footer>
+
+</body>
+</html>

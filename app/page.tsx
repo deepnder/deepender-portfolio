@@ -1761,7 +1761,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
   domain: 'Aviation · BPMN 2.0 · Stakeholder Analysis · Gap Analysis',
   color: 'from-blue-500 to-cyan-500',
   emoji: '✈️',
-  link: '#', // replace with Netlify link
+  link: '/projects/project-1-flight-booking.html', // replace with Netlify link
 },
                  {
   num: '02',
@@ -1770,7 +1770,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
   domain: 'E-Commerce · Requirements Engineering · BPMN · JIRA / Agile',
   color: 'from-teal-500 to-green-500',
   emoji: '🛒',
-  link: '#',
+  link: '/projects/project-3-customer-refund.html',
 },
                   {
   num: '03',
@@ -1779,7 +1779,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
   domain: 'Sales Analytics · SQL · Power BI · DAX · Pareto Analysis',
   color: 'from-orange-500 to-amber-500',
   emoji: '📦',
-  link: '#',
+  link: '/projects/project-5-amazon.html',
 },
                   {
   num: '04',
@@ -1788,10 +1788,9 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
   domain: 'Food Delivery · Zomato Dataset · Process Mapping · MoSCoW · SQL',
   color: 'from-pink-500 to-rose-500',
   emoji: '🍕',
-  link: '#',
+  link: '/projects/project-4-zomato.html',
 },
-                  
-                 
+                                 
                   {
   num: '05',
   title: 'HDFC Bank Credit Card Default Risk & Collections Process Improvement',
@@ -1799,7 +1798,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
   domain: 'BFSI · Credit Risk · UCI Dataset · SQL · Risk Register · RACI',
   color: 'from-yellow-400 to-orange-500',
   emoji: '🏦',
-  link: '#',
+  link: '/projects/project-5-hdfc.html',
 },
                 ].map((project, i) => (
                   <motion.div
