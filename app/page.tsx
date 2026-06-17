@@ -65,6 +65,8 @@ export default function DeependerPremiumPortfolio() {
   const [beerCount, setBeerCount] = useState(420);
   const [showBeerAchievement, setShowBeerAchievement] = useState(false);
 const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+const [isMobileMenuOpenForModal, setIsMobileMenuOpenForModal] = useState(false);
+const [showProjectsModal, setShowProjectsModal] = useState(false);
   const handleBeerClick = () => {
     setBeerCount((prev) => prev + 1);
     setShowBeerAchievement(true);
@@ -75,7 +77,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   };
 
   // form values
-  const FORMSPREE_ID = 'YOUR_FORM_ID';
+  
   const RESUME_VIEW_URL =
     'https://docs.google.com/document/d/1goFJDq8pAb8kbzO5bxXgfvy4rkmyH0-6-yw_7FkCvnI/edit?usp=sharing';
   const RESUME_DOWNLOAD_URL =
@@ -203,79 +205,59 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // ─── DATA ─────────────────────────────────────────────────────────────────
 
   const projects = [
-    {
-      title: 'E-Commerce Sales Analytics Dashboard',
-      tagline: '50K+ transactions analyzed, 65% revenue concentration identified',
-      description: 'Built comprehensive sales analytics solution using SQL and Power BI to transform raw transaction data into actionable business insights',
-      challenge: 'Business stakeholders needed real-time visibility into product performance, customer segments, and revenue trends but were drowning in Excel spreadsheets',
-      approach: [
-        'Downloaded Kaggle e-commerce dataset with 50,000+ transactions',
-        'Wrote complex SQL queries using JOINs, CTEs, and Window Functions for data transformation',
-        'Created star schema for optimized reporting',
-        'Built interactive Power BI dashboard with drill-down capabilities',
-        'Implemented DAX measures for YoY growth, customer lifetime value, and cohort analysis',
-      ],
-      tools: ['SQL', 'Power BI', 'DAX', 'Excel', 'Data Modeling'],
-      outcomes: [
-        'Identified top 3 product categories generating 65% of total revenue',
-        'Discovered customer segment responsible for 40% of repeat purchases',
-        'Reduced monthly reporting time from 8 hours to 30 minutes (93% improvement)',
-        'Enabled data-driven inventory decisions saving estimated 15% in holding costs',
-      ],
-      metrics: { time: '30% faster', accuracy: '100%', impact: '₹2L+ saved' },
-      BadgeCheck: '#',
-      demo: '#',
-      color: 'from-blue-500 to-cyan-500',
-    },
-    {
-      title: 'Flight Operations Process Optimization',
-      tagline: '25% reduction in SLA violations through process redesign',
-      description: 'Analyzed and optimized KLM Airlines booking workflow serving 200+ daily passengers across multiple Lines of Business',
-      challenge: 'Operations team experiencing 15% SLA violations during peak hours due to process bottlenecks in Claims, Seating, and Rebooking workflows',
-      approach: [
-        'Conducted stakeholder interviews with 6 LOB managers',
-        'Mapped current-state processes using BPMN 2.0 in Microsoft Visio',
-        'Performed time-motion study identifying 3 critical bottlenecks',
-        'Designed future-state workflow with parallel processing capabilities',
-        'Documented requirements in comprehensive BRD with ROI analysis',
-      ],
-      tools: ['BPMN 2.0', 'Microsoft Visio', 'Process Analysis', 'BRD', 'Stakeholder Management'],
-      outcomes: [
-        'Reduced average case handling time from 8 minutes to 6 minutes (25% improvement)',
-        'Proposed automation of passenger eligibility checks (60% time savings)',
-        'Created reusable process templates for 7 LOBs',
-        'Projected 25% reduction in SLA violations if implemented (from 15% to 11%)',
-      ],
-      metrics: { time: '25% faster', efficiency: '60% automation', impact: '99% SLA' },
-      BadgeCheck: '#',
-      demo: '#',
-      color: 'from-purple-500 to-pink-500',
-    },
-    {
-      title: 'AI-Powered Requirements Elicitation',
-      tagline: '40% faster sprint planning with GenAI assistance',
-      description: 'Leveraged ChatGPT to accelerate user story creation and requirements documentation for agile development teams',
-      challenge: 'Manual requirements gathering taking 3-4 days per sprint, causing delays in development kickoff and reducing available coding time',
-      approach: [
-        'Developed structured prompt templates for ChatGPT',
-        'Generated 15 user stories with acceptance criteria in 90 minutes',
-        'Validated AI-generated requirements with stakeholders',
-        'Created reusable prompt library for common BA tasks',
-        'Documented best practices for AI-assisted analysis',
-      ],
-      tools: ['ChatGPT', 'JIRA', 'Agile/Scrum', 'User Stories', 'Prompt Engineering'],
-      outcomes: [
-        'Reduced requirements documentation time from 3 days to 1.5 days',
-        'Generated 40+ user stories across 3 sprints with 95% stakeholder acceptance',
-        'Freed up 8 hours per sprint for deeper analysis and validation',
-        'Built knowledge base of 50+ reusable prompts for team',
-      ],
-      metrics: { time: '40% faster', stories: '40+ created', accuracy: '95%' },
-      BadgeCheck: '#',
-      demo: '#',
-      color: 'from-green-500 to-emerald-500',
-    },
-  ];
+  {
+    title: 'Amazon Sales & Lead Analytics Dashboard',
+
+    tagline: '100K+ transactions analyzed · 65% revenue in top 3 categories · 93% reporting time reduction',
+
+    description: 'A complete BA Analyst case study using a real 100K-row Amazon-style e-commerce dataset from Kaggle. Transforms raw transaction data into actionable business insights.',
+ 
+    challenge: "Amazon's sales leadership could not identify which product categories, regions, and customer segments drive the highest conversion value. Budget was allocated uniformly across all channels — resulting in an estimated 30–40% of marketing spend on low-ROI categories.",
+
+    approach: [
+      'Downloaded real 100K-row Amazon-style sales dataset from Kaggle (20 columns, product categories, regions, customer segments)',
+      'Built star schema data model optimised for Power BI reporting with defined relationships and calculated columns',
+      'Created interactive Power BI dashboard with DAX measures for YoY growth, customer lifetime value, and segment performance',
+    ],
+
+    tools: ['SQL', 'Power BI', 'DAX', 'Excel', 'Data Modeling', ],
+    outcomes: [
+      'Identified top 3 product categories generating 65% of total revenue — Pareto concentration confirmed',
+      'Reduced monthly reporting cycle from 8 hours to 30 minutes — 93% time saving quantified',
+      'Delivered 2–3 budget reallocation recommendations backed by SQL-derived data — actionable, not just descriptive',
+    ],
+    metrics: { transactions: '100K+', reporting: '93% faster', impact: '65% revenue in top 3' },
+    BadgeCheck: '#',
+    demo: '#',
+    color: 'from-orange-500 to-amber-500',
+  },
+  {
+    title: 'Flight Booking Process Improvement Analysis',
+
+    tagline: '~20% SLA compliance improvement · 6 critical gaps identified · 10/10 interview defensibility',
+
+    description: 'A complete BA case study on airline disruption rebooking workflows — from stakeholder analysis and BPMN 2.0 process mapping to gap analysis, requirements documentation, and business recommendations. Based on real operational experience managing KLM airline workflows at IGT Solutions, Gurugram.',
+
+    challenge: 'During peak flight disruption events, the operations team experienced a 35–45% spike in average case handling time and a 20–30% rise in passenger escalation volume. Rebooking, compensation, and seat reallocation workflows were fragmented — no automated handoffs between systems, no documented escalation criteria, and no real-time SLA visibility for team leads.',
+
+    approach: [
+      'Mapped stakeholder landscape across 7 roles: Airline Ops Manager, Frontline Agent, GDS Admin, Passenger, CRM Owner, Customer Service Manager, Compliance',
+      'Built As-Is BPMN 2.0 process map in Draw.io — 4 swimlanes, 6 pain points annotated across disruption detection to case closure',
+      'Designed To-Be process with 4 automation triggers: GDS pre-population, auto compensation calculation, CRM auto-logging, passenger notification',
+    ],
+    tools: ['BPMN 2.0', 'Draw.io', 'BRD', 'Stakeholder Analysis', 'RACI Matrix', ],
+    
+    outcomes: [
+      'Identified 6 critical workflow gaps across disruption handling — SOP documentation, escalation criteria, GDS integration, compensation calculation, notifications, and performance monitoring',
+      'Proposed GDS API integration eliminating 3–5 minutes of manual lookup per rebooking case — highest-impact fix',
+      'Designed automated passenger notification within 30 minutes — replacing 30–90 minute manual delay',
+    ],
+    metrics: { gaps: '6 identified', sla: '~20% improvement', defensibility: '10/10' },
+    BadgeCheck: '#',
+    demo: '#',
+    color: 'from-purple-500 to-pink-500',
+  },
+];
 
   // ─── OTHER PROJECTS (NEW) ─────────────────────────────────────────────────
   const otherProjects = [
@@ -352,24 +334,23 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const timeline = [
     {
-      year: '2025 - Present',
+      year: '2025 - 2026',
       title: 'Operations Business Analyst',
-      company: 'IGT Solutions (KLM Airlines)',
+      company: 'IGT Solutions',
       location: 'Gurugram, India',
       description: 'Currently managing multi-LOB airline operations, analyzing processes, and driving data-backed improvements. This is where I discovered my passion for Business Analysis.',
-      achievements: [
-        'Managing 6-7 Lines of Business (Claims, Seating, Rebooking, GST)',
-        'Handling 50+ operational cases daily maintaining 99%+ SLA',
-        'Analyzed real-time flight disruptions affecting 200+ passengers',
-        'Generated operational reports tracking KPIs and performance metrics',
-        'Contributed to process documentation and SOP improvements',
-      ],
+    achievements: [
+  'Gathered and analyzed requirements across multiple business functions',
+  'Performed process analysis and identified operational improvements',
+  'Built KPI reports to support performance tracking and decision-making',
+  'Collaborated with stakeholders to enhance workflows and service delivery',
+],
       skills: ['Process Analysis', 'Multi-LOB Management', 'Operational Reporting', 'Stakeholder Coordination'],
       icon: Target,
     },
     {
       year: '2024 - 2025',
-      title: 'Support Engineer (L1)',
+      title: 'Technical Support Analyst (L1) — US Telecom Client',
       company: 'Concentrix',
       location: 'Gurugram, India',
       description: 'Transitioned to technical support for US telecom client. Developed strong analytical and problem-solving skills while maintaining high customer satisfaction under pressure.',
@@ -384,7 +365,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     },
     {
       year: '2022 - 2024',
-      title: 'Frontend Developer',
+      title: 'Frontend Developer & QA Analyst',
       company: 'Super Minds IT Services',
       location: 'Gurugram, India',
       description: 'Started my tech journey building React.js applications. Created 20+ affiliate booking pages, integrated REST APIs, and learned the fundamentals of translating business requirements into technical solutions.',
@@ -409,18 +390,30 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const certifications = [
     {
-      name: 'AWS Certified Cloud Practitioner',
-      issuer: 'Amazon Web Services',
+      name: 'The Complete GEN AI For Business Analysis',
+      issuer: 'Analysts corner',
       date: '2026',
-      credential: 'CLF-C02',
       color: 'from-orange-500 to-yellow-500',
+      link:'https://drive.google.com/file/d/1jT2bJ77P9HPXX82w11ZSZVaLpWl_ontN/view',
+      crediantial:'AI-0351-2605'
     },
     {
       name: 'Microsoft Azure Fundamentals',
       issuer: 'Microsoft',
       date: '2025',
-      credential: 'AZ-900',
       color: 'from-blue-500 to-cyan-500',
+      link:'https://www.udemy.com/certificate/UC-f8589ae2-9b7e-4ed8-b155-4768ca74f8d0/',
+      crediantial:'AZ-900'
+
+    },
+     {
+      name: 'Business Analysis "A to Z" Masterclass',
+      issuer: 'UDEMY, Meetu Patel',
+      date: '2026',
+      color: 'from-orange-500 to-yellow-500',
+      link:'https://www.udemy.com/certificate/UC-0e3dff73-ccba-4169-890c-ccada81b3bee/',
+      crediantial:''
+
     },
   ];
 
@@ -928,12 +921,7 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
                 </p>
               </motion.div>
 
-              <p>
-                I have completed cloud fundamentals through{' '}
-                <span className="text-orange-400 font-semibold">AWS Cloud Practitioner</span> and{' '}
-                <span className="text-blue-400 font-semibold">Microsoft Azure Fundamentals</span>.
-                I use them as a base to understand modern systems, not as a shortcut to claim expertise.
-              </p>
+              
 
               <p className="text-xl font-bold text-green-400">
                 Long term, I want to build useful products and solve problems where execution matters.
@@ -950,40 +938,43 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
                 <h3 className="text-2xl font-bold text-green-400">Certifications</h3>
 
                 {certifications.map((cert, i) => (
-                  <motion.div
-                    key={i}
-                    className={`${themeClass({
-                      dark: 'bg-black/50 border-green-500/30',
-                      light: 'bg-white/80 border-green-500/30',
-                    })} p-5 sm:p-6 border-2 rounded-xl`}
-                    whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(34, 197, 94, 0.25)' }}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <div
-                          className={`${themeClass({
-                            dark: 'text-white',
-                            light: 'text-zinc-950',
-                          })} font-bold text-base sm:text-lg mb-1`}
-                        >
-                          {cert.name}
-                        </div>
-                        <div
-                          className={`${themeClass({
-                            dark: 'text-slate-400',
-                            light: 'text-zinc-600',
-                          })} text-sm`}
-                        >
-                          {cert.issuer} • {cert.date}
-                        </div>
-                        <div className="text-green-400 text-sm font-mono mt-1">
-                          {cert.credential}
-                        </div>
-                      </div>
-                      <Award className="text-green-400 shrink-0" size={28} />
-                    </div>
-                  </motion.div>
-                ))}
+  <motion.a
+    key={i}
+    href={cert.link}
+    target="_blank"
+    rel="noopener noreferrer"
+    className={`${themeClass({
+      dark: 'bg-black/50 border-green-500/30',
+      light: 'bg-white/80 border-green-500/30',
+    })} p-5 sm:p-6 border-2 rounded-xl block`}
+    whileHover={{ scale: 1.02, boxShadow: '0 0 30px rgba(34, 197, 94, 0.25)' }}
+  >
+    <div className="flex items-start justify-between gap-4">
+      <div>
+        <div
+          className={`${themeClass({
+            dark: 'text-white',
+            light: 'text-zinc-950',
+          })} font-bold text-base sm:text-lg mb-1`}
+        >
+          {cert.name}
+        </div>
+        <div
+          className={`${themeClass({
+            dark: 'text-slate-400',
+            light: 'text-zinc-600',
+          })} text-sm`}
+        >
+          {cert.issuer} • {cert.date}
+        </div>
+        <div className="text-green-400 text-sm font-mono mt-1">
+          {cert.crediantial}
+        </div>
+      </div>
+      <Award className="text-green-400 shrink-0" size={28} />
+    </div>
+  </motion.a>
+))}
               </motion.div>
 
               <motion.div
@@ -1459,10 +1450,46 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
                   </div>
                 </motion.div>
               ))}
-            </div>
-          </motion.div>
+           </div>
+        </motion.div>
+
+        {/* ── View All Projects Button ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.3 }}
+          className="mt-16 flex justify-center"
+        >
+          <motion.button
+            type="button"
+            onClick={() => setShowProjectsModal(true)}
+            whileHover={{ scale: 1.06, boxShadow: '0 0 50px rgba(34,197,94,0.45)' }}
+            whileTap={{ scale: 0.95 }}
+            className="group relative px-10 py-5 rounded-2xl font-black text-lg overflow-hidden border-2 border-green-400 text-white"
+          >
+            {/* animated gradient background */}
+            <motion.span
+              className="absolute inset-0 bg-gradient-to-r from-green-500 via-emerald-400 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            />
+            <span className="relative z-10 flex items-center gap-3">
+              <span className="text-green-400 group-hover:text-black transition-colors duration-300">📁</span>
+              <span className="text-white group-hover:text-black transition-colors duration-300">
+                View All Portfolio Projects
+              </span>
+              <motion.span
+                className="text-green-400 group-hover:text-black transition-colors duration-300"
+                animate={{ x: [0, 5, 0] }}
+                transition={{ duration: 1.2, repeat: Infinity }}
+              >
+                →
+              </motion.span>
+            </span>
+          </motion.button>
+        </motion.div>
+
         </div>
       </section>
+      
 
       {/* ═══════════════════════════════════════════════════════════════════
           SKILLS SECTION
@@ -1670,7 +1697,189 @@ const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
           </motion.div>
         </div>
       </section>
+{/* ══════════════════════════════════════════════════════════════════
+          ALL PROJECTS MODAL
+      ══════════════════════════════════════════════════════════════════ */}
+      <AnimatePresence>
+        {showProjectsModal && (
+          <motion.div
+            className="fixed inset-0 z-[200] flex items-center justify-center px-4 py-16"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {/* Backdrop */}
+            <motion.div
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+              onClick={() => setShowProjectsModal(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
 
+            {/* Modal box */}
+            <motion.div
+              className={`relative z-10 w-full max-w-3xl max-h-[290px] sm:max-h-[80vh] rounded-3xl border-2 overflow-hidden flex flex-col ${themeClass({
+                dark: 'bg-black/90 border-green-500/40',
+                light: 'bg-white/95 border-green-500/40',
+              })}`}
+              initial={{ scale: 0.88, opacity: 0, y: 40 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.88, opacity: 0, y: 40 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 22 }}
+            >
+              {/* Modal header */}
+              <div className={`flex items-center justify-between px-6 py-5 border-b ${themeClass({ dark: 'border-green-500/20', light: 'border-green-500/20' })} shrink-0`}>
+                <div>
+                  <h3 className="text-2xl font-black bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-transparent">
+                    All Portfolio Projects
+                  </h3>
+                  <p className={`text-xs mt-0.5 font-mono ${themeClass({ dark: 'text-slate-400', light: 'text-zinc-500' })}`}>
+                    5 projects · Click any to view full case study
+                  </p>
+                </div>
+                <motion.button
+                  type="button"
+                  onClick={() => setShowProjectsModal(false)}
+                  whileHover={{ scale: 1.15, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-10 h-10 rounded-full border border-green-500/40 flex items-center justify-center text-green-400 hover:bg-green-500/10 transition-colors"
+                  aria-label="Close modal"
+                >
+                  <X size={18} />
+                </motion.button>
+              </div>
+
+              {/* Scrollable project list */}
+              <div className="overflow-y-auto flex-1 px-6 py-6 space-y-4 scrollbar-thin scrollbar-thumb-green-500/30 scrollbar-track-transparent">
+                {[
+                  {
+  num: '01',
+  title: 'Flight Booking Process Improvement Analysis',
+  desc: 'End-to-end BA case study on airline disruption rebooking workflows. BPMN 2.0 process maps, stakeholder analysis. Based on real KLM/IGT operational experience.',
+  domain: 'Aviation · BPMN 2.0 · Stakeholder Analysis · Gap Analysis',
+  color: 'from-blue-500 to-cyan-500',
+  emoji: '✈️',
+  link: '#', // replace with Netlify link
+},
+                 {
+  num: '02',
+  title: 'Customer Refund Process Improvement Analysis',
+  desc: 'E-commerce refund workflow redesign — 35% rise in support tickets traced to missing refund status visibility (root cause). JIRA sprint board with Epic→Story→Task→Bug hierarchy, and SQL analytics.',
+  domain: 'E-Commerce · Requirements Engineering · BPMN · JIRA / Agile',
+  color: 'from-teal-500 to-green-500',
+  emoji: '🛒',
+  link: '#',
+},
+                  {
+  num: '03',
+  title: 'Amazon E-Commerce Sales & Lead Analytics Dashboard',
+  desc: 'BA + Data Analyst case study on 100K+ Amazon-style transactions. Power BI dashboard with DAX measures, Pareto analysis (65% revenue in top 3 categories), and budget reallocation recommendations.',
+  domain: 'Sales Analytics · SQL · Power BI · DAX · Pareto Analysis',
+  color: 'from-orange-500 to-amber-500',
+  emoji: '📦',
+  link: '#',
+},
+                  {
+  num: '04',
+  title: 'Zomato Refund & Delivery Failure Process Analysis',
+  desc: 'Full BA case study using Zomato\'s public order dataset — 34% of refund tickets traced to missing real-time order tracking (root cause). Includes mock Jira board, and a live BI dashboard with Pareto insight.',
+  domain: 'Food Delivery · Zomato Dataset · Process Mapping · MoSCoW · SQL',
+  color: 'from-pink-500 to-rose-500',
+  emoji: '🍕',
+  link: '#',
+},
+                  
+                 
+                  {
+  num: '05',
+  title: 'HDFC Bank Credit Card Default Risk & Collections Process Improvement',
+  desc: 'BFSI BA case study using UCI Credit Card Default Dataset — default rate rose 15%→22% over 6 quarters, traced to a missing CRM-to-analytics API bridge. Covers a Power BI collections dashboard. ₹480 Cr NPA exposure quantified.',
+  domain: 'BFSI · Credit Risk · UCI Dataset · SQL · Risk Register · RACI',
+  color: 'from-yellow-400 to-orange-500',
+  emoji: '🏦',
+  link: '#',
+},
+                ].map((project, i) => (
+                  <motion.div
+  key={i}
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: i * 0.06 }}
+  whileHover={{ scale: 1.015, x: 4 }}
+  className={`group relative rounded-xl border overflow-hidden ${themeClass({
+    dark: 'border-slate-700/60 bg-slate-900/50 hover:border-green-500/50',
+    light: 'border-zinc-200 bg-zinc-50/80 hover:border-green-400/60',
+  })} transition-all duration-200`}
+>
+  {/* Left color bar */}
+  <div className={`absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b ${project.color}`} />
+
+  <div className="flex flex-col gap-2 pl-5 pr-4 py-3 sm:pl-6 sm:pr-5 sm:py-4">
+
+    {/* Row 1 — number + emoji + title */}
+    <div className="flex items-start gap-2">
+      <div className="shrink-0 flex items-center gap-1 pt-0.5">
+        <span className={`font-mono text-[9px] leading-none font-bold bg-gradient-to-r ${project.color} bg-clip-text text-transparent`}>
+          {project.num}
+        </span>
+        <span className="text-sm sm:text-lg">{project.emoji}</span>
+      </div>
+      <h4 className={`flex-1 font-bold text-[13px] sm:text-sm leading-snug ${themeClass({
+        dark: 'text-white group-hover:text-green-400',
+        light: 'text-zinc-950 group-hover:text-green-600',
+      })} transition-colors`}>
+        {project.title}
+      </h4>
+    </div>
+
+    {/* Description — desktop only */}
+    <p className={`hidden sm:block text-xs leading-relaxed pl-7 ${themeClass({
+      dark: 'text-slate-400',
+      light: 'text-zinc-500',
+    })}`}>
+      {project.desc}
+    </p>
+
+    {/* Row 2 — domain tags (separate boxes) + View button */}
+    <div className="flex items-center justify-between gap-2 pl-7 sm:pl-0">
+      <div className="flex flex-wrap gap-1 flex-1">
+        {project.domain.split(' · ').map((tag, idx) => (
+          <span
+            key={idx}
+            className={`text-[8px] sm:text-[10px] font-mono px-2 py-0.5 rounded-full border ${themeClass({
+              dark: 'border-slate-600 text-slate-400 bg-slate-800/60',
+              light: 'border-zinc-300 text-zinc-500 bg-zinc-100',
+            })}`}
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+      <motion.a
+        href={project.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        whileHover={{ scale: 1.08 }}
+        whileTap={{ scale: 0.94 }}
+        onClick={(e) => e.stopPropagation()}
+        className={`shrink-0 px-3 py-1.5 rounded-lg text-[10px] sm:text-xs font-bold bg-gradient-to-r ${project.color} text-white whitespace-nowrap`}
+      >
+        View →
+      </motion.a>
+    </div>
+
+  </div>
+</motion.div>
+                ))}
+              </div>
+
+              
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* ── Footer ────────────────────────────────────────────────────────── */}
       <footer className={`${themeClass({ dark: 'border-green-500/20 bg-black/80', light: 'border-green-500/30 bg-white/80' })} border-t py-12 px-6 backdrop-blur-xl`}>
         <div className="max-w-6xl mx-auto">
