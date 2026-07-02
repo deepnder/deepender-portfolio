@@ -234,7 +234,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
   {
     title: 'Flight Booking Process Improvement Analysis',
 
-    tagline: '~20% SLA compliance improvement · 6 critical gaps identified · 10/10 interview defensibility',
+    tagline: '~20% SLA compliance improvement · 6 critical gaps identified',
 
     description: 'A complete BA case study on airline disruption rebooking workflows — from stakeholder analysis and BPMN 2.0 process mapping to gap analysis, requirements documentation, and business recommendations. Based on real operational experience managing KLM airline workflows at IGT Solutions, Gurugram.',
 
