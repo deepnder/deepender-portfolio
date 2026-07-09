@@ -37,12 +37,22 @@ export default function JobsPage() {
 
   async function loadJobs() {
     setLoading(true);
+    setStatusMsg("");
     try {
       const res = await fetch("/api/jobs", { cache: "no-store" });
-      const json = await res.json();
-      setData(json);
+      const json = await res.json().catch(() => null);
+      if (!res.ok) {
+        setStatusMsg(json?.error || `Server returned ${res.status}`);
+        setData(null);
+      } else if (json?.error) {
+        setStatusMsg(json.error);
+        setData(json);
+      } else {
+        setData(json);
+      }
     } catch (e) {
       setStatusMsg("Couldn't load job data.");
+      setData(null);
     }
     setLoading(false);
   }
