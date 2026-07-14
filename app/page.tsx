@@ -37,13 +37,7 @@ import {
   BrainCircuit,
 } from 'lucide-react';
 
-type Particle = {
-  id: number;
-  left: number;
-  top: number;
-  duration: number;
-  delay: number;
-};
+// (particle type removed — background uses CanvasParticles now)
 
 type ThemeAwareClassOptions = {
   dark: string;
@@ -55,7 +49,7 @@ export default function DeependerPremiumPortfolio() {
   const [cursorVariant, setCursorVariant] = useState('default');
   const [activeSection, setActiveSection] = useState('hero');
   const [isDark, setIsDark] = useState(true);
-  const [particles, setParticles] = useState<Particle[]>([]);
+  // particles replaced by lightweight CanvasParticles component for performance
   const [sessionSeconds, setSessionSeconds] = useState(0);
   const [hasMounted, setHasMounted] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
@@ -139,35 +133,108 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
 
   const themeClass = ({ dark, light }: ThemeAwareClassOptions) => (isDark ? dark : light);
 
+  // Lightweight canvas particle background (low CPU, mostly static)
+  const CanvasParticles = ({ isDark }: { isDark: boolean }) => {
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    useEffect(() => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      let dpr = window.devicePixelRatio || 1;
+      let width = canvas.clientWidth;
+      let height = canvas.clientHeight;
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const cols = Math.max(20, Math.floor(width / 100));
+      const count = Math.min(120, Math.max(40, cols * 6));
+      const particles = new Array(count).fill(0).map(() => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: 0.6 + Math.random() * 1.6,
+        phase: Math.random() * Math.PI * 2,
+        speed: 0.0005 + Math.random() * 0.0012,
+      }));
+
+      let rafId = 0;
+      let last = performance.now();
+      const baseColor = isDark ? '34,197,94' : '16,185,129';
+
+      const draw = (now: number) => {
+        const dt = now - last;
+        last = now;
+        ctx.clearRect(0, 0, width, height);
+        for (const p of particles) {
+          p.phase += p.speed * dt;
+          const alpha = 0.08 + 0.06 * Math.sin(p.phase * 2);
+          ctx.fillStyle = `rgba(${baseColor},${alpha})`;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        rafId = requestAnimationFrame(draw);
+      };
+
+      rafId = requestAnimationFrame(draw);
+
+      const handleResize = () => {
+        width = canvas.clientWidth;
+        height = canvas.clientHeight;
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      };
+
+      window.addEventListener('resize', handleResize, { passive: true });
+      return () => {
+        cancelAnimationFrame(rafId);
+        window.removeEventListener('resize', handleResize);
+      };
+    }, [isDark]);
+
+    return <canvas ref={canvasRef} className="fixed inset-0 w-full h-full pointer-events-none z-0" />;
+  };
+
   const minutes = Math.floor(sessionSeconds / 60);
   const seconds = sessionSeconds % 60;
 
   useEffect(() => {
     setHasMounted(true);
+    // Smooth cursor using requestAnimationFrame to avoid heavy layout thrashing
+    const target = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    const current = { x: target.x, y: target.y };
+    let rafId: number | null = null;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!cursorRef.current) return;
-      cursorRef.current.style.transform = `translate3d(${e.clientX - 8}px, ${e.clientY - 8}px, 0) scale(${cursorVariant === 'hover' ? 1.35 : 1})`;
+    const onMove = (e: MouseEvent) => {
+      target.x = e.clientX;
+      target.y = e.clientY;
     };
 
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    const lerp = (a: number, b: number, n: number) => (1 - n) * a + n * b;
+
+    const loop = () => {
+      current.x = lerp(current.x, target.x, 0.18);
+      current.y = lerp(current.y, target.y, 0.18);
+      if (cursorRef.current) {
+        const scale = cursorVariant === 'hover' ? 1.35 : 1;
+        cursorRef.current.style.transform = `translate3d(${Math.round(current.x) - 8}px, ${Math.round(current.y) - 8}px, 0) scale(${scale})`;
+      }
+      rafId = window.requestAnimationFrame(loop);
+    };
+
+    window.addEventListener('mousemove', onMove, { passive: true });
+    rafId = window.requestAnimationFrame(loop);
+
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousemove', onMove);
+      if (rafId) window.cancelAnimationFrame(rafId);
     };
   }, [cursorVariant]);
 
-  // Hydration-safe particles
-  useEffect(() => {
-    setParticles(
-      Array.from({ length: 7 }).map((_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        top: Math.random() * 100,
-        duration: 5 + Math.random() * 3,
-        delay: Math.random() * 2,
-      }))
-    );
-  }, []);
+  // (Background particles replaced by CanvasParticles for performance)
 
   // Session timer
   useEffect(() => {
@@ -430,7 +497,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
       date: '2026',
       color: 'from-blue-500 to-cyan-500',
       link:'https://www.credly.com/badges/dab4235c-fa40-48df-a1dd-c0c667865e74/linked_in_profile',
-      crediantial:'DP-300'
+      crediantial:'DP'
 
     },
      {
@@ -555,38 +622,8 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
         />
       )}
 
-      {/* ── Animated Background ───────────────────────────────────────────── */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className={`absolute inset-0 ${themeClass({ dark: 'bg-gradient-to-br from-black via-zinc-950 to-emerald-950 opacity-95', light: 'bg-gradient-to-br from-zinc-50 via-white to-emerald-50 opacity-95' })}`} />
-        <motion.div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: isDark
-              ? 'radial-gradient(circle at 50% 50%, rgba(45, 207, 105, 0.1) 0%, transparent 50%)'
-              : 'radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.16) 0%, transparent 50%)',
-            backgroundSize: '100% 100%',
-            y: y1,
-            opacity,
-          }}
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute -right-20 top-40 h-72 w-72 rounded-full bg-green-500/10 blur-3xl"
-          style={{ y: y2 }}
-          animate={{ x: [0, -30, 0], scale: [1, 1.15, 1] }}
-          transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        {particles.map((particle) => (
-          <motion.div
-            key={particle.id}
-            className="absolute w-1 h-1 bg-green-400 rounded-full"
-            style={{ left: `${particle.left}%`, top: `${particle.top}%` }}
-            animate={{ y: [0, -30, 0], opacity: [0, 1, 0] }}
-            transition={{ duration: particle.duration, repeat: Infinity, delay: particle.delay }}
-          />
-        ))}
-      </div>
+      {/* ── Lightweight Particle Background (Canvas) ───────────────────────── */}
+      <CanvasParticles isDark={isDark} />
 
       {/* ── Navigation ────────────────────────────────────────────────────── */}
      <motion.nav
