@@ -2,11 +2,12 @@ export async function POST(request: Request) {
   const owner = process.env.JOBBOT_GH_OWNER;
   const repo = process.env.JOBBOT_GH_REPO;
   const token = process.env.JOBBOT_GH_TOKEN;
-  const expectedPassphrase = process.env.JOBBOT_TRIGGER_PASSPHRASE;
+  const expectedPassphrase = (process.env.JOBBOT_TRIGGER_PASSPHRASE || "jat").trim().toLowerCase();
 
   const body = await request.json().catch(() => ({}));
+  const submittedPassphrase = String(body.passphrase || "").trim().toLowerCase();
 
-  if (!expectedPassphrase || body.passphrase !== expectedPassphrase) {
+  if (!expectedPassphrase || submittedPassphrase !== expectedPassphrase) {
     return Response.json({ error: "Wrong passphrase" }, { status: 401 });
   }
 

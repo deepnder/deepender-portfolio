@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type Job = {
   title: string;
@@ -27,19 +27,51 @@ type Snapshot = {
   companies: CompanyBlock[];
 };
 
+type FlattenedJob = Job & {
+  company: string;
+  score: number;
+};
+
+const PAGE_SIZE = 40;
+
+function normalizeText(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getMatchScore(job: FlattenedJob, query: string) {
+  const normalizedQuery = normalizeText(query);
+  if (!normalizedQuery) return 1;
+
+  const haystack = normalizeText(`${job.title} ${job.company} ${job.url}`);
+  if (!haystack) return -1;
+
+  if (haystack.includes(normalizedQuery)) return 100;
+
+  const queryTokens = normalizedQuery.split(" ").filter(Boolean);
+  const matchedTokens = queryTokens.filter((token) => haystack.includes(token)).length;
+  return matchedTokens > 0 ? matchedTokens : -1;
+}
+
 export default function JobsPage() {
   const [data, setData] = useState<Snapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [triggering, setTriggering] = useState(false);
   const [statusMsg, setStatusMsg] = useState("");
   const [passphrase, setPassphrase] = useState("");
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [search, setSearch] = useState("");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   async function loadJobs() {
     setLoading(true);
     setStatusMsg("");
     try {
-      const res = await fetch("/api/jobs", { cache: "no-store" });
+      const res = await fetch("/api/jobs?mode=full", { cache: "no-store" });
       const json = await res.json().catch(() => null);
       if (!res.ok) {
         setStatusMsg(json?.error || `Server returned ${res.status}`);
@@ -60,6 +92,10 @@ export default function JobsPage() {
   useEffect(() => {
     loadJobs();
   }, []);
+
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [search]);
 
   async function handleRunNow() {
     setTriggering(true);
@@ -104,23 +140,45 @@ export default function JobsPage() {
       }
     }, 10000);
 
-    // stop polling after 8 minutes no matter what, so it can't spin forever
     setTimeout(() => clearInterval(interval), 8 * 60 * 1000);
   }
 
-  const companies = (data?.companies || [])
-    .filter((c: CompanyBlock) => c.job_count > 0 || c.error)
-    .sort((a: CompanyBlock, b: CompanyBlock) => (b.new_this_run || 0) - (a.new_this_run || 0));
+  const flattenedJobs = useMemo(() => {
+    const allJobs: FlattenedJob[] = [];
+    (data?.companies || []).forEach((company) => {
+      (company.jobs || []).forEach((job) => {
+        allJobs.push({ ...job, company: company.name, score: 0 });
+      });
+    });
+    return allJobs;
+  }, [data]);
+
+  const searchResults = useMemo(() => {
+    const normalizedSearch = search.trim();
+    if (!normalizedSearch) {
+      return flattenedJobs
+        .sort((a, b) => (b.first_seen || "").localeCompare(a.first_seen || ""))
+        .slice(0, PAGE_SIZE);
+    }
+
+    return flattenedJobs
+      .map((job) => ({ ...job, score: getMatchScore(job, normalizedSearch) }))
+      .filter((job) => job.score > 0)
+      .sort((a, b) => b.score - a.score || (b.first_seen || "").localeCompare(a.first_seen || ""));
+  }, [flattenedJobs, search]);
+
+  const visibleJobs = searchResults.slice(0, visibleCount);
+  const hasMore = visibleCount < searchResults.length;
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 px-6 py-12">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-semibold text-emerald-400 mb-1">Job Watch</h1>
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-2xl font-semibold text-emerald-400 mb-1">Job Alert</h1>
         <p className="text-neutral-400 text-sm mb-6">
           {data?.last_run
             ? `Last checked: ${new Date(data.last_run).toLocaleString()}`
             : loading
-            ? "Loading last check time…"
+            ? "Loading job snapshot…"
             : "No data yet."}
           {data?.totals && (
             <>
@@ -151,64 +209,63 @@ export default function JobsPage() {
         {statusMsg && <p className="text-sm text-neutral-400 mb-6">{statusMsg}</p>}
         {!statusMsg && <div className="mb-6" />}
 
+        <div className="mb-6 rounded-lg border border-neutral-800 bg-neutral-900/50 p-4">
+          <label className="text-sm text-neutral-400 block mb-2">Search jobs by keyword or phrase</label>
+          <div className="flex gap-2 flex-wrap">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="e.g. frontend, product manager, data engineer"
+              className="flex-1 min-w-[240px] bg-neutral-950 border border-neutral-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-emerald-500"
+            />
+            <button
+              onClick={() => setSearch("")}
+              className="text-sm text-neutral-300 border border-neutral-700 rounded px-3 py-2 hover:bg-neutral-800"
+            >
+              Clear
+            </button>
+          </div>
+          <p className="text-xs text-neutral-500 mt-3">
+            Matching jobs are indexed locally after the snapshot loads, so repeated searches stay fast.
+          </p>
+        </div>
+
         {loading && <p className="text-neutral-500">Loading…</p>}
 
-        {!loading && companies.length === 0 && (
-          <p className="text-neutral-500">No jobs tracked yet — run a check to get started.</p>
+        {!loading && searchResults.length === 0 && (
+          <p className="text-neutral-500">No matching jobs found for this search.</p>
         )}
 
-        {!loading && companies.length > 0 && (
+        {!loading && searchResults.length > 0 && (
           <div className="space-y-3">
-            {companies.map((c: CompanyBlock) => (
-              <div
-                key={c.name}
-                className="border border-neutral-800 rounded-lg p-4 bg-neutral-900/40"
-              >
-                <button
-                  onClick={() =>
-                    setExpanded((prev: Record<string, boolean>) => ({ ...prev, [c.name]: !prev[c.name] }))
-                  }
-                  className="w-full flex justify-between items-center text-left"
-                >
-                  <span className="font-medium">{c.name}</span>
-                  <span className="text-xs text-neutral-400 flex items-center gap-2">
-                    {c.job_count} tracked
-                    {c.new_this_run > 0 && (
-                      <span className="text-emerald-400">+{c.new_this_run} new</span>
-                    )}
-                    {c.error && (
-                      <span className="text-red-400" title={c.error}>
-                        ⚠
-                      </span>
-                    )}
-                  </span>
-                </button>
-                {expanded[c.name] && (
-                  <ul className="mt-3 space-y-1 text-sm">
-                    {c.jobs.slice(0, 30).map((j: Job) => (
-                      <li key={j.url}>
-                        <a
-                          href={j.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-emerald-400 hover:underline"
-                        >
-                          {j.title}
-                        </a>
-                      </li>
-                    ))}
-                    {c.jobs.length > 30 && (
-                      <li className="text-neutral-500">
-                        + {c.jobs.length - 30} more tracked, not shown
-                      </li>
-                    )}
-                    {c.jobs.length === 0 && c.error && (
-                      <li className="text-red-400 text-xs">{c.error}</li>
-                    )}
-                  </ul>
-                )}
+            <div className="flex items-center justify-between text-sm text-neutral-400">
+              <span>
+                Showing {visibleJobs.length} of {searchResults.length} matching jobs
+              </span>
+              {search ? <span>Filtered by “{search}”</span> : null}
+            </div>
+
+            {visibleJobs.map((job) => (
+              <div key={`${job.company}-${job.url}`} className="rounded-lg border border-neutral-800 bg-neutral-900/40 p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <a href={job.url} target="_blank" rel="noreferrer" className="text-emerald-400 hover:underline font-medium">
+                    {job.title}
+                  </a>
+                  <span className="text-xs text-neutral-500">{job.company}</span>
+                </div>
+                <p className="text-xs text-neutral-500 mt-2">{job.url}</p>
               </div>
             ))}
+
+            {hasMore && (
+              <button
+                onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+                className="w-full rounded border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-800"
+              >
+                Load more
+              </button>
+            )}
           </div>
         )}
       </div>
