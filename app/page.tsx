@@ -228,7 +228,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
     ],
     metrics: { transactions: '100K+', reporting: '93% faster', impact: '65% revenue in top 3' },
     BadgeCheck: '#',
-    demo: '#',
+    demo: 'http://localhost:3000/projects/project-3-amazon.html',
     color: 'from-orange-500 to-amber-500',
   },
   {
@@ -254,7 +254,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
     ],
     metrics: { gaps: '6 identified', sla: '~20% improvement', defensibility: '10/10' },
     BadgeCheck: '#',
-    demo: '#',
+    demo: 'http://localhost:3000/projects/project-1-flight-booking.html',
     color: 'from-purple-500 to-pink-500',
   },
 ];
@@ -398,12 +398,39 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
       crediantial:'AI-0351-2605'
     },
     {
-      name: 'Microsoft Azure Fundamentals',
+      name: 'Microsoft Azure Fundamentals (AZ-900)',
       issuer: 'Microsoft',
       date: '2025',
       color: 'from-blue-500 to-cyan-500',
       link:'https://www.udemy.com/certificate/UC-f8589ae2-9b7e-4ed8-b155-4768ca74f8d0/',
       crediantial:'AZ-900'
+
+    },
+    {
+      name: 'Microsoft Certified: Power BI Data Analyst Associate',
+      issuer: 'Microsoft',
+      date: '2026',
+      color: 'from-blue-500 to-cyan-500',
+      link:'https://learn.microsoft.com/en-us/users/deependerchoudhary-4217/credentials/227219595f2d08d7?ref=https%3A%2F%2Fwww.linkedin.com%2F',
+      crediantial:'PL-300'
+
+    },
+    {
+      name: 'Microsoft Certified: Azure Database Administrator Associate',
+      issuer: 'Microsoft',
+      date: '2026',
+      color: 'from-blue-500 to-cyan-500',
+      link:'https://learn.microsoft.com/en-us/users/deependerchoudhary-4217/credentials/7cc58210ebe336ae?ref=https%3A%2F%2Fwww.linkedin.com%2F',
+      crediantial:'DP-300'
+
+    },
+    {
+      name: 'McKinsey.org Forward Program',
+      issuer: 'McKinsey & Company',
+      date: '2026',
+      color: 'from-blue-500 to-cyan-500',
+      link:'https://www.credly.com/badges/dab4235c-fa40-48df-a1dd-c0c667865e74/linked_in_profile',
+      crediantial:'DP-300'
 
     },
      {
@@ -920,12 +947,6 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
                   I try to understand the problem, take action, and improve through real feedback.
                 </p>
               </motion.div>
-
-              
-
-              <p className="text-xl font-bold text-green-400">
-                Long term, I want to build useful products and solve problems where execution matters.
-              </p>
             </motion.div>
 
             <div className="space-y-6">
@@ -977,44 +998,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
 ))}
               </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: false, amount: 0.25 }}
-                className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-2 border-green-500/30 rounded-2xl p-6"
-              >
-                <h3 className="text-xl font-bold mb-4 text-green-400">Quick Facts</h3>
-
-                <div className="space-y-4">
-                  {[
-                    { icon: MapPin, label: 'Location', value: 'Gurugram, Haryana, India' },
-                    { icon: GraduationCap, label: 'Education', value: 'BCA, Shri Khushal Das University' },
-                    { icon: Target, label: 'Current Focus', value: 'Business analysis, operations, cloud fundamentals, and product thinking' },
-                  ].map((fact, i) => (
-                    <motion.div key={i} className="flex items-start gap-3" whileHover={{ x: 5 }}>
-                      <fact.icon className="text-green-400 shrink-0 mt-1" size={20} />
-                      <div>
-                        <div
-                          className={`${themeClass({
-                            dark: 'text-white',
-                            light: 'text-zinc-950',
-                          })} font-semibold`}
-                        >
-                          {fact.label}
-                        </div>
-                        <div
-                          className={`${themeClass({
-                            dark: 'text-slate-400',
-                            light: 'text-zinc-600',
-                          })} text-sm`}
-                        >
-                          {fact.value}
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
+             
             </div>
           </div>
         </div>
