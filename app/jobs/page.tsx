@@ -32,6 +32,8 @@ type FlattenedJob = Job & {
   score: number;
 };
 
+type SearchMode = "keyword" | "company";
+
 const PAGE_SIZE = 40;
 
 function normalizeText(value: string) {
@@ -44,11 +46,14 @@ function normalizeText(value: string) {
     .trim();
 }
 
-function getMatchScore(job: FlattenedJob, query: string) {
+function getMatchScore(job: FlattenedJob, query: string, mode: SearchMode) {
   const normalizedQuery = normalizeText(query);
   if (!normalizedQuery) return 1;
 
-  const haystack = normalizeText(`${job.title} ${job.company} ${job.url}`);
+  const haystack =
+    mode === "company"
+      ? normalizeText(job.company)
+      : normalizeText(`${job.title} ${job.company} ${job.url}`);
   if (!haystack) return -1;
 
   if (haystack.includes(normalizedQuery)) return 100;
@@ -65,6 +70,7 @@ export default function JobsPage() {
   const [statusMsg, setStatusMsg] = useState("");
   const [passphrase, setPassphrase] = useState("");
   const [search, setSearch] = useState("");
+  const [searchMode, setSearchMode] = useState<SearchMode>("keyword");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   async function loadJobs() {
@@ -95,7 +101,7 @@ export default function JobsPage() {
 
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
-  }, [search]);
+  }, [search, searchMode]);
 
   async function handleRunNow() {
     setTriggering(true);
@@ -162,10 +168,10 @@ export default function JobsPage() {
     }
 
     return flattenedJobs
-      .map((job) => ({ ...job, score: getMatchScore(job, normalizedSearch) }))
+      .map((job) => ({ ...job, score: getMatchScore(job, normalizedSearch, searchMode) }))
       .filter((job) => job.score > 0)
       .sort((a, b) => b.score - a.score || (b.first_seen || "").localeCompare(a.first_seen || ""));
-  }, [flattenedJobs, search]);
+  }, [flattenedJobs, search, searchMode]);
 
   const visibleJobs = searchResults.slice(0, visibleCount);
   const hasMore = visibleCount < searchResults.length;
@@ -210,17 +216,28 @@ export default function JobsPage() {
         {!statusMsg && <div className="mb-6" />}
 
         <div className="mb-6 rounded-lg border border-neutral-800 bg-neutral-900/50 p-4">
-          <label className="text-sm text-neutral-400 block mb-2">Search jobs by keyword or phrase</label>
+          <label className="text-sm text-neutral-400 block mb-2">Search jobs</label>
           <div className="flex gap-2 flex-wrap">
+            <select
+              value={searchMode}
+              onChange={(e) => setSearchMode(e.target.value as SearchMode)}
+              className="bg-neutral-950 border border-neutral-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-emerald-500"
+            >
+              <option value="keyword">Keyword / phrase</option>
+              <option value="company">Company</option>
+            </select>
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="e.g. frontend, product manager, data engineer"
+              placeholder={searchMode === "company" ? "e.g. Google, Microsoft, Goldman Sachs" : "e.g. frontend, product manager, data engineer"}
               className="flex-1 min-w-[240px] bg-neutral-950 border border-neutral-700 rounded px-3 py-2 text-sm focus:outline-none focus:border-emerald-500"
             />
             <button
-              onClick={() => setSearch("")}
+              onClick={() => {
+                setSearch("");
+                setSearchMode("keyword");
+              }}
               className="text-sm text-neutral-300 border border-neutral-700 rounded px-3 py-2 hover:bg-neutral-800"
             >
               Clear
@@ -243,7 +260,7 @@ export default function JobsPage() {
               <span>
                 Showing {visibleJobs.length} of {searchResults.length} matching jobs
               </span>
-              {search ? <span>Filtered by “{search}”</span> : null}
+              {search ? <span>Filtered by {searchMode === "company" ? "company" : "keyword"}: “{search}”</span> : null}
             </div>
 
             {visibleJobs.map((job) => (
