@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Job = {
   title: string;
@@ -17,7 +17,7 @@ type CompanyBlock = {
 };
 
 type Snapshot = {
-  last_run: string;
+  last_run?: string;
   totals?: {
     companies_checked: number;
     companies_with_errors: number;
@@ -72,24 +72,26 @@ export default function JobsPage() {
   const [search, setSearch] = useState("");
   const [searchMode, setSearchMode] = useState<SearchMode>("keyword");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const pollingRef = useRef<number | null>(null);
+  const timeoutRef = useRef<number | null>(null);
 
   async function loadJobs() {
     setLoading(true);
     setStatusMsg("");
     try {
-      const res = await fetch("/api/jobs?mode=full", { cache: "no-store" });
+      const res = await fetch("/api/jobs", { cache: "no-store" });
       const json = await res.json().catch(() => null);
       if (!res.ok) {
         setStatusMsg(json?.error || `Server returned ${res.status}`);
         setData(null);
       } else if (json?.error) {
         setStatusMsg(json.error);
-        setData(json);
+        setData(null);
       } else {
         setData(json);
       }
     } catch (e) {
-      setStatusMsg("Couldn't load job data.");
+      setStatusMsg("Couldn't load job data. Try again in a moment.");
       setData(null);
     }
     setLoading(false);
@@ -104,35 +106,50 @@ export default function JobsPage() {
   }, [search, searchMode]);
 
   async function handleRunNow() {
+    if (!passphrase.trim()) {
+      setStatusMsg("Enter the passphrase before checking now.");
+      return;
+    }
+
     setTriggering(true);
     setStatusMsg("");
+
     try {
       const res = await fetch("/api/trigger-run", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ passphrase }),
+        body: JSON.stringify({ passphrase: passphrase.trim() }),
       });
-      const json = await res.json();
+      const json = await res.json().catch(() => null);
+
       if (!res.ok) {
-        setStatusMsg(json.error || "Something went wrong.");
+        setStatusMsg(json?.error || "Something went wrong.");
         setTriggering(false);
         return;
       }
+
       setStatusMsg("Check running… this takes 2-5 minutes.");
-      pollUntilDone();
+      startPolling();
     } catch (e) {
-      setStatusMsg("Couldn't reach the trigger.");
+      setStatusMsg("Couldn't reach the trigger. Try again later.");
       setTriggering(false);
     }
   }
 
-  function pollUntilDone() {
-    const interval = setInterval(async () => {
+  function startPolling() {
+    stopPolling();
+
+    pollingRef.current = window.setInterval(async () => {
       try {
         const res = await fetch("/api/run-status", { cache: "no-store" });
-        const json = await res.json();
-        if (json.status === "completed") {
-          clearInterval(interval);
+        const json = await res.json().catch(() => null);
+
+        if (!res.ok) {
+          return;
+        }
+
+        if (json?.status === "completed") {
+          stopPolling();
           setStatusMsg(
             json.conclusion === "success"
               ? "Done — showing latest results."
@@ -142,12 +159,33 @@ export default function JobsPage() {
           loadJobs();
         }
       } catch (e) {
-        // keep polling silently; a single failed poll isn't fatal
+        // ignored: polling will continue until completion or timeout
       }
     }, 10000);
 
-    setTimeout(() => clearInterval(interval), 8 * 60 * 1000);
+    timeoutRef.current = window.setTimeout(() => {
+      stopPolling();
+      setTriggering(false);
+      setStatusMsg("Run timed out. Please try again later or refresh the page.");
+    }, 8 * 60 * 1000);
   }
+
+  function stopPolling() {
+    if (pollingRef.current !== null) {
+      window.clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+    if (timeoutRef.current !== null) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  }
+
+  useEffect(() => {
+    return () => {
+      stopPolling();
+    };
+  }, []);
 
   const flattenedJobs = useMemo(() => {
     const allJobs: FlattenedJob[] = [];
@@ -161,16 +199,16 @@ export default function JobsPage() {
 
   const searchResults = useMemo(() => {
     const normalizedSearch = search.trim();
-    if (!normalizedSearch) {
-      return flattenedJobs
-        .sort((a, b) => (b.first_seen || "").localeCompare(a.first_seen || ""))
-        .slice(0, PAGE_SIZE);
-    }
+    const results = flattenedJobs.map((job) => ({
+      ...job,
+      score: normalizedSearch ? getMatchScore(job, normalizedSearch, searchMode) : 1,
+    }));
 
-    return flattenedJobs
-      .map((job) => ({ ...job, score: getMatchScore(job, normalizedSearch, searchMode) }))
-      .filter((job) => job.score > 0)
-      .sort((a, b) => b.score - a.score || (b.first_seen || "").localeCompare(a.first_seen || ""));
+    const filtered = normalizedSearch ? results.filter((job) => job.score > 0) : results;
+
+    return filtered
+      .sort((a, b) => b.score - a.score || (b.first_seen || "").localeCompare(a.first_seen || ""))
+      .slice(0, 1000);
   }, [flattenedJobs, search, searchMode]);
 
   const visibleJobs = searchResults.slice(0, visibleCount);

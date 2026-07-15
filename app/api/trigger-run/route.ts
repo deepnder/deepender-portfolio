@@ -2,7 +2,7 @@ export async function POST(request: Request) {
   const owner = process.env.JOBBOT_GH_OWNER;
   const repo = process.env.JOBBOT_GH_REPO;
   const token = process.env.JOBBOT_GH_TOKEN;
-  const expectedPassphrase = (process.env.JOBBOT_TRIGGER_PASSPHRASE || "jat").trim().toLowerCase();
+  const expectedPassphrase = process.env.JOBBOT_TRIGGER_PASSPHRASE?.trim().toLowerCase();
 
   const body = await request.json().catch(() => ({}));
   const submittedPassphrase = String(body.passphrase || "").trim().toLowerCase();
@@ -19,6 +19,9 @@ export async function POST(request: Request) {
   }
 
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
     const res = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/actions/workflows/job_monitor.yml/dispatches`,
       {
@@ -29,8 +32,11 @@ export async function POST(request: Request) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ ref: "main" }),
+        signal: controller.signal,
       }
     );
+
+    clearTimeout(timeoutId);
 
     if (res.status !== 204) {
       const errText = await res.text();
@@ -39,6 +45,9 @@ export async function POST(request: Request) {
 
     return Response.json({ ok: true, message: "Check started — takes about 2-5 minutes." });
   } catch (err) {
+    if ((err as any)?.name === "AbortError") {
+      return Response.json({ error: "Trigger request timed out" }, { status: 504 });
+    }
     return Response.json({ error: "Could not reach GitHub" }, { status: 502 });
   }
 }

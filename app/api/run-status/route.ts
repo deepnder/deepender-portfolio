@@ -11,6 +11,9 @@ export async function GET() {
   }
 
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 12000);
+
     const res = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/actions/workflows/job_monitor.yml/runs?per_page=1`,
       {
@@ -19,8 +22,11 @@ export async function GET() {
           Accept: "application/vnd.github+json",
         },
         cache: "no-store",
+        signal: controller.signal,
       }
     );
+
+    clearTimeout(timeoutId);
 
     if (!res.ok) {
       return Response.json({ error: `GitHub returned ${res.status}` }, { status: 502 });
@@ -28,14 +34,19 @@ export async function GET() {
 
     const data = await res.json();
     const run = data.workflow_runs?.[0];
-    if (!run) return Response.json({ status: "unknown" });
+    if (!run) {
+      return Response.json({ status: "unknown" }, { status: 200 });
+    }
 
     return Response.json({
-      status: run.status, // queued | in_progress | completed
-      conclusion: run.conclusion, // success | failure | null
+      status: run.status,
+      conclusion: run.conclusion,
       started_at: run.run_started_at,
     });
   } catch (err) {
+    if ((err as any)?.name === "AbortError") {
+      return Response.json({ error: "Run status request timed out" }, { status: 504 });
+    }
     return Response.json({ error: "Could not check run status" }, { status: 502 });
   }
 }
