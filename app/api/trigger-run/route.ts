@@ -2,6 +2,8 @@ export async function POST(request: Request) {
   const owner = process.env.JOBBOT_GH_OWNER;
   const repo = process.env.JOBBOT_GH_REPO;
   const token = process.env.JOBBOT_GH_TOKEN;
+  const branch = process.env.JOBBOT_GH_BRANCH?.trim() || "main";
+  const workflowFile = process.env.JOBBOT_WORKFLOW_FILE?.trim() || "job_monitor.yml";
   const expectedPassphrase = process.env.JOBBOT_TRIGGER_PASSPHRASE?.trim().toLowerCase();
 
   const body = await request.json().catch(() => ({}));
@@ -23,7 +25,9 @@ export async function POST(request: Request) {
     const timeoutId = setTimeout(() => controller.abort(), 12000);
 
     const res = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/actions/workflows/job_monitor.yml/dispatches`,
+      `https://api.github.com/repos/${owner}/${repo}/actions/workflows/${encodeURIComponent(
+        workflowFile
+      )}/dispatches`,
       {
         method: "POST",
         headers: {
@@ -31,7 +35,7 @@ export async function POST(request: Request) {
           Accept: "application/vnd.github+json",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ref: "main" }),
+        body: JSON.stringify({ ref: branch }),
         signal: controller.signal,
       }
     );

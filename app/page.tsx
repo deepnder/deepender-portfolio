@@ -465,12 +465,21 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
       crediantial:'AI-0351-2605'
     },
     {
-      name: 'Microsoft Azure Fundamentals (AZ-900)',
+      name: 'Microsoft Certified: Fabric Analytics Engineer Associate',
       issuer: 'Microsoft',
       date: '2025',
       color: 'from-blue-500 to-cyan-500',
-      link:'https://www.udemy.com/certificate/UC-f8589ae2-9b7e-4ed8-b155-4768ca74f8d0/',
-      crediantial:'AZ-900'
+      link:'https://learn.microsoft.com/en-us/users/deependerchoudhary2003/credentials/adab445b07daa9c5?ref=https%3A%2F%2Fwww.linkedin.com%2F',
+      crediantial:'DP-600'
+
+    },
+     {
+      name: 'Microsoft Certified: AI Business Professional',
+      issuer: 'Microsoft',
+      date: '2025',
+      color: 'from-blue-500 to-cyan-500',
+      link:'https://learn.microsoft.com/en-us/users/deependerchoudhary2003/credentials/3e9e7986dcf75b6a?ref=https%3A%2F%2Fwww.linkedin.com%2F',
+      crediantial:'AB-730'
 
     },
     {
@@ -1475,7 +1484,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
         </motion.div>
 
         {/* ── View All Projects Button ── */}
-        <motion.div
+        {/* <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, amount: 0.3 }}
@@ -1488,7 +1497,6 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
             whileTap={{ scale: 0.95 }}
             className="group relative px-10 py-5 rounded-2xl font-black text-lg overflow-hidden border-2 border-green-400 text-white"
           >
-            {/* animated gradient background */}
             <motion.span
               className="absolute inset-0 bg-gradient-to-r from-green-500 via-emerald-400 to-teal-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             />
@@ -1506,7 +1514,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
               </motion.span>
             </span>
           </motion.button>
-        </motion.div>
+        </motion.div>  */}
 
         </div>
       </section>
@@ -1515,7 +1523,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
       {/* ═══════════════════════════════════════════════════════════════════
           SKILLS SECTION
       ═══════════════════════════════════════════════════════════════════ */}
-      <section id="skills" className={`min-h-screen px-6 py-32 relative ${themeClass({ dark: 'bg-slate-900/20', light: 'bg-emerald-50/40' })}`}>
+      <section id="skills" className={`min-h-screen px-6 py-27 relative ${themeClass({ dark: 'bg-slate-900/20', light: 'bg-emerald-50/40' })}`}>
         <div className="max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: false, amount: 0.25 }}>
             <h2 className="text-4xl md:text-6xl font-black mb-16 flex items-center gap-6">

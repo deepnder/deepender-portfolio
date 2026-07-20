@@ -2,6 +2,7 @@ export async function GET() {
   const owner = process.env.JOBBOT_GH_OWNER;
   const repo = process.env.JOBBOT_GH_REPO;
   const token = process.env.JOBBOT_GH_TOKEN;
+  const workflowFile = process.env.JOBBOT_WORKFLOW_FILE?.trim() || "job_monitor.yml";
 
   if (!owner || !repo || !token) {
     return Response.json(
