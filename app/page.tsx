@@ -295,7 +295,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
     ],
     metrics: { transactions: '100K+', reporting: '93% faster', impact: '65% revenue in top 3' },
     BadgeCheck: '#',
-    demo: 'http://localhost:3000/projects/project-3-amazon.html',
+    demo: 'https://deepender-portfolio-lime.vercel.app/projects/project-3-amazon.html',
     color: 'from-orange-500 to-amber-500',
   },
   {
@@ -321,7 +321,7 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
     ],
     metrics: { gaps: '6 identified', sla: '~20% improvement', defensibility: '10/10' },
     BadgeCheck: '#',
-    demo: 'http://localhost:3000/projects/project-1-flight-booking.html',
+    demo: 'https://deepender-portfolio-lime.vercel.app/projects/project-1-flight-booking.html',
     color: 'from-purple-500 to-pink-500',
   },
 ];
