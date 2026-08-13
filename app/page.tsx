@@ -73,9 +73,9 @@ const [showProjectsModal, setShowProjectsModal] = useState(false);
   // form values
   
   const RESUME_VIEW_URL =
-    'https://docs.google.com/document/d/1goFJDq8pAb8kbzO5bxXgfvy4rkmyH0-6-yw_7FkCvnI/edit?usp=sharing';
+    'https://docs.google.com/document/d/1t7HefhUyp8O5tF4ltswfwDgcY1tO7Jq1eZMbClrNuco/edit?usp=sharing';
   const RESUME_DOWNLOAD_URL =
-    'https://docs.google.com/document/d/1goFJDq8pAb8kbzO5bxXgfvy4rkmyH0-6-yw_7FkCvnI/export?format=pdf';
+    'https://docs.google.com/document/d/1t7HefhUyp8O5tF4ltswfwDgcY1tO7Jq1eZMbClrNuco/export?format=pdf';
 
   // dynamic geolocation state
   const [visitorCity, setVisitorCity] = useState('India');
